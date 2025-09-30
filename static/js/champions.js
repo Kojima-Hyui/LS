@@ -3,10 +3,9 @@
 // チャンピオンフィルター管理
 let allChampionsData = [];
 let selectedChampionRoles = [];
-let selectedChampionLanes = [];
 let selectedChampionDifficulties = [];
 
-// ロールとレーンのマスターデータ
+// ロールのマスターデータ
 const CHAMPION_ROLES = [
   "Fighter",
   "Tank",
@@ -15,7 +14,6 @@ const CHAMPION_ROLES = [
   "Support",
   "Marksman",
 ];
-const CHAMPION_LANES = ["Top", "Jungle", "Mid", "Bot", "Support"];
 const DIFFICULTIES = [
   { value: 1, label: "初心者" },
   { value: 2, label: "初級" },
@@ -41,7 +39,6 @@ async function loadChampionsList() {
 
     // フィルターUIの初期化
     renderChampionRolesFilter();
-    renderChampionLanesFilter();
     renderChampionDifficultyFilter();
 
     displayChampions(allChampionsData);
@@ -89,26 +86,6 @@ function renderChampionRolesFilter() {
   container.innerHTML = html;
 }
 
-// レーンフィルターのレンダリング
-function renderChampionLanesFilter() {
-  const container = document.getElementById("champion-lanes-filter");
-  let html = "";
-
-  CHAMPION_LANES.forEach((lane) => {
-    const isActive = selectedChampionLanes.includes(lane);
-    html += `
-      <button 
-        class="tag-button ${isActive ? "active" : ""}"
-        onclick="toggleChampionLane('${lane}')"
-      >
-        ${lane}
-      </button>
-    `;
-  });
-
-  container.innerHTML = html;
-}
-
 // 難易度フィルターのレンダリング
 function renderChampionDifficultyFilter() {
   const container = document.getElementById("champion-difficulty-filter");
@@ -141,18 +118,6 @@ function toggleChampionRole(role) {
   filterChampions();
 }
 
-// レーンの切り替え
-function toggleChampionLane(lane) {
-  const index = selectedChampionLanes.indexOf(lane);
-  if (index === -1) {
-    selectedChampionLanes.push(lane);
-  } else {
-    selectedChampionLanes.splice(index, 1);
-  }
-  renderChampionLanesFilter();
-  filterChampions();
-}
-
 // 難易度の切り替え
 function toggleChampionDifficulty(difficulty) {
   const index = selectedChampionDifficulties.indexOf(difficulty);
@@ -170,9 +135,8 @@ function clearChampionFilters() {
   document.getElementById("champion-search").value = "";
   document.getElementById("champion-sort").value = "name-asc";
 
-  // すべてのロール・レーン・難易度を非選択にする
+  // すべてのロール・難易度を非選択にする
   selectedChampionRoles = [];
-  selectedChampionLanes = [];
   selectedChampionDifficulties = [];
 
   // ロールボタンの選択状態をクリア
@@ -180,12 +144,6 @@ function clearChampionFilters() {
     "#champion-roles-filter .tag-button"
   );
   roleButtons.forEach((btn) => btn.classList.remove("active"));
-
-  // レーンボタンの選択状態をクリア
-  const laneButtons = document.querySelectorAll(
-    "#champion-lanes-filter .tag-button"
-  );
-  laneButtons.forEach((btn) => btn.classList.remove("active"));
 
   // 難易度ボタンの選択状態をクリア
   const difficultyButtons = document.querySelectorAll(
@@ -222,9 +180,6 @@ function filterChampions() {
     const matchesDifficulty =
       selectedChampionDifficulties.length === 0 ||
       selectedChampionDifficulties.includes(champion.info.difficulty);
-
-    // レーンマッチングは現状タグに含まれないため、スキップ
-    // 将来的にはAPI拡張が必要
 
     return matchesSearch && matchesRoles && matchesDifficulty;
   });
