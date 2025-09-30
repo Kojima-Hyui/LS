@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LoL 汎用ツール</title>
+    <title>LoL Search Tools - 汎用ツール</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
       * {
         margin: 0;
@@ -12,83 +15,185 @@
       }
 
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: "Noto Sans JP", sans-serif;
+        background: #0a0e27;
         min-height: 100vh;
         padding: 20px;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      /* アニメーション背景 */
+      body::before {
+        content: '';
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: 
+          radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+          radial-gradient(circle at 80% 80%, rgba(88, 101, 242, 0.3) 0%, transparent 50%),
+          radial-gradient(circle at 40% 20%, rgba(255, 115, 230, 0.2) 0%, transparent 50%);
+        animation: gradientShift 15s ease infinite;
+        z-index: 0;
+      }
+
+      @keyframes gradientShift {
+        0%, 100% { transform: translate(0, 0) rotate(0deg); }
+        33% { transform: translate(5%, -5%) rotate(120deg); }
+        66% { transform: translate(-5%, 5%) rotate(240deg); }
       }
 
       .container {
-        max-width: 1200px;
+        max-width: 1400px;
         margin: 0 auto;
-        background: white;
-        border-radius: 10px;
-        padding: 30px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        position: relative;
+        z-index: 1;
       }
 
+      /* ヘッダー */
       h1 {
         text-align: center;
-        color: #333;
-        margin-bottom: 30px;
-        font-size: 2.5em;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 40px;
+        font-size: 3.5em;
+        font-weight: 900;
+        font-family: 'Barlow', sans-serif;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+        animation: glow 3s ease-in-out infinite;
       }
 
+      @keyframes glow {
+        0%, 100% { filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5)); }
+        50% { filter: drop-shadow(0 0 20px rgba(246, 147, 251, 0.8)); }
+      }
+
+      /* タブナビゲーション */
       .tabs {
         display: flex;
-        gap: 10px;
+        gap: 15px;
         margin-bottom: 30px;
-        border-bottom: 2px solid #ddd;
+        justify-content: center;
+        flex-wrap: wrap;
       }
 
       .tab {
-        padding: 15px 30px;
-        background: transparent;
-        border: none;
+        padding: 15px 35px;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        border-radius: 15px;
         cursor: pointer;
         font-size: 1.1em;
-        color: #666;
-        transition: all 0.3s;
-        border-bottom: 3px solid transparent;
+        font-weight: 700;
+        color: #8b92bc;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        font-family: 'Barlow', sans-serif;
+        letter-spacing: 1px;
       }
 
-      .tab.active {
-        color: #667eea;
-        border-bottom-color: #667eea;
+      .tab::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(102, 126, 234, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+      }
+
+      .tab:hover::before {
+        width: 300px;
+        height: 300px;
       }
 
       .tab:hover {
-        color: #667eea;
+        transform: translateY(-5px) scale(1.05);
+        border-color: #667eea;
+        color: #fff;
+        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
       }
 
+      .tab.active {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+        border-color: #f093fb;
+        color: #fff;
+        box-shadow: 0 10px 40px rgba(246, 147, 251, 0.5),
+                    inset 0 0 20px rgba(102, 126, 234, 0.3);
+        transform: translateY(-3px);
+      }
+
+      /* タブコンテンツカード */
       .tab-content {
         display: none;
+        animation: fadeIn 0.5s ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
       }
 
       .tab-content.active {
         display: block;
       }
 
+      .content-card {
+        background: rgba(15, 21, 46, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+      }
+
+      .content-card:hover {
+        box-shadow: 0 25px 70px rgba(102, 126, 234, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        border-color: rgba(102, 126, 234, 0.4);
+      }
+
+      /* 入力グループ */
       .input-group {
-        margin-bottom: 20px;
+        margin-bottom: 25px;
       }
 
       label {
         display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #333;
+        margin-bottom: 10px;
+        font-weight: 700;
+        color: #c9d1d9;
+        font-size: 1.05em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-family: 'Barlow', sans-serif;
       }
 
       input[type="text"],
       input[type="number"],
       textarea {
         width: 100%;
-        padding: 12px;
-        border: 2px solid #ddd;
-        border-radius: 5px;
-        font-size: 1em;
-        transition: border-color 0.3s;
+        padding: 15px 20px;
+        background: rgba(10, 14, 39, 0.6);
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        border-radius: 12px;
+        font-size: 1.05em;
+        color: #fff;
+        transition: all 0.3s ease;
+        font-family: "Noto Sans JP", sans-serif;
       }
 
       input[type="text"]:focus,
@@ -96,197 +201,315 @@
       textarea:focus {
         outline: none;
         border-color: #667eea;
+        background: rgba(10, 14, 39, 0.8);
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.3),
+                    inset 0 0 10px rgba(102, 126, 234, 0.1);
+        transform: translateY(-2px);
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: #6b7280;
       }
 
       textarea {
-        min-height: 150px;
+        min-height: 200px;
         font-family: "Courier New", monospace;
+        resize: vertical;
       }
 
+      /* ボタン */
       button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        padding: 12px 30px;
-        border-radius: 5px;
-        font-size: 1.1em;
+        padding: 16px 40px;
+        border-radius: 12px;
+        font-size: 1.15em;
+        font-weight: 700;
         cursor: pointer;
-        transition: transform 0.2s;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        font-family: 'Barlow', sans-serif;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      }
+
+      button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s;
+      }
+
+      button:hover::before {
+        left: 100%;
       }
 
       button:hover {
-        transform: translateY(-2px);
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6),
+                    0 0 30px rgba(246, 147, 251, 0.4);
       }
 
       button:active {
-        transform: translateY(0);
+        transform: translateY(-2px) scale(1.02);
       }
 
+      /* ローディング */
       .loading {
         display: none;
         text-align: center;
-        padding: 20px;
+        padding: 30px;
         color: #667eea;
-        font-size: 1.2em;
+        font-size: 1.3em;
+        font-weight: 700;
+        animation: pulse 1.5s ease-in-out infinite;
       }
 
+      @keyframes pulse {
+        0%, 100% { opacity: 0.6; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.05); }
+      }
+
+      /* 結果エリア */
       .result {
         margin-top: 30px;
-        padding: 20px;
-        background: #f8f9fa;
-        border-radius: 5px;
+        padding: 30px;
+        background: rgba(15, 21, 46, 0.5);
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        border-radius: 20px;
         display: none;
+        animation: slideUp 0.5s ease;
       }
 
-      .match-item {
-        background: white;
-        padding: 15px;
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .result h2, .result h3 {
+        color: #f093fb;
+        margin-bottom: 20px;
+        font-family: 'Barlow', sans-serif;
+        letter-spacing: 1px;
+      }
+
+      .result p {
+        color: #c9d1d9;
         margin-bottom: 10px;
-        border-radius: 5px;
-        border-left: 4px solid #667eea;
+        font-size: 1.05em;
+      }
+
+      /* 試合アイテム */
+      .match-item {
+        background: rgba(20, 27, 58, 0.8);
+        padding: 20px;
+        margin-bottom: 15px;
+        border-radius: 15px;
+        border-left: 5px solid #667eea;
+        transition: all 0.3s ease;
+        color: #c9d1d9;
+      }
+
+      .match-item:hover {
+        transform: translateX(10px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
       }
 
       .match-item.win {
-        border-left-color: #28a745;
+        border-left-color: #10b981;
+        background: rgba(16, 185, 129, 0.1);
+      }
+
+      .match-item.win:hover {
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
       }
 
       .match-item.loss {
-        border-left-color: #dc3545;
+        border-left-color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
       }
 
+      .match-item.loss:hover {
+        box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+      }
+
+      /* チーム */
       .team {
-        background: white;
-        padding: 20px;
-        border-radius: 5px;
-        margin-bottom: 15px;
+        background: rgba(20, 27, 58, 0.6);
+        padding: 25px;
+        border-radius: 20px;
+        margin-bottom: 20px;
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .team:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
       }
 
       .team.team1 {
-        border-left: 5px solid #007bff;
+        border-left: 6px solid #3b82f6;
       }
 
       .team.team2 {
-        border-left: 5px solid #dc3545;
+        border-left: 6px solid #ef4444;
       }
 
+      .team h3 {
+        color: #f093fb;
+        margin-bottom: 15px;
+        font-family: 'Barlow', sans-serif;
+        font-size: 1.5em;
+      }
+
+      /* プレイヤーアイテム */
       .player-item {
-        padding: 10px;
-        background: #f8f9fa;
-        margin-bottom: 8px;
-        border-radius: 3px;
+        padding: 12px 15px;
+        background: rgba(10, 14, 39, 0.5);
+        margin-bottom: 10px;
+        border-radius: 10px;
+        color: #c9d1d9;
+        border-left: 3px solid #667eea;
+        transition: all 0.3s ease;
       }
 
+      .player-item:hover {
+        background: rgba(102, 126, 234, 0.2);
+        transform: translateX(5px);
+        border-left-color: #f093fb;
+      }
+
+      /* エラー */
       .error {
-        background: #f8d7da;
-        color: #721c24;
-        padding: 15px;
-        border-radius: 5px;
+        background: rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        padding: 20px;
+        border-radius: 12px;
         margin-top: 20px;
         display: none;
+        border: 1px solid rgba(239, 68, 68, 0.5);
+        font-weight: 600;
       }
 
+      /* 情報ボックス */
       .info-box {
-        background: #d1ecf1;
-        color: #0c5460;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
+        background: rgba(59, 130, 246, 0.1);
+        color: #93c5fd;
+        padding: 20px;
+        border-radius: 15px;
+        margin-bottom: 25px;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        font-size: 1em;
+        line-height: 1.6;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>⚔️ League of Legends 汎用ツール</h1>
+      <h1>⚔️ LoL Search Tools</h1>
 
       <div class="tabs">
         <button class="tab active" onclick="showTab('match-history')">
-          戦績表示
+          📊 戦績表示
         </button>
-        <button class="tab" onclick="showTab('current-game')">試合情報</button>
-        <button class="tab" onclick="showTab('team-balance')">組み分け</button>
+        <button class="tab" onclick="showTab('current-game')">⚔️ 試合情報</button>
+        <button class="tab" onclick="showTab('team-balance')">⚖️ 組み分け</button>
       </div>
 
       <!-- 戦績表示タブ -->
       <div id="match-history" class="tab-content active">
-        <div class="info-box">
-          サモナーネーム（ゲーム名#タグライン）を入力して過去の戦績を確認できます。
+        <div class="content-card">
+          <div class="info-box">
+            💡 サモナーネーム（ゲーム名#タグライン）を入力して過去の戦績を確認できます。
+          </div>
+
+          <div class="input-group">
+            <label>🎮 ゲーム名</label>
+            <input
+              type="text"
+              id="history-game-name"
+              placeholder="例: Hide on Bush"
+            />
+          </div>
+
+          <div class="input-group">
+            <label>🏷️ タグライン</label>
+            <input type="text" id="history-tag-line" placeholder="例: KR1" />
+          </div>
+
+          <div class="input-group">
+            <label>📈 取得する試合数</label>
+            <input type="number" id="history-count" value="10" min="1" max="50" />
+          </div>
+
+          <button onclick="getMatchHistory()">🔍 戦績を取得</button>
+
+          <div class="loading" id="history-loading">⏳ 読み込み中...</div>
+          <div class="error" id="history-error"></div>
+          <div class="result" id="history-result"></div>
         </div>
-
-        <div class="input-group">
-          <label>ゲーム名</label>
-          <input
-            type="text"
-            id="history-game-name"
-            placeholder="例: Hide on Bush"
-          />
-        </div>
-
-        <div class="input-group">
-          <label>タグライン</label>
-          <input type="text" id="history-tag-line" placeholder="例: KR1" />
-        </div>
-
-        <div class="input-group">
-          <label>取得する試合数</label>
-          <input type="number" id="history-count" value="10" min="1" max="50" />
-        </div>
-
-        <button onclick="getMatchHistory()">戦績を取得</button>
-
-        <div class="loading" id="history-loading">読み込み中...</div>
-        <div class="error" id="history-error"></div>
-        <div class="result" id="history-result"></div>
       </div>
 
       <!-- 試合情報タブ -->
       <div id="current-game" class="tab-content">
-        <div class="info-box">
-          サモナーネームを入力して、その人が現在ゲーム中の場合、試合の敵味方情報を表示します。
+        <div class="content-card">
+          <div class="info-box">
+            💡 サモナーネームを入力して、その人が現在ゲーム中の場合、試合の敵味方情報を表示します。
+          </div>
+
+          <div class="input-group">
+            <label>🎮 ゲーム名</label>
+            <input
+              type="text"
+              id="game-game-name"
+              placeholder="例: Hide on Bush"
+            />
+          </div>
+
+          <div class="input-group">
+            <label>🏷️ タグライン</label>
+            <input type="text" id="game-tag-line" placeholder="例: KR1" />
+          </div>
+
+          <button onclick="getCurrentGame()">🔍 試合情報を取得</button>
+
+          <div class="loading" id="game-loading">⏳ 読み込み中...</div>
+          <div class="error" id="game-error"></div>
+          <div class="result" id="game-result"></div>
         </div>
-
-        <div class="input-group">
-          <label>ゲーム名</label>
-          <input
-            type="text"
-            id="game-game-name"
-            placeholder="例: Hide on Bush"
-          />
-        </div>
-
-        <div class="input-group">
-          <label>タグライン</label>
-          <input type="text" id="game-tag-line" placeholder="例: KR1" />
-        </div>
-
-        <button onclick="getCurrentGame()">試合情報を取得</button>
-
-        <div class="loading" id="game-loading">読み込み中...</div>
-        <div class="error" id="game-error"></div>
-        <div class="result" id="game-result"></div>
       </div>
 
       <!-- 組み分けタブ -->
       <div id="team-balance" class="tab-content">
-        <div class="info-box">
-          カスタムゲームに参加する10人のサモナーネームを入力してください。<br />
-          ランク情報を基に公平な5vs5のチーム分けを行います。
+        <div class="content-card">
+          <div class="info-box">
+            💡 カスタムゲームに参加する10人のサモナーネームを入力してください。<br />
+            ランク情報を基に公平な5vs5のチーム分けを行います。
+          </div>
+
+          <div class="input-group">
+            <label>👥 プレイヤーリスト（1行に1人、ゲーム名#タグライン形式で入力）</label>
+            <textarea
+              id="balance-players"
+              placeholder="例:&#10;Player1#JP1&#10;Player2#JP1&#10;Player3#JP1&#10;...&#10;Player10#JP1"
+            ></textarea>
+          </div>
+
+          <button onclick="balanceTeams()">⚖️ チームを組み分け</button>
+
+          <div class="loading" id="balance-loading">⏳ 読み込み中...</div>
+          <div class="error" id="balance-error"></div>
+          <div class="result" id="balance-result"></div>
         </div>
-
-        <div class="input-group">
-          <label
-            >プレイヤーリスト（1行に1人、ゲーム名#タグライン形式で入力）</label
-          >
-          <textarea
-            id="balance-players"
-            placeholder="例:&#10;Player1#JP1&#10;Player2#JP1&#10;Player3#JP1&#10;...&#10;Player10#JP1"
-          ></textarea>
-        </div>
-
-        <button onclick="balanceTeams()">チームを組み分け</button>
-
-        <div class="loading" id="balance-loading">読み込み中...</div>
-        <div class="error" id="balance-error"></div>
-        <div class="result" id="balance-result"></div>
       </div>
     </div>
 
