@@ -91,6 +91,10 @@ async function loadItemsList() {
     document.getElementById("items-loading").style.display = "none";
     document.getElementById("items-grid").style.display = "block";
 
+    // ビルドの初期状態を表示
+    updateBuildDisplay();
+    updateBuildItemsCount();
+
     console.log(`✅ ${allItems.length}個のアイテムを読み込みました`);
   } catch (error) {
     console.error("❌ アイテムデータの読み込みに失敗:", error);

@@ -61,6 +61,34 @@
 
           <button onclick="fetchMatchHistory()">🔍 戦績を取得</button>
 
+          <!-- フィルターセクション -->
+          <div id="match-filters" style="display: none; margin-top: 20px;">
+            <div class="compact-filters">
+              <div class="compact-filters-header">
+                <h3>🔍 フィルター</h3>
+              </div>
+              <div class="filter-group">
+                <div class="input-group">
+                  <label>ゲームモード</label>
+                  <select id="filter-mode" onchange="applyFilters()">
+                    <option value="">すべて</option>
+                    <option value="CLASSIC">ランク/ノーマル</option>
+                    <option value="ARAM">ARAM</option>
+                    <option value="CHERRY">Arena</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label>結果</label>
+                  <select id="filter-result" onchange="applyFilters()">
+                    <option value="">すべて</option>
+                    <option value="win">勝利のみ</option>
+                    <option value="loss">敗北のみ</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="loading" id="match-loading">⏳ 読み込み中...</div>
           <div class="error" id="match-error"></div>
           <div class="result" id="match-result"></div>
@@ -324,7 +352,7 @@
           </div>
 
           <!-- 保存済みビルド表示エリア -->
-          <div id="saved-builds-container" style="display: none">
+          <div id="saved-builds-container" style="display: none; margin-top: 20px;">
             <div class="saved-builds-panel">
               <h3>💾 保存済みビルド</h3>
               <div id="saved-builds-list"></div>
@@ -332,7 +360,7 @@
           </div>
 
           <!-- ビルドパネル -->
-          <div id="build-panel" class="build-panel" style="display: none">
+          <div id="build-panel" class="build-panel">
             <div class="build-panel-content">
               <div class="build-panel-header">
                 <h3>🎒 現在のビルド</h3>

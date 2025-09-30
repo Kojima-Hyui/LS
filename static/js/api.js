@@ -63,6 +63,9 @@ async function fetchMatchHistory() {
     filteredMatches = data.matches || [];
     displayMatchHistory(filteredMatches);
     resultEl.style.display = "block";
+    
+    // フィルターを表示
+    document.getElementById("match-filters").style.display = "block";
   } catch (error) {
     loadingEl.style.display = "none";
     errorEl.textContent = `❌ エラーが発生しました: ${error.message}`;
@@ -86,16 +89,24 @@ function displayMatchHistory(matches) {
     const win = stats.win;
     const winClass = win ? "team-blue" : "team-red";
     const winText = win ? "🏆 勝利" : "💀 敗北";
+    
+    // チャンピオンアイコンURL
+    const championIcon = stats.champion 
+      ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${stats.champion}.png`
+      : "";
 
     html += `
       <div class="team ${winClass}" style="margin: 15px 0;">
         <h4>${winText} - ${match.game_mode} (${match.game_duration})</h4>
-        <div class="player">
-          <strong>${stats.champion || "不明"}</strong><br>
-          <span style="color: #9ae6b4;">KDA: ${stats.kills || 0}/${stats.deaths || 0}/${stats.assists || 0} (${stats.kda || 0})</span><br>
-          <span>CS: ${stats.cs || 0} | ダメージ: ${
-            stats.damage ? stats.damage.toLocaleString() : "N/A"
-          }</span>
+        <div class="player" style="display: flex; align-items: center; gap: 15px;">
+          ${championIcon ? `<img src="${championIcon}" alt="${stats.champion}" style="width: 64px; height: 64px; border-radius: 8px;" onerror="this.style.display='none'">` : ''}
+          <div>
+            <strong>${stats.champion || "不明"}</strong><br>
+            <span style="color: #9ae6b4;">KDA: ${stats.kills || 0}/${stats.deaths || 0}/${stats.assists || 0} (${stats.kda || 0})</span><br>
+            <span>CS: ${stats.cs || 0} | ダメージ: ${
+              stats.damage ? stats.damage.toLocaleString() : "N/A"
+            } | ゴールド: ${stats.gold ? stats.gold.toLocaleString() : "N/A"}</span>
+          </div>
         </div>
       </div>
     `;
