@@ -22,6 +22,14 @@ const DIFFICULTIES = [
   { value: 5, label: "専門" },
 ];
 
+// 難易度を正規化する関数 (APIの値を1-5にマッピング)
+function normalizeDifficulty(difficulty) {
+  if (!difficulty || difficulty <= 0) return 1;
+  if (difficulty >= 10) return 5;
+  // 1-10を1-5にマッピング: Math.ceil(difficulty / 2)
+  return Math.min(5, Math.max(1, Math.ceil(difficulty / 2)));
+}
+
 // チャンピオン一覧読み込み
 async function loadChampionsList() {
   try {
@@ -176,10 +184,12 @@ function filterChampions() {
         (role) => champion.tags && champion.tags.includes(role)
       );
 
-    // 難易度マッチング
+    // 難易度マッチング（正規化した値で比較）
     const matchesDifficulty =
       selectedChampionDifficulties.length === 0 ||
-      selectedChampionDifficulties.includes(champion.info.difficulty);
+      selectedChampionDifficulties.includes(
+        normalizeDifficulty(champion.info.difficulty)
+      );
 
     return matchesSearch && matchesRoles && matchesDifficulty;
   });
@@ -209,7 +219,8 @@ function displayChampions(champions) {
 
   champions.forEach((champion) => {
     const imgUrl = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${champion.id}.png`;
-    const difficulty = "★".repeat(champion.info.difficulty);
+    const normalizedDifficulty = normalizeDifficulty(champion.info.difficulty);
+    const difficulty = "★".repeat(normalizedDifficulty);
 
     html += `
       <div class="champion-card" onclick="showChampionDetail('${champion.id}')">
