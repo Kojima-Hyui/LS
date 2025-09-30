@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LoL 汎用ツール</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 2.5em;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #ddd;
+      }
+
+      .tab {
+        padding: 15px 30px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1em;
+        color: #666;
+        transition: all 0.3s;
+        border-bottom: 3px solid transparent;
+      }
+
+      .tab.active {
+        color: #667eea;
+        border-bottom-color: #667eea;
+      }
+
+      .tab:hover {
+        color: #667eea;
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .input-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 1em;
+        transition: border-color 0.3s;
+      }
+
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      textarea {
+        min-height: 150px;
+        font-family: "Courier New", monospace;
+      }
+
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 5px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 20px;
+        color: #667eea;
+        font-size: 1.2em;
+      }
+
+      .result {
+        margin-top: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        display: none;
+      }
+
+      .match-item {
+        background: white;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border-left: 4px solid #667eea;
+      }
+
+      .match-item.win {
+        border-left-color: #28a745;
+      }
+
+      .match-item.loss {
+        border-left-color: #dc3545;
+      }
+
+      .team {
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+      }
+
+      .team.team1 {
+        border-left: 5px solid #007bff;
+      }
+
+      .team.team2 {
+        border-left: 5px solid #dc3545;
+      }
+
+      .player-item {
+        padding: 10px;
+        background: #f8f9fa;
+        margin-bottom: 8px;
+        border-radius: 3px;
+      }
+
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+        display: none;
+      }
+
+      .info-box {
+        background: #d1ecf1;
+        color: #0c5460;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>⚔️ League of Legends 汎用ツール</h1>
+
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('match-history')">
+          戦績表示
+        </button>
+        <button class="tab" onclick="showTab('current-game')">試合情報</button>
+        <button class="tab" onclick="showTab('team-balance')">組み分け</button>
+      </div>
+
+      <!-- 戦績表示タブ -->
+      <div id="match-history" class="tab-content active">
+        <div class="info-box">
+          サモナーネーム（ゲーム名#タグライン）を入力して過去の戦績を確認できます。
+        </div>
+
+        <div class="input-group">
+          <label>ゲーム名</label>
+          <input
+            type="text"
+            id="history-game-name"
+            placeholder="例: Hide on Bush"
+          />
+        </div>
+
+        <div class="input-group">
+          <label>タグライン</label>
+          <input type="text" id="history-tag-line" placeholder="例: KR1" />
+        </div>
+
+        <div class="input-group">
+          <label>取得する試合数</label>
+          <input type="number" id="history-count" value="10" min="1" max="50" />
+        </div>
+
+        <button onclick="getMatchHistory()">戦績を取得</button>
+
+        <div class="loading" id="history-loading">読み込み中...</div>
+        <div class="error" id="history-error"></div>
+        <div class="result" id="history-result"></div>
+      </div>
+
+      <!-- 試合情報タブ -->
+      <div id="current-game" class="tab-content">
+        <div class="info-box">
+          サモナーネームを入力して、その人が現在ゲーム中の場合、試合の敵味方情報を表示します。
+        </div>
+
+        <div class="input-group">
+          <label>ゲーム名</label>
+          <input
+            type="text"
+            id="game-game-name"
+            placeholder="例: Hide on Bush"
+          />
+        </div>
+
+        <div class="input-group">
+          <label>タグライン</label>
+          <input type="text" id="game-tag-line" placeholder="例: KR1" />
+        </div>
+
+        <button onclick="getCurrentGame()">試合情報を取得</button>
+
+        <div class="loading" id="game-loading">読み込み中...</div>
+        <div class="error" id="game-error"></div>
+        <div class="result" id="game-result"></div>
+      </div>
+
+      <!-- 組み分けタブ -->
+      <div id="team-balance" class="tab-content">
+        <div class="info-box">
+          カスタムゲームに参加する10人のサモナーネームを入力してください。<br />
+          ランク情報を基に公平な5vs5のチーム分けを行います。
+        </div>
+
+        <div class="input-group">
+          <label
+            >プレイヤーリスト（1行に1人、ゲーム名#タグライン形式で入力）</label
+          >
+          <textarea
+            id="balance-players"
+            placeholder="例:&#10;Player1#JP1&#10;Player2#JP1&#10;Player3#JP1&#10;...&#10;Player10#JP1"
+          ></textarea>
+        </div>
+
+        <button onclick="balanceTeams()">チームを組み分け</button>
+
+        <div class="loading" id="balance-loading">読み込み中...</div>
+        <div class="error" id="balance-error"></div>
+        <div class="result" id="balance-result"></div>
+      </div>
+    </div>
+
+    <script>
+      function showTab(tabName) {
+        // すべてのタブとタブコンテンツを非表示
+        document
+          .querySelectorAll(".tab")
+          .forEach((tab) => tab.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((content) => content.classList.remove("active"));
+
+        // 選択されたタブとコンテンツを表示
+        event.target.classList.add("active");
+        document.getElementById(tabName).classList.add("active");
+      }
+
+      async function getMatchHistory() {
+        const gameName = document
+          .getElementById("history-game-name")
+          .value.trim();
+        const tagLine = document
+          .getElementById("history-tag-line")
+          .value.trim();
+        const count = document.getElementById("history-count").value;
+
+        if (!gameName || !tagLine) {
+          showError("history", "ゲーム名とタグラインを入力してください");
+          return;
+        }
+
+        hideError("history");
+        showLoading("history");
+        hideResult("history");
+
+        try {
+          const response = await fetch("/api/match_history", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              game_name: gameName,
+              tag_line: tagLine,
+              count: parseInt(count),
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "エラーが発生しました");
+          }
+
+          displayMatchHistory(data);
+        } catch (error) {
+          showError("history", error.message);
+        } finally {
+          hideLoading("history");
+        }
+      }
+
+      function displayMatchHistory(data) {
+        const resultDiv = document.getElementById("history-result");
+
+        let html = "<h2>📊 プレイヤー情報</h2>";
+        html += `<p><strong>サモナー:</strong> ${data.summoner.game_name}#${data.summoner.tag_line}</p>`;
+        html += `<p><strong>レベル:</strong> ${data.summoner.level}</p>`;
+
+        if (data.ranked_stats && data.ranked_stats.length > 0) {
+          html += "<h3>ランク情報</h3>";
+          data.ranked_stats.forEach((rank) => {
+            const rankDisplay =
+              rank.tier === "MASTER" ||
+              rank.tier === "GRANDMASTER" ||
+              rank.tier === "CHALLENGER"
+                ? `${rank.tier} ${rank.leaguePoints} LP`
+                : `${rank.tier} ${rank.rank} ${rank.leaguePoints} LP`;
+            html += `<p><strong>${rank.queueType}:</strong> ${rankDisplay} (${rank.wins}W ${rank.losses}L)</p>`;
+          });
+        }
+
+        html += "<h3>最近の試合</h3>";
+        data.matches.forEach((match, index) => {
+          const winClass = match.stats.win ? "win" : "loss";
+          const result = match.stats.win ? "🟢 勝利" : "🔴 敗北";
+          html += `
+                    <div class="match-item ${winClass}">
+                        <strong>${index + 1}. ${result}</strong> | ${
+            match.game_mode
+          } | ${match.game_duration}<br>
+                        <strong>チャンピオン:</strong> ${
+                          match.stats.champion
+                        } | 
+                        <strong>KDA:</strong> ${match.stats.kills}/${
+            match.stats.deaths
+          }/${match.stats.assists} (${match.stats.kda})<br>
+                        <strong>CS:</strong> ${match.stats.cs} | 
+                        <strong>ダメージ:</strong> ${match.stats.damage.toLocaleString()} | 
+                        <strong>視界スコア:</strong> ${match.stats.vision_score}
+                    </div>
+                `;
+        });
+
+        resultDiv.innerHTML = html;
+        showResult("history");
+      }
+
+      async function getCurrentGame() {
+        const gameName = document.getElementById("game-game-name").value.trim();
+        const tagLine = document.getElementById("game-tag-line").value.trim();
+
+        if (!gameName || !tagLine) {
+          showError("game", "ゲーム名とタグラインを入力してください");
+          return;
+        }
+
+        hideError("game");
+        showLoading("game");
+        hideResult("game");
+
+        try {
+          const response = await fetch("/api/current_game", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              game_name: gameName,
+              tag_line: tagLine,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "エラーが発生しました");
+          }
+
+          displayCurrentGame(data);
+        } catch (error) {
+          showError("game", error.message);
+        } finally {
+          hideLoading("game");
+        }
+      }
+
+      function displayCurrentGame(data) {
+        const resultDiv = document.getElementById("game-result");
+
+        let html = "<h2>⚔️ 試合情報</h2>";
+        html += `<p><strong>ゲームモード:</strong> ${data.game_mode}</p>`;
+
+        const team1 = data.players.filter((p) => p.team_id === 100);
+        const team2 = data.players.filter((p) => p.team_id === 200);
+
+        html += '<div class="team team1"><h3>🔵 青チーム</h3>';
+        team1.forEach((player) => {
+          html += `<div class="player-item">${player.riot_id} - ${player.rank}</div>`;
+        });
+        html += "</div>";
+
+        html += '<div class="team team2"><h3>🔴 赤チーム</h3>';
+        team2.forEach((player) => {
+          html += `<div class="player-item">${player.riot_id} - ${player.rank}</div>`;
+        });
+        html += "</div>";
+
+        resultDiv.innerHTML = html;
+        showResult("game");
+      }
+
+      async function balanceTeams() {
+        const playersText = document
+          .getElementById("balance-players")
+          .value.trim();
+
+        if (!playersText) {
+          showError("balance", "プレイヤーリストを入力してください");
+          return;
+        }
+
+        const riotIds = playersText
+          .split("\n")
+          .map((line) => line.trim())
+          .filter((line) => line);
+
+        if (riotIds.length !== 10) {
+          showError(
+            "balance",
+            "10人のプレイヤーが必要です（現在: " + riotIds.length + "人）"
+          );
+          return;
+        }
+
+        hideError("balance");
+        showLoading("balance");
+        hideResult("balance");
+
+        try {
+          const response = await fetch("/api/balance_teams", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              riot_ids: riotIds,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "エラーが発生しました");
+          }
+
+          displayBalancedTeams(data);
+        } catch (error) {
+          showError("balance", error.message);
+        } finally {
+          hideLoading("balance");
+        }
+      }
+
+      function displayBalancedTeams(data) {
+        const resultDiv = document.getElementById("balance-result");
+
+        let html = "<h2>⚖️ チーム組み分け結果</h2>";
+        html += `<p><strong>スコア差:</strong> ${data.score_difference.toFixed(
+          2
+        )}</p>`;
+
+        html += `<div class="team team1">`;
+        html += `<h3>🔵 チーム1 (平均スコア: ${data.team1.average_score})</h3>`;
+        data.team1.players.forEach((player) => {
+          html += `<div class="player-item">${player.riot_id} - ${player.rank_info} (${player.rank_score})</div>`;
+        });
+        html += "</div>";
+
+        html += `<div class="team team2">`;
+        html += `<h3>🔴 チーム2 (平均スコア: ${data.team2.average_score})</h3>`;
+        data.team2.players.forEach((player) => {
+          html += `<div class="player-item">${player.riot_id} - ${player.rank_info} (${player.rank_score})</div>`;
+        });
+        html += "</div>";
+
+        resultDiv.innerHTML = html;
+        showResult("balance");
+      }
+
+      function showLoading(section) {
+        document.getElementById(`${section}-loading`).style.display = "block";
+      }
+
+      function hideLoading(section) {
+        document.getElementById(`${section}-loading`).style.display = "none";
+      }
+
+      function showResult(section) {
+        document.getElementById(`${section}-result`).style.display = "block";
+      }
+
+      function hideResult(section) {
+        document.getElementById(`${section}-result`).style.display = "none";
+      }
+
+      function showError(section, message) {
+        const errorDiv = document.getElementById(`${section}-error`);
+        errorDiv.textContent = message;
+        errorDiv.style.display = "block";
+      }
+
+      function hideError(section) {
+        document.getElementById(`${section}-error`).style.display = "none";
+      }
+    </script>
+  </body>
+</html>
