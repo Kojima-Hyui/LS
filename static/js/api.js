@@ -88,18 +88,53 @@ function displayMatchHistory(matches) {
 
   matches.forEach((match, index) => {
     const stats = match.stats || {};
-    const win = stats.win;
-    const winClass = win ? "team-blue" : "team-red";
-    const winText = win ? "🏆 勝利" : "💀 敗北";
+    const isArena = match.game_mode === "CHERRY";
+    
+    // Arena: 順位表示、通常: 勝敗表示
+    let resultText, resultClass;
+    if (isArena) {
+      const placement = stats.placement || "?";
+      resultClass = placement <= 2 ? "team-blue" : (placement <= 4 ? "team-neutral" : "team-red");
+      resultText = `🏆 ${placement}位`;
+    } else {
+      const win = stats.win;
+      resultClass = win ? "team-blue" : "team-red";
+      resultText = win ? "🏆 勝利" : "💀 敗北";
+    }
+    
+    // レーン情報（CLASSICモードのみ）
+    const position = stats.position;
+    const laneEmoji = {
+      'TOP': '⬆️',
+      'JUNGLE': '🌳',
+      'MIDDLE': '⭐',
+      'BOTTOM': '⬇️',
+      'UTILITY': '🛡️'
+    };
+    const laneText = (match.game_mode === "CLASSIC" && position) 
+      ? ` | ${laneEmoji[position] || ''} ${position}` 
+      : '';
     
     // チャンピオンアイコンURL
     const championIcon = stats.champion 
       ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${stats.champion}.png`
       : "";
+    
+    // ゲームモード名を日本語に変換
+    const modeNames = {
+      'CLASSIC': 'ランク/ノーマル',
+      'ARAM': 'ARAM',
+      'CHERRY': 'Arena',
+      'URF': 'URF',
+      'NEXUSBLITZ': 'Nexus Blitz',
+      'ONEFORALL': 'ワンフォーオール',
+      'TUTORIAL': 'チュートリアル'
+    };
+    const modeName = modeNames[match.game_mode] || match.game_mode;
 
     html += `
-      <div class="team ${winClass}" style="margin: 15px 0;">
-        <h4>${winText} - ${match.game_mode} (${match.game_duration})</h4>
+      <div class="team ${resultClass}" style="margin: 15px 0;">
+        <h4>${resultText} - ${modeName} (${match.game_duration})${laneText}</h4>
         <div class="player" style="display: flex; align-items: center; gap: 15px;">
           ${championIcon ? `<img src="${championIcon}" alt="${stats.champion}" style="width: 64px; height: 64px; border-radius: 8px;" onerror="this.style.display='none'">` : ''}
           <div>

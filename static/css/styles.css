@@ -343,6 +343,10 @@ button:active {
   color: #f56565;
 }
 
+.team-neutral h3 {
+  color: #ecc94b;
+}
+
 .player {
   background: rgba(20, 30, 60, 0.6);
   padding: 12px;
@@ -357,6 +361,10 @@ button:active {
 
 .team-red .player {
   border-left-color: #f56565;
+}
+
+.team-neutral .player {
+  border-left-color: #ecc94b;
 }
 
 /* モーダル */
