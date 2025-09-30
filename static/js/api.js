@@ -60,12 +60,14 @@ async function fetchMatchHistory() {
       return;
     }
 
-    filteredMatches = data.matches || [];
-    displayMatchHistory(filteredMatches);
+    allMatches = data.matches || [];
+    displayMatchHistory(allMatches);
     resultEl.style.display = "block";
     
     // フィルターを表示
     document.getElementById("match-filters").style.display = "block";
+    
+    console.log(`✅ ${allMatches.length}試合の戦績を取得しました`);
   } catch (error) {
     loadingEl.style.display = "none";
     errorEl.textContent = `❌ エラーが発生しました: ${error.message}`;
@@ -116,32 +118,38 @@ function displayMatchHistory(matches) {
 }
 
 // フィルター適用
-let filteredMatches = [];
+let allMatches = [];  // 元データを保持
 
 function applyFilters() {
-  if (!filteredMatches.length) return;
+  if (!allMatches.length) return;
 
   const mode = document.getElementById("filter-mode").value;
-  const champion = document.getElementById("filter-champion").value;
   const result = document.getElementById("filter-result").value;
 
-  let filtered = [...filteredMatches];
+  let filtered = [...allMatches];
 
+  // ゲームモードでフィルター
   if (mode) {
     filtered = filtered.filter((m) => m.game_mode === mode);
   }
 
-  if (champion) {
-    filtered = filtered.filter((m) => m.stats?.champion === champion);
-  }
-
+  // 勝敗でフィルター
   if (result === "win") {
     filtered = filtered.filter((m) => m.stats?.win === true);
   } else if (result === "loss") {
     filtered = filtered.filter((m) => m.stats?.win === false);
   }
 
+  console.log(`🔍 フィルター適用: ${allMatches.length}試合 → ${filtered.length}試合`);
   displayMatchHistory(filtered);
+}
+
+// フィルターをリセット
+function resetMatchFilters() {
+  document.getElementById("filter-mode").value = "";
+  document.getElementById("filter-result").value = "";
+  displayMatchHistory(allMatches);
+  console.log(`🔄 フィルターをリセットしました`);
 }
 
 // 現在の試合情報取得
