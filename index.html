@@ -536,12 +536,14 @@
                 <label>🎮 ゲームモード</label>
                 <select id="filter-game-mode">
                   <option value="">すべて</option>
-                  <option value="CLASSIC">ランク/ノーマル</option>
+                  <option value="CLASSIC">クラシック（ランク/ノーマル）</option>
                   <option value="ARAM">ARAM</option>
                   <option value="URF">URF</option>
-                  <option value="NEXUSBLITZ">ネクサスブリッツ</option>
+                  <option value="ULTBOOK">アルティメットスペルブック</option>
                   <option value="ONEFORALL">ワンフォーオール</option>
+                  <option value="NEXUSBLITZ">ネクサスブリッツ</option>
                   <option value="TUTORIAL">チュートリアル</option>
+                  <option value="PRACTICETOOL">練習モード</option>
                 </select>
               </div>
 
@@ -667,6 +669,21 @@
       // ページ読み込み時にチャンピオンリストを取得
       window.addEventListener('DOMContentLoaded', loadChampions);
 
+      // ゲームモードを日本語に変換
+      function getGameModeDisplayName(mode) {
+        const modeMap = {
+          'CLASSIC': 'クラシック',
+          'ARAM': 'ARAM',
+          'URF': 'URF',
+          'ULTBOOK': 'スペルブック',
+          'ONEFORALL': 'ワンフォーオール',
+          'NEXUSBLITZ': 'ネクサスブリッツ',
+          'TUTORIAL': 'チュートリアル',
+          'PRACTICETOOL': '練習モード'
+        };
+        return modeMap[mode.toUpperCase()] || mode;
+      }
+
       function showTab(tabName) {
         // すべてのタブとタブコンテンツを非表示
         document
@@ -730,7 +747,7 @@
         const resultDiv = document.getElementById("history-result");
 
         // フィルター値を取得
-        const filterGameMode = document.getElementById("filter-game-mode").value.toLowerCase();
+        const filterGameMode = document.getElementById("filter-game-mode").value;
         const filterChampion = document.getElementById("filter-champion").value.trim().toLowerCase();
         const filterResult = document.getElementById("filter-result").value;
 
@@ -751,11 +768,21 @@
           });
         }
 
+        // デバッグ: 実際のゲームモード値を確認
+        if (data.matches.length > 0) {
+          const uniqueModes = [...new Set(data.matches.map(m => m.game_mode))];
+          console.log('📊 実際のゲームモード値:', uniqueModes);
+        }
+
         // フィルタリング処理
         let filteredMatches = data.matches.filter((match) => {
-          // ゲームモードでフィルタ
-          if (filterGameMode && match.game_mode.toLowerCase() !== filterGameMode) {
-            return false;
+          // ゲームモードでフィルタ（大文字小文字を無視、空白も許容）
+          if (filterGameMode) {
+            const matchMode = match.game_mode.toUpperCase().trim();
+            const filterMode = filterGameMode.toUpperCase().trim();
+            if (matchMode !== filterMode) {
+              return false;
+            }
           }
 
           // チャンピオンでフィルタ
@@ -783,12 +810,13 @@
             const winClass = match.stats.win ? "win" : "loss";
             const result = match.stats.win ? "🟢 勝利" : "🔴 敗北";
             const championIcon = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${match.stats.champion}.png`;
+            const gameMode = getGameModeDisplayName(match.game_mode);
             
             html += `
                       <div class="match-item ${winClass}">
                           <img src="${championIcon}" alt="${match.stats.champion}" class="champion-icon" onerror="this.style.display='none'">
                           <div class="match-info">
-                              <strong>${index + 1}. ${result}</strong> | ${match.game_mode} | ${match.game_duration}<br>
+                              <strong>${index + 1}. ${result}</strong> | ${gameMode} | ${match.game_duration}<br>
                               <strong>チャンピオン:</strong> ${match.stats.champion} | 
                               <strong>KDA:</strong> ${match.stats.kills}/${match.stats.deaths}/${match.stats.assists} (${match.stats.kda})<br>
                               <strong>CS:</strong> ${match.stats.cs} | 
