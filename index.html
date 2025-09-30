@@ -774,27 +774,33 @@
       // Riot IDをパースする関数（ゲーム名#タグライン → {gameName, tagLine}）
       function parseRiotId(riotId) {
         const trimmed = riotId.trim();
-        
+
         // #の個数を確認
         const hashCount = (trimmed.match(/#/g) || []).length;
-        
+
         if (hashCount === 0) {
-          throw new Error("Riot IDの形式が正しくありません。「ゲーム名#タグライン」の形式で入力してください（例: Hide on Bush#KR1）");
+          throw new Error(
+            "Riot IDの形式が正しくありません。「ゲーム名#タグライン」の形式で入力してください（例: Hide on Bush#KR1）"
+          );
         }
-        
+
         if (hashCount > 1) {
-          throw new Error("Riot IDに#が複数含まれています。「ゲーム名#タグライン」の形式で入力してください");
+          throw new Error(
+            "Riot IDに#が複数含まれています。「ゲーム名#タグライン」の形式で入力してください"
+          );
         }
-        
+
         // #で分割
-        const parts = trimmed.split('#');
+        const parts = trimmed.split("#");
         const gameName = parts[0].trim();
         const tagLine = parts[1].trim();
-        
+
         if (!gameName || !tagLine) {
-          throw new Error("ゲーム名またはタグラインが空です。正しい形式で入力してください（例: Hide on Bush#KR1）");
+          throw new Error(
+            "ゲーム名またはタグラインが空です。正しい形式で入力してください（例: Hide on Bush#KR1）"
+          );
         }
-        
+
         return { gameName, tagLine };
       }
 
@@ -803,7 +809,10 @@
         const count = document.getElementById("history-count").value;
 
         if (!riotId) {
-          showError("history", "Riot IDを入力してください（例: Hide on Bush#KR1）");
+          showError(
+            "history",
+            "Riot IDを入力してください（例: Hide on Bush#KR1）"
+          );
           return;
         }
 
@@ -814,7 +823,7 @@
         try {
           // Riot IDをパース
           const { gameName, tagLine } = parseRiotId(riotId);
-          
+
           const response = await fetch("/api/match_history", {
             method: "POST",
             headers: {
@@ -967,7 +976,10 @@
         const riotId = document.getElementById("game-riot-id").value.trim();
 
         if (!riotId) {
-          showError("game", "Riot IDを入力してください（例: Hide on Bush#KR1）");
+          showError(
+            "game",
+            "Riot IDを入力してください（例: Hide on Bush#KR1）"
+          );
           return;
         }
 
@@ -978,7 +990,7 @@
         try {
           // Riot IDをパース
           const { gameName, tagLine } = parseRiotId(riotId);
-          
+
           const response = await fetch("/api/current_game", {
             method: "POST",
             headers: {
