@@ -24,18 +24,18 @@ let savedRunePages = [];
 const STAT_SHARDS = {
   offense: [
     { id: 5005, name: "攻撃速度", value: "+10% 攻撃速度" },
-    { id: 5008, name: "適応攻撃力", value: "+9 適応攻撃力" },
-    { id: 5007, name: "適応攻撃力", value: "+9 適応攻撃力" },
+    { id: 5008, name: "適応攻撃力", value: "+5.4 ADまたは+9 AP" },
+    { id: 5007, name: "スキルヘイスト", value: "+8 スキルヘイスト" },
   ],
   flex: [
-    { id: 5008, name: "適応攻撃力", value: "+9 適応攻撃力" },
-    { id: 5002, name: "物理防御力", value: "+6 物理防御力" },
-    { id: 5003, name: "魔法防御力", value: "+8 魔法防御力" },
+    { id: 5008, name: "適応攻撃力", value: "+5.4 ADまたは+9 AP" },
+    { id: 5004, name: "移動速度", value: "+2% 移動速度" },
+    { id: 5001, name: "体力 (スケール)", value: "+10～180 HP (Lv1-18)" },
   ],
   defense: [
-    { id: 5001, name: "体力", value: "+15-140 体力（レベル依存）" },
-    { id: 5002, name: "物理防御力", value: "+6 物理防御力" },
-    { id: 5003, name: "魔法防御力", value: "+8 魔法防御力" },
+    { id: 5001, name: "体力", value: "+65 HP" },
+    { id: 5002, name: "行動妨害耐性&Slow耐性", value: "+10% 行動妨害&Slow耐性" },
+    { id: 5003, name: "体力 (スケール)", value: "+10～180 HP (Lv1-18)" },
   ],
 };
 
