@@ -899,19 +899,20 @@
           html += `<p style="color: #93c5fd; padding: 20px; text-align: center;">フィルター条件に一致する試合が見つかりませんでした。</p>`;
         } else {
           filteredMatches.forEach((match, index) => {
-            const isArena = match.game_mode.toUpperCase() === 'CHERRY';
+            const isArena = match.game_mode.toUpperCase() === "CHERRY";
             const winClass = match.stats.win ? "win" : "loss";
-            
+
             // Arenaモードの場合は順位表示、それ以外は勝敗表示
             let result;
             if (isArena) {
-              const placement = match.stats.placement || '?';
-              const placementEmoji = placement <= 2 ? '🥇' : placement <= 4 ? '🥈' : '🥉';
+              const placement = match.stats.placement || "?";
+              const placementEmoji =
+                placement <= 2 ? "🥇" : placement <= 4 ? "🥈" : "🥉";
               result = `${placementEmoji} ${placement}位`;
             } else {
               result = match.stats.win ? "🟢 勝利" : "🔴 敗北";
             }
-            
+
             const championIcon = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${match.stats.champion}.png`;
             const gameMode = getGameModeDisplayName(match.game_mode);
 
