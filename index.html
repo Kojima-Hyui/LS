@@ -548,6 +548,178 @@
         font-size: 1em;
         line-height: 1.6;
       }
+
+      /* ルーンツリー */
+      .rune-trees {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .rune-tree {
+        background: rgba(20, 27, 58, 0.6);
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        border-radius: 20px;
+        padding: 25px;
+        transition: all 0.3s ease;
+      }
+
+      .rune-tree:hover {
+        border-color: rgba(102, 126, 234, 0.6);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+      }
+
+      .rune-tree-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+      }
+
+      .rune-tree-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+      }
+
+      .rune-tree-name {
+        color: #f093fb;
+        font-size: 1.5em;
+        font-weight: 700;
+        font-family: "Barlow", sans-serif;
+      }
+
+      .rune-slot {
+        margin-bottom: 20px;
+      }
+
+      .rune-slot-title {
+        color: #93c5fd;
+        font-size: 0.9em;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .rune-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 10px;
+      }
+
+      .rune-item {
+        background: rgba(10, 14, 39, 0.6);
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        border-radius: 12px;
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .rune-item:hover {
+        border-color: #667eea;
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .rune-item-icon {
+        width: 48px;
+        height: 48px;
+        margin: 0 auto 8px;
+        border-radius: 8px;
+      }
+
+      .rune-item-name {
+        color: #c9d1d9;
+        font-size: 0.85em;
+        line-height: 1.2;
+      }
+
+      /* チャンピオングリッド */
+      .champions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .champion-card {
+        background: rgba(20, 27, 58, 0.6);
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        border-radius: 15px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .champion-card:hover {
+        border-color: #667eea;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      }
+
+      .champion-card-img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+      }
+
+      .champion-card-name {
+        padding: 10px;
+        text-align: center;
+        color: #c9d1d9;
+        font-weight: 700;
+        font-size: 0.9em;
+      }
+
+      /* アイテムグリッド */
+      .items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .item-card {
+        background: rgba(20, 27, 58, 0.6);
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        border-radius: 12px;
+        padding: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .item-card:hover {
+        border-color: #667eea;
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      .item-card-img {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 8px;
+        border-radius: 8px;
+      }
+
+      .item-card-name {
+        color: #c9d1d9;
+        font-size: 0.85em;
+        line-height: 1.2;
+        margin-bottom: 5px;
+      }
+
+      .item-card-price {
+        color: #f093fb;
+        font-weight: 700;
+        font-size: 0.9em;
+      }
     </style>
   </head>
   <body>
@@ -564,6 +736,11 @@
         <button class="tab" onclick="showTab('team-balance')">
           ⚖️ 組み分け
         </button>
+        <button class="tab" onclick="showTab('runes')">🎨 ルーン</button>
+        <button class="tab" onclick="showTab('champions')">
+          🏆 チャンピオン
+        </button>
+        <button class="tab" onclick="showTab('items')">📦 アイテム</button>
       </div>
 
       <!-- 戦績表示タブ -->
@@ -693,6 +870,106 @@
           <div class="result" id="balance-result"></div>
         </div>
       </div>
+
+      <!-- ルーンタブ -->
+      <div id="runes" class="tab-content">
+        <div class="content-card">
+          <div class="info-box">
+            🎨 League of Legendsの全ルーンツリーと効果を確認できます。
+          </div>
+
+          <div class="loading" id="runes-loading">
+            ⏳ ルーンデータを読み込み中...
+          </div>
+          <div class="error" id="runes-error"></div>
+          <div id="runes-content" style="display: none">
+            <!-- ルーンツリー表示エリア -->
+          </div>
+        </div>
+      </div>
+
+      <!-- チャンピオンタブ -->
+      <div id="champions" class="tab-content">
+        <div class="content-card">
+          <div class="info-box">
+            🏆 全チャンピオンの詳細情報、スキル、ステータスを確認できます。
+          </div>
+
+          <div class="input-group">
+            <label>🔍 チャンピオン検索</label>
+            <input
+              type="text"
+              id="champion-search"
+              placeholder="チャンピオン名で検索..."
+            />
+          </div>
+
+          <div class="loading" id="champions-loading">
+            ⏳ チャンピオンデータを読み込み中...
+          </div>
+          <div class="error" id="champions-error"></div>
+          <div id="champions-grid" style="display: none">
+            <!-- チャンピオングリッド表示エリア -->
+          </div>
+        </div>
+      </div>
+
+      <!-- アイテムタブ -->
+      <div id="items" class="tab-content">
+        <div class="content-card">
+          <div class="info-box">
+            📦 全アイテムの詳細情報、効果、ビルドパスを確認できます。
+          </div>
+
+          <div class="filter-section">
+            <h3>🔍 フィルター</h3>
+            <div class="filter-grid">
+              <div class="input-group">
+                <label>🔍 アイテム名</label>
+                <input
+                  type="text"
+                  id="item-search"
+                  placeholder="アイテム名で検索..."
+                />
+              </div>
+
+              <div class="input-group">
+                <label>💰 価格範囲</label>
+                <input
+                  type="number"
+                  id="item-price-min"
+                  placeholder="最小"
+                  value="0"
+                  min="0"
+                />
+                <input
+                  type="number"
+                  id="item-price-max"
+                  placeholder="最大"
+                  value="10000"
+                  min="0"
+                />
+              </div>
+
+              <div class="input-group">
+                <label>🗺️ マップ</label>
+                <select id="item-map">
+                  <option value="11">サモナーズリフト</option>
+                  <option value="12">ハウリングアビス (ARAM)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="loading" id="items-loading">
+            ⏳ アイテムデータを読み込み中...
+          </div>
+          <div class="error" id="items-error"></div>
+          <div id="items-grid" style="display: none">
+            <!-- アイテムグリッド表示エリア -->
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -736,6 +1013,296 @@
             error
           );
         }
+      }
+
+      // ページ読み込み時にチャンピオンリストを取得
+      window.addEventListener("DOMContentLoaded", () => {
+        loadChampions();
+        loadRunes();
+        loadChampionsList();
+        loadItemsList();
+      });
+
+      // ルーンデータを読み込む
+      async function loadRunes() {
+        try {
+          const response = await fetch(
+            `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/data/ja_JP/runesReforged.json`
+          );
+          const runesData = await response.json();
+
+          displayRunes(runesData);
+          document.getElementById("runes-loading").style.display = "none";
+          document.getElementById("runes-content").style.display = "block";
+
+          console.log(`✅ ${runesData.length}個のルーンツリーを読み込みました`);
+        } catch (error) {
+          console.error("❌ ルーンデータの読み込みに失敗しました:", error);
+          document.getElementById("runes-loading").style.display = "none";
+          document.getElementById("runes-error").textContent =
+            "ルーンデータの読み込みに失敗しました";
+          document.getElementById("runes-error").style.display = "block";
+        }
+      }
+
+      // ルーンを表示
+      function displayRunes(runesData) {
+        const container = document.getElementById("runes-content");
+
+        let html = '<div class="rune-trees">';
+
+        runesData.forEach((tree) => {
+          const treeIconUrl = `https://ddragon.leagueoflegends.com/cdn/img/${tree.icon}`;
+
+          html += `
+            <div class="rune-tree">
+              <div class="rune-tree-header">
+                <img src="${treeIconUrl}" alt="${tree.name}" class="rune-tree-icon">
+                <div class="rune-tree-name">${tree.name}</div>
+              </div>
+          `;
+
+          tree.slots.forEach((slot, slotIndex) => {
+            html += `
+              <div class="rune-slot">
+                <div class="rune-slot-title">スロット ${slotIndex + 1}</div>
+                <div class="rune-items">
+            `;
+
+            slot.runes.forEach((rune) => {
+              const runeIconUrl = `https://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`;
+              html += `
+                <div class="rune-item" onclick="showRuneDetail('${rune.name}', '${rune.shortDesc}', '${rune.longDesc}')">
+                  <img src="${runeIconUrl}" alt="${rune.name}" class="rune-item-icon">
+                  <div class="rune-item-name">${rune.name}</div>
+                </div>
+              `;
+            });
+
+            html += `
+                </div>
+              </div>
+            `;
+          });
+
+          html += "</div>";
+        });
+
+        html += "</div>";
+        container.innerHTML = html;
+      }
+
+      // ルーン詳細を表示
+      function showRuneDetail(name, shortDesc, longDesc) {
+        alert(
+          `${name}\n\n${shortDesc}\n\n詳細:\n${longDesc.replace(
+            /<[^>]*>/g,
+            ""
+          )}`
+        );
+      }
+
+      // チャンピオン一覧を読み込む
+      async function loadChampionsList() {
+        try {
+          const response = await fetch(
+            `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/data/ja_JP/champion.json`
+          );
+          const championData = await response.json();
+
+          const champions = Object.entries(championData.data).map(
+            ([id, champion]) => ({
+              id,
+              ...champion,
+            })
+          );
+
+          displayChampions(champions);
+
+          // 検索機能
+          document
+            .getElementById("champion-search")
+            .addEventListener("input", (e) => {
+              const searchTerm = e.target.value.toLowerCase();
+              const filtered = champions.filter(
+                (c) =>
+                  c.name.toLowerCase().includes(searchTerm) ||
+                  c.id.toLowerCase().includes(searchTerm)
+              );
+              displayChampions(filtered);
+            });
+
+          document.getElementById("champions-loading").style.display = "none";
+          document.getElementById("champions-grid").style.display = "block";
+
+          console.log(`✅ ${champions.length}体のチャンピオンを読み込みました`);
+        } catch (error) {
+          console.error(
+            "❌ チャンピオンデータの読み込みに失敗しました:",
+            error
+          );
+          document.getElementById("champions-loading").style.display = "none";
+          document.getElementById("champions-error").textContent =
+            "チャンピオンデータの読み込みに失敗しました";
+          document.getElementById("champions-error").style.display = "block";
+        }
+      }
+
+      // チャンピオンを表示
+      function displayChampions(champions) {
+        const container = document.getElementById("champions-grid");
+
+        let html = '<div class="champions-grid">';
+
+        champions.forEach((champion) => {
+          const imgUrl = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${champion.id}.png`;
+
+          html += `
+            <div class="champion-card" onclick="showChampionDetail('${champion.id}')">
+              <img src="${imgUrl}" alt="${champion.name}" class="champion-card-img">
+              <div class="champion-card-name">${champion.name}</div>
+            </div>
+          `;
+        });
+
+        html += "</div>";
+        container.innerHTML = html;
+      }
+
+      // チャンピオン詳細を表示
+      async function showChampionDetail(championId) {
+        try {
+          const response = await fetch(
+            `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/data/ja_JP/champion/${championId}.json`
+          );
+          const data = await response.json();
+          const champion = data.data[championId];
+
+          let info = `${champion.name} - ${champion.title}\n\n`;
+          info += `${champion.lore}\n\n`;
+          info += `タイプ: ${champion.tags.join(", ")}\n`;
+          info += `難易度: ${"★".repeat(champion.info.difficulty)}\n\n`;
+          info += `スキル:\n`;
+
+          champion.spells.forEach((spell, index) => {
+            info += `${index + 1}. ${spell.name}: ${spell.description.replace(
+              /<[^>]*>/g,
+              ""
+            )}\n`;
+          });
+
+          alert(info);
+        } catch (error) {
+          console.error("チャンピオン詳細の取得に失敗:", error);
+          alert("チャンピオン詳細の取得に失敗しました");
+        }
+      }
+
+      // アイテム一覧を読み込む
+      async function loadItemsList() {
+        try {
+          const response = await fetch(
+            `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/data/ja_JP/item.json`
+          );
+          const itemData = await response.json();
+
+          window.allItems = Object.entries(itemData.data).map(([id, item]) => ({
+            id,
+            ...item,
+          }));
+
+          displayItems(window.allItems);
+
+          // 検索とフィルター機能
+          document
+            .getElementById("item-search")
+            .addEventListener("input", filterItems);
+          document
+            .getElementById("item-price-min")
+            .addEventListener("input", filterItems);
+          document
+            .getElementById("item-price-max")
+            .addEventListener("input", filterItems);
+          document
+            .getElementById("item-map")
+            .addEventListener("change", filterItems);
+
+          document.getElementById("items-loading").style.display = "none";
+          document.getElementById("items-grid").style.display = "block";
+
+          console.log(
+            `✅ ${window.allItems.length}個のアイテムを読み込みました`
+          );
+        } catch (error) {
+          console.error("❌ アイテムデータの読み込みに失敗しました:", error);
+          document.getElementById("items-loading").style.display = "none";
+          document.getElementById("items-error").textContent =
+            "アイテムデータの読み込みに失敗しました";
+          document.getElementById("items-error").style.display = "block";
+        }
+      }
+
+      // アイテムをフィルター
+      function filterItems() {
+        const searchTerm = document
+          .getElementById("item-search")
+          .value.toLowerCase();
+        const priceMin =
+          parseInt(document.getElementById("item-price-min").value) || 0;
+        const priceMax =
+          parseInt(document.getElementById("item-price-max").value) || 999999;
+        const selectedMap = document.getElementById("item-map").value;
+
+        const filtered = window.allItems.filter((item) => {
+          const matchesSearch = item.name.toLowerCase().includes(searchTerm);
+          const matchesPrice =
+            item.gold.total >= priceMin && item.gold.total <= priceMax;
+          const matchesMap = item.maps[selectedMap] === true;
+          const isPurchasable = item.gold.purchasable !== false;
+
+          return matchesSearch && matchesPrice && matchesMap && isPurchasable;
+        });
+
+        displayItems(filtered);
+      }
+
+      // アイテムを表示
+      function displayItems(items) {
+        const container = document.getElementById("items-grid");
+
+        let html = '<div class="items-grid">';
+
+        items.forEach((item) => {
+          const imgUrl = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/item/${item.id}.png`;
+
+          html += `
+            <div class="item-card" onclick="showItemDetail('${item.id}')">
+              <img src="${imgUrl}" alt="${item.name}" class="item-card-img" onerror="this.style.display='none'">
+              <div class="item-card-name">${item.name}</div>
+              <div class="item-card-price">${item.gold.total}G</div>
+            </div>
+          `;
+        });
+
+        html += "</div>";
+        container.innerHTML = html;
+      }
+
+      // アイテム詳細を表示
+      function showItemDetail(itemId) {
+        const item = window.allItems.find((i) => i.id === itemId);
+        if (!item) return;
+
+        let info = `${item.name}\n\n`;
+        info += `価格: ${item.gold.total}G (売却: ${item.gold.sell}G)\n`;
+        info += `説明: ${item.plaintext || ""}\n\n`;
+        info += `効果: ${item.description.replace(/<[^>]*>/g, "")}\n`;
+
+        if (item.tags && item.tags.length > 0) {
+          info += `\nタグ: ${item.tags.join(", ")}`;
+        }
+
+        alert(info);
       }
 
       // ページ読み込み時にチャンピオンリストを取得
