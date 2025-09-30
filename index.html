@@ -218,6 +218,67 @@
         resize: vertical;
       }
 
+      /* セレクトボックス */
+      select {
+        width: 100%;
+        padding: 15px 20px;
+        background: rgba(10, 14, 39, 0.6);
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        border-radius: 12px;
+        font-size: 1.05em;
+        color: #fff;
+        transition: all 0.3s ease;
+        font-family: "Noto Sans JP", sans-serif;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        padding-right: 45px;
+      }
+
+      select:focus {
+        outline: none;
+        border-color: #667eea;
+        background-color: rgba(10, 14, 39, 0.8);
+        box-shadow: 0 0 20px rgba(102, 126, 234, 0.3),
+                    inset 0 0 10px rgba(102, 126, 234, 0.1);
+        transform: translateY(-2px);
+      }
+
+      select:hover {
+        border-color: rgba(102, 126, 234, 0.5);
+      }
+
+      select option {
+        background: #0a0e27;
+        color: #fff;
+        padding: 10px;
+      }
+
+      /* フィルターセクション */
+      .filter-section {
+        background: rgba(10, 14, 39, 0.3);
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+      }
+
+      .filter-section h3 {
+        color: #f093fb;
+        margin-bottom: 20px;
+        font-family: 'Barlow', sans-serif;
+        font-size: 1.3em;
+        letter-spacing: 1px;
+      }
+
+      .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
       /* ボタン */
       button {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -429,7 +490,7 @@
       <div id="match-history" class="tab-content active">
         <div class="content-card">
           <div class="info-box">
-            💡 サモナーネーム（ゲーム名#タグライン）を入力して過去の戦績を確認できます。
+            💡 サモナーネーム（ゲーム名#タグライン）を入力して過去の戦績を確認できます。フィルターを使って特定のゲームモードやチャンピオンに絞り込めます。
           </div>
 
           <div class="input-group">
@@ -448,7 +509,44 @@
 
           <div class="input-group">
             <label>📈 取得する試合数</label>
-            <input type="number" id="history-count" value="10" min="1" max="50" />
+            <input type="number" id="history-count" value="20" min="1" max="50" />
+          </div>
+
+          <!-- フィルターセクション -->
+          <div class="filter-section">
+            <h3>🔍 フィルター</h3>
+            <div class="filter-grid">
+              <div class="input-group">
+                <label>🎮 ゲームモード</label>
+                <select id="filter-game-mode">
+                  <option value="">すべて</option>
+                  <option value="CLASSIC">ランク/ノーマル</option>
+                  <option value="ARAM">ARAM</option>
+                  <option value="URF">URF</option>
+                  <option value="NEXUSBLITZ">ネクサスブリッツ</option>
+                  <option value="ONEFORALL">ワンフォーオール</option>
+                  <option value="TUTORIAL">チュートリアル</option>
+                </select>
+              </div>
+
+              <div class="input-group">
+                <label>🏆 チャンピオン</label>
+                <input
+                  type="text"
+                  id="filter-champion"
+                  placeholder="例: Yasuo, Ahri"
+                />
+              </div>
+
+              <div class="input-group">
+                <label>📊 勝敗</label>
+                <select id="filter-result">
+                  <option value="">すべて</option>
+                  <option value="win">勝利のみ</option>
+                  <option value="loss">敗北のみ</option>
+                </select>
+              </div>
+            </div>
           </div>
 
           <button onclick="getMatchHistory()">🔍 戦績を取得</button>
@@ -576,6 +674,11 @@
       function displayMatchHistory(data) {
         const resultDiv = document.getElementById("history-result");
 
+        // フィルター値を取得
+        const filterGameMode = document.getElementById("filter-game-mode").value.toLowerCase();
+        const filterChampion = document.getElementById("filter-champion").value.trim().toLowerCase();
+        const filterResult = document.getElementById("filter-result").value;
+
         let html = "<h2>📊 プレイヤー情報</h2>";
         html += `<p><strong>サモナー:</strong> ${data.summoner.game_name}#${data.summoner.tag_line}</p>`;
         html += `<p><strong>レベル:</strong> ${data.summoner.level}</p>`;
@@ -593,27 +696,55 @@
           });
         }
 
-        html += "<h3>最近の試合</h3>";
-        data.matches.forEach((match, index) => {
-          const winClass = match.stats.win ? "win" : "loss";
-          const result = match.stats.win ? "🟢 勝利" : "🔴 敗北";
-          html += `
-                    <div class="match-item ${winClass}">
-                        <strong>${index + 1}. ${result}</strong> | ${
-            match.game_mode
-          } | ${match.game_duration}<br>
-                        <strong>チャンピオン:</strong> ${
-                          match.stats.champion
-                        } | 
-                        <strong>KDA:</strong> ${match.stats.kills}/${
-            match.stats.deaths
-          }/${match.stats.assists} (${match.stats.kda})<br>
-                        <strong>CS:</strong> ${match.stats.cs} | 
-                        <strong>ダメージ:</strong> ${match.stats.damage.toLocaleString()} | 
-                        <strong>視界スコア:</strong> ${match.stats.vision_score}
-                    </div>
-                `;
+        // フィルタリング処理
+        let filteredMatches = data.matches.filter((match) => {
+          // ゲームモードでフィルタ
+          if (filterGameMode && match.game_mode.toLowerCase() !== filterGameMode) {
+            return false;
+          }
+
+          // チャンピオンでフィルタ
+          if (filterChampion && !match.stats.champion.toLowerCase().includes(filterChampion)) {
+            return false;
+          }
+
+          // 勝敗でフィルタ
+          if (filterResult === "win" && !match.stats.win) {
+            return false;
+          }
+          if (filterResult === "loss" && match.stats.win) {
+            return false;
+          }
+
+          return true;
         });
+
+        html += `<h3>最近の試合 (${filteredMatches.length}/${data.matches.length}件)</h3>`;
+        
+        if (filteredMatches.length === 0) {
+          html += `<p style="color: #93c5fd; padding: 20px; text-align: center;">フィルター条件に一致する試合が見つかりませんでした。</p>`;
+        } else {
+          filteredMatches.forEach((match, index) => {
+            const winClass = match.stats.win ? "win" : "loss";
+            const result = match.stats.win ? "🟢 勝利" : "🔴 敗北";
+            html += `
+                      <div class="match-item ${winClass}">
+                          <strong>${index + 1}. ${result}</strong> | ${
+              match.game_mode
+            } | ${match.game_duration}<br>
+                          <strong>チャンピオン:</strong> ${
+                            match.stats.champion
+                          } | 
+                          <strong>KDA:</strong> ${match.stats.kills}/${
+              match.stats.deaths
+            }/${match.stats.assists} (${match.stats.kda})<br>
+                          <strong>CS:</strong> ${match.stats.cs} | 
+                          <strong>ダメージ:</strong> ${match.stats.damage.toLocaleString()} | 
+                          <strong>視界スコア:</strong> ${match.stats.vision_score}
+                      </div>
+                  `;
+          });
+        }
 
         resultDiv.innerHTML = html;
         showResult("history");
