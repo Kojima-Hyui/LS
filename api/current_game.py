@@ -14,7 +14,33 @@ from utils import format_rank
 
 
 class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        """GETリクエスト対応（クエリパラメータから取得）"""
+        try:
+            from urllib.parse import urlparse, parse_qs
+            
+            # URLパースしてクエリパラメータを取得
+            parsed_url = urlparse(self.path)
+            params = parse_qs(parsed_url.query)
+            
+            game_name = params.get('game_name', [None])[0]
+            tag_line = params.get('tag_line', [None])[0]
+            region = params.get('region', ['jp1'])[0]
+            routing = params.get('routing', ['asia'])[0]
+            
+            if not game_name or not tag_line:
+                self.send_error_response({'error': 'ゲーム名とタグラインが必要です'}, 400)
+                return
+            
+            # 共通処理を実行
+            self._process_current_game(game_name, tag_line, region, routing)
+            
+        except Exception as e:
+            print(f"Error in current_game GET: {e}")
+            self.send_error_response({'error': str(e)}, 500)
+    
     def do_POST(self):
+        """POSTリクエスト対応（JSONボディから取得）"""
         try:
             # リクエストボディを読み取る
             content_length = int(self.headers.get('Content-Length', 0))
@@ -30,6 +56,16 @@ class handler(BaseHTTPRequestHandler):
                 self.send_error_response({'error': 'ゲーム名とタグラインが必要です'}, 400)
                 return
             
+            # 共通処理を実行
+            self._process_current_game(game_name, tag_line, region, routing)
+            
+        except Exception as e:
+            print(f"Error in current_game POST: {e}")
+            self.send_error_response({'error': str(e)}, 500)
+    
+    def _process_current_game(self, game_name, tag_line, region, routing):
+        """現在のゲーム情報取得の共通処理"""
+        try:
             # Riot APIクライアント初期化
             riot_client = RiotAPIClient(region=region, routing=routing)
             
@@ -87,7 +123,7 @@ class handler(BaseHTTPRequestHandler):
             })
             
         except Exception as e:
-            print(f"Error in current_game: {e}")
+            print(f"Error in _process_current_game: {e}")
             self.send_error_response({'error': str(e)}, 500)
     
     def do_OPTIONS(self):
