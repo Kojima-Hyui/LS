@@ -4,9 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LoL Search Tools - 汎用ツール</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow:wght@700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
     <style>
       * {
         margin: 0;
@@ -25,24 +28,42 @@
 
       /* アニメーション背景 */
       body::before {
-        content: '';
+        content: "";
         position: fixed;
         top: -50%;
         left: -50%;
         width: 200%;
         height: 200%;
-        background: 
-          radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-          radial-gradient(circle at 80% 80%, rgba(88, 101, 242, 0.3) 0%, transparent 50%),
-          radial-gradient(circle at 40% 20%, rgba(255, 115, 230, 0.2) 0%, transparent 50%);
+        background: radial-gradient(
+            circle at 20% 50%,
+            rgba(120, 119, 198, 0.3) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 80%,
+            rgba(88, 101, 242, 0.3) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 40% 20%,
+            rgba(255, 115, 230, 0.2) 0%,
+            transparent 50%
+          );
         animation: gradientShift 15s ease infinite;
         z-index: 0;
       }
 
       @keyframes gradientShift {
-        0%, 100% { transform: translate(0, 0) rotate(0deg); }
-        33% { transform: translate(5%, -5%) rotate(120deg); }
-        66% { transform: translate(-5%, 5%) rotate(240deg); }
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        33% {
+          transform: translate(5%, -5%) rotate(120deg);
+        }
+        66% {
+          transform: translate(-5%, 5%) rotate(240deg);
+        }
       }
 
       .container {
@@ -55,14 +76,19 @@
       /* ヘッダー */
       h1 {
         text-align: center;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 50%,
+          #f093fb 100%
+        );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         margin-bottom: 40px;
         font-size: 3.5em;
         font-weight: 900;
-        font-family: 'Barlow', sans-serif;
+        font-family: "Barlow", sans-serif;
         letter-spacing: 2px;
         text-transform: uppercase;
         text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
@@ -70,8 +96,13 @@
       }
 
       @keyframes glow {
-        0%, 100% { filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5)); }
-        50% { filter: drop-shadow(0 0 20px rgba(246, 147, 251, 0.8)); }
+        0%,
+        100% {
+          filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
+        }
+        50% {
+          filter: drop-shadow(0 0 20px rgba(246, 147, 251, 0.8));
+        }
       }
 
       /* タブナビゲーション */
@@ -96,12 +127,12 @@
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         position: relative;
         overflow: hidden;
-        font-family: 'Barlow', sans-serif;
+        font-family: "Barlow", sans-serif;
         letter-spacing: 1px;
       }
 
       .tab::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 50%;
         left: 50%;
@@ -126,11 +157,15 @@
       }
 
       .tab.active {
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+        background: linear-gradient(
+          135deg,
+          rgba(102, 126, 234, 0.3) 0%,
+          rgba(118, 75, 162, 0.3) 100%
+        );
         border-color: #f093fb;
         color: #fff;
         box-shadow: 0 10px 40px rgba(246, 147, 251, 0.5),
-                    inset 0 0 20px rgba(102, 126, 234, 0.3);
+          inset 0 0 20px rgba(102, 126, 234, 0.3);
         transform: translateY(-3px);
       }
 
@@ -141,8 +176,14 @@
       }
 
       @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       .tab-content.active {
@@ -156,13 +197,13 @@
         border-radius: 25px;
         padding: 40px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+          inset 0 1px 0 rgba(255, 255, 255, 0.05);
         transition: all 0.3s ease;
       }
 
       .content-card:hover {
         box-shadow: 0 25px 70px rgba(102, 126, 234, 0.3),
-                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
         border-color: rgba(102, 126, 234, 0.4);
       }
 
@@ -179,7 +220,7 @@
         font-size: 1.05em;
         text-transform: uppercase;
         letter-spacing: 1px;
-        font-family: 'Barlow', sans-serif;
+        font-family: "Barlow", sans-serif;
       }
 
       input[type="text"],
@@ -203,7 +244,7 @@
         border-color: #667eea;
         background: rgba(10, 14, 39, 0.8);
         box-shadow: 0 0 20px rgba(102, 126, 234, 0.3),
-                    inset 0 0 10px rgba(102, 126, 234, 0.1);
+          inset 0 0 10px rgba(102, 126, 234, 0.1);
         transform: translateY(-2px);
       }
 
@@ -242,7 +283,7 @@
         border-color: #667eea;
         background-color: rgba(10, 14, 39, 0.8);
         box-shadow: 0 0 20px rgba(102, 126, 234, 0.3),
-                    inset 0 0 10px rgba(102, 126, 234, 0.1);
+          inset 0 0 10px rgba(102, 126, 234, 0.1);
         transform: translateY(-2px);
       }
 
@@ -268,7 +309,7 @@
       .filter-section h3 {
         color: #f093fb;
         margin-bottom: 20px;
-        font-family: 'Barlow', sans-serif;
+        font-family: "Barlow", sans-serif;
         font-size: 1.3em;
         letter-spacing: 1px;
       }
@@ -292,20 +333,25 @@
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         position: relative;
         overflow: hidden;
-        font-family: 'Barlow', sans-serif;
+        font-family: "Barlow", sans-serif;
         letter-spacing: 1px;
         text-transform: uppercase;
         box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
       }
 
       button::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
         transition: left 0.5s;
       }
 
@@ -316,7 +362,7 @@
       button:hover {
         transform: translateY(-5px) scale(1.05);
         box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6),
-                    0 0 30px rgba(246, 147, 251, 0.4);
+          0 0 30px rgba(246, 147, 251, 0.4);
       }
 
       button:active {
@@ -335,8 +381,15 @@
       }
 
       @keyframes pulse {
-        0%, 100% { opacity: 0.6; transform: scale(1); }
-        50% { opacity: 1; transform: scale(1.05); }
+        0%,
+        100% {
+          opacity: 0.6;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.05);
+        }
       }
 
       /* 結果エリア */
@@ -351,14 +404,21 @@
       }
 
       @keyframes slideUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
-      .result h2, .result h3 {
+      .result h2,
+      .result h3 {
         color: #f093fb;
         margin-bottom: 20px;
-        font-family: 'Barlow', sans-serif;
+        font-family: "Barlow", sans-serif;
         letter-spacing: 1px;
       }
 
@@ -444,7 +504,7 @@
       .team h3 {
         color: #f093fb;
         margin-bottom: 15px;
-        font-family: 'Barlow', sans-serif;
+        font-family: "Barlow", sans-serif;
         font-size: 1.5em;
       }
 
@@ -498,15 +558,20 @@
         <button class="tab active" onclick="showTab('match-history')">
           📊 戦績表示
         </button>
-        <button class="tab" onclick="showTab('current-game')">⚔️ 試合情報</button>
-        <button class="tab" onclick="showTab('team-balance')">⚖️ 組み分け</button>
+        <button class="tab" onclick="showTab('current-game')">
+          ⚔️ 試合情報
+        </button>
+        <button class="tab" onclick="showTab('team-balance')">
+          ⚖️ 組み分け
+        </button>
       </div>
 
       <!-- 戦績表示タブ -->
       <div id="match-history" class="tab-content active">
         <div class="content-card">
           <div class="info-box">
-            💡 サモナーネーム（ゲーム名#タグライン）を入力して過去の戦績を確認できます。フィルターを使って特定のゲームモードやチャンピオンに絞り込めます。
+            💡
+            サモナーネーム（ゲーム名#タグライン）を入力して過去の戦績を確認できます。フィルターを使って特定のゲームモードやチャンピオンに絞り込めます。
           </div>
 
           <div class="input-group">
@@ -525,7 +590,13 @@
 
           <div class="input-group">
             <label>📈 取得する試合数</label>
-            <input type="number" id="history-count" value="20" min="1" max="50" />
+            <input
+              type="number"
+              id="history-count"
+              value="20"
+              min="1"
+              max="50"
+            />
           </div>
 
           <!-- フィルターセクション -->
@@ -578,7 +649,8 @@
       <div id="current-game" class="tab-content">
         <div class="content-card">
           <div class="info-box">
-            💡 サモナーネームを入力して、その人が現在ゲーム中の場合、試合の敵味方情報を表示します。
+            💡
+            サモナーネームを入力して、その人が現在ゲーム中の場合、試合の敵味方情報を表示します。
           </div>
 
           <div class="input-group">
@@ -607,12 +679,16 @@
       <div id="team-balance" class="tab-content">
         <div class="content-card">
           <div class="info-box">
-            💡 カスタムゲームに参加する10人のサモナーネームを入力してください。<br />
+            💡
+            カスタムゲームに参加する10人のサモナーネームを入力してください。<br />
             ランク情報を基に公平な5vs5のチーム分けを行います。
           </div>
 
           <div class="input-group">
-            <label>👥 プレイヤーリスト（1行に1人、ゲーム名#タグライン形式で入力）</label>
+            <label
+              >👥
+              プレイヤーリスト（1行に1人、ゲーム名#タグライン形式で入力）</label
+            >
             <textarea
               id="balance-players"
               placeholder="例:&#10;Player1#JP1&#10;Player2#JP1&#10;Player3#JP1&#10;...&#10;Player10#JP1"
@@ -630,13 +706,15 @@
 
     <script>
       // Data Dragon用のグローバル変数
-      let DDRAGON_VERSION = '14.1.1'; // デフォルト値
+      let DDRAGON_VERSION = "14.1.1"; // デフォルト値
 
       // Data Dragonからチャンピオンリストを取得
       async function loadChampions() {
         try {
           // 最新バージョンを取得
-          const versionResponse = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+          const versionResponse = await fetch(
+            "https://ddragon.leagueoflegends.com/api/versions.json"
+          );
           const versions = await versionResponse.json();
           DDRAGON_VERSION = versions[0]; // グローバル変数に保存
 
@@ -647,14 +725,14 @@
           const championData = await championResponse.json();
 
           // チャンピオンリストをソート
-          const champions = Object.values(championData.data).sort((a, b) => 
-            a.name.localeCompare(b.name, 'ja')
+          const champions = Object.values(championData.data).sort((a, b) =>
+            a.name.localeCompare(b.name, "ja")
           );
 
           // セレクトボックスに追加
-          const selectElement = document.getElementById('filter-champion');
-          champions.forEach(champion => {
-            const option = document.createElement('option');
+          const selectElement = document.getElementById("filter-champion");
+          champions.forEach((champion) => {
+            const option = document.createElement("option");
             option.value = champion.id; // 英語ID（例: Yasuo）
             option.textContent = `${champion.name} (${champion.id})`; // 日本語名 (英語ID)
             selectElement.appendChild(option);
@@ -662,24 +740,27 @@
 
           console.log(`✅ ${champions.length}体のチャンピオンを読み込みました`);
         } catch (error) {
-          console.error('❌ チャンピオンリストの読み込みに失敗しました:', error);
+          console.error(
+            "❌ チャンピオンリストの読み込みに失敗しました:",
+            error
+          );
         }
       }
 
       // ページ読み込み時にチャンピオンリストを取得
-      window.addEventListener('DOMContentLoaded', loadChampions);
+      window.addEventListener("DOMContentLoaded", loadChampions);
 
       // ゲームモードを日本語に変換
       function getGameModeDisplayName(mode) {
         const modeMap = {
-          'CLASSIC': 'クラシック',
-          'ARAM': 'ARAM',
-          'URF': 'URF',
-          'ULTBOOK': 'スペルブック',
-          'ONEFORALL': 'ワンフォーオール',
-          'NEXUSBLITZ': 'ネクサスブリッツ',
-          'TUTORIAL': 'チュートリアル',
-          'PRACTICETOOL': '練習モード'
+          CLASSIC: "クラシック",
+          ARAM: "ARAM",
+          URF: "URF",
+          ULTBOOK: "スペルブック",
+          ONEFORALL: "ワンフォーオール",
+          NEXUSBLITZ: "ネクサスブリッツ",
+          TUTORIAL: "チュートリアル",
+          PRACTICETOOL: "練習モード",
         };
         return modeMap[mode.toUpperCase()] || mode;
       }
@@ -747,8 +828,12 @@
         const resultDiv = document.getElementById("history-result");
 
         // フィルター値を取得
-        const filterGameMode = document.getElementById("filter-game-mode").value;
-        const filterChampion = document.getElementById("filter-champion").value.trim().toLowerCase();
+        const filterGameMode =
+          document.getElementById("filter-game-mode").value;
+        const filterChampion = document
+          .getElementById("filter-champion")
+          .value.trim()
+          .toLowerCase();
         const filterResult = document.getElementById("filter-result").value;
 
         let html = "<h2>📊 プレイヤー情報</h2>";
@@ -770,8 +855,10 @@
 
         // デバッグ: 実際のゲームモード値を確認
         if (data.matches.length > 0) {
-          const uniqueModes = [...new Set(data.matches.map(m => m.game_mode))];
-          console.log('📊 実際のゲームモード値:', uniqueModes);
+          const uniqueModes = [
+            ...new Set(data.matches.map((m) => m.game_mode)),
+          ];
+          console.log("📊 実際のゲームモード値:", uniqueModes);
         }
 
         // フィルタリング処理
@@ -786,7 +873,10 @@
           }
 
           // チャンピオンでフィルタ
-          if (filterChampion && !match.stats.champion.toLowerCase().includes(filterChampion)) {
+          if (
+            filterChampion &&
+            !match.stats.champion.toLowerCase().includes(filterChampion)
+          ) {
             return false;
           }
 
@@ -802,7 +892,7 @@
         });
 
         html += `<h3>最近の試合 (${filteredMatches.length}/${data.matches.length}件)</h3>`;
-        
+
         if (filteredMatches.length === 0) {
           html += `<p style="color: #93c5fd; padding: 20px; text-align: center;">フィルター条件に一致する試合が見つかりませんでした。</p>`;
         } else {
@@ -811,17 +901,29 @@
             const result = match.stats.win ? "🟢 勝利" : "🔴 敗北";
             const championIcon = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${match.stats.champion}.png`;
             const gameMode = getGameModeDisplayName(match.game_mode);
-            
+
             html += `
                       <div class="match-item ${winClass}">
-                          <img src="${championIcon}" alt="${match.stats.champion}" class="champion-icon" onerror="this.style.display='none'">
+                          <img src="${championIcon}" alt="${
+              match.stats.champion
+            }" class="champion-icon" onerror="this.style.display='none'">
                           <div class="match-info">
-                              <strong>${index + 1}. ${result}</strong> | ${gameMode} | ${match.game_duration}<br>
-                              <strong>チャンピオン:</strong> ${match.stats.champion} | 
-                              <strong>KDA:</strong> ${match.stats.kills}/${match.stats.deaths}/${match.stats.assists} (${match.stats.kda})<br>
+                              <strong>${
+                                index + 1
+                              }. ${result}</strong> | ${gameMode} | ${
+              match.game_duration
+            }<br>
+                              <strong>チャンピオン:</strong> ${
+                                match.stats.champion
+                              } | 
+                              <strong>KDA:</strong> ${match.stats.kills}/${
+              match.stats.deaths
+            }/${match.stats.assists} (${match.stats.kda})<br>
                               <strong>CS:</strong> ${match.stats.cs} | 
                               <strong>ダメージ:</strong> ${match.stats.damage.toLocaleString()} | 
-                              <strong>視界スコア:</strong> ${match.stats.vision_score}
+                              <strong>視界スコア:</strong> ${
+                                match.stats.vision_score
+                              }
                           </div>
                       </div>
                   `;
