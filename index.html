@@ -979,15 +979,92 @@
         margin-bottom: 20px;
       }
 
+      /* コンパクトフィルターレイアウト（アイテム・チャンピオン用） */
+      .compact-filters {
+        background: rgba(30, 40, 70, 0.6);
+        border-radius: 12px;
+        padding: 20px;
+        border: 2px solid rgba(120, 119, 198, 0.3);
+        margin-bottom: 20px;
+      }
+
+      .compact-filters-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .compact-filters-header h3 {
+        font-size: 1.1rem;
+        color: #667eea;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .compact-filters-header .toggle-icon {
+        font-size: 1.2rem;
+        transition: transform 0.3s ease;
+      }
+
+      .compact-filters-header.collapsed .toggle-icon {
+        transform: rotate(-90deg);
+      }
+
+      .filters-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        max-height: 1000px;
+        overflow: hidden;
+        transition: max-height 0.3s ease, opacity 0.3s ease;
+      }
+
+      .filters-content.collapsed {
+        max-height: 0;
+        opacity: 0;
+      }
+
+      @media (max-width: 1024px) {
+        .filters-content {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .filter-section {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .filter-row {
+        display: flex;
+        gap: 15px;
+      }
+
+      .filter-row > * {
+        flex: 1;
+      }
+
       /* タグフィルター */
       .tags-filter {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-        padding: 8px;
+        padding: 12px;
         background: rgba(20, 30, 60, 0.4);
         border-radius: 8px;
+        max-height: 120px;
+        overflow-y: auto;
         min-height: 44px;
+      }
+
+      .tags-filter-compact {
+        max-height: 80px;
       }
 
       .tag-button {
@@ -999,6 +1076,7 @@
         border-radius: 6px;
         cursor: pointer;
         transition: all 0.3s ease;
+        white-space: nowrap;
       }
 
       .tag-button:hover {
@@ -1217,7 +1295,8 @@
         line-height: 1.5;
       }
 
-      .items-stats, .champion-stats {
+      .items-stats,
+      .champion-stats {
         margin-bottom: 20px;
         padding: 15px;
         background: rgba(102, 126, 234, 0.1);
@@ -1475,38 +1554,61 @@
             チャンピオン名、ロール、レーン、難易度でフィルタリングできます。
           </div>
 
-          <div class="filter-group">
-            <div class="input-group">
-              <label>🔍 チャンピオン検索</label>
-              <input
-                type="text"
-                id="champion-search"
-                placeholder="チャンピオン名、タイトル、説明で検索..."
-              />
+          <!-- フィルターセクション -->
+          <div class="compact-filters">
+            <div class="compact-filters-header" onclick="toggleFiltersSection(this)">
+              <h3>
+                <span class="toggle-icon">🔽</span>
+                検索・フィルター
+              </h3>
+              <span style="color: #a0aec0; font-size: 0.9rem;">クリックで展開/折りたたみ</span>
             </div>
+            
+            <div class="filters-content">
+              <!-- 左カラム -->
+              <div class="filter-section">
+                <div class="input-group">
+                  <label>🔍 チャンピオン検索</label>
+                  <input
+                    type="text"
+                    id="champion-search"
+                    placeholder="チャンピオン名、タイトル、説明で検索..."
+                  />
+                </div>
 
-            <div class="input-group">
-              <label>🎭 ロールフィルター</label>
-              <div id="champion-roles-filter" class="tags-filter"></div>
-            </div>
+                <div class="input-group">
+                  <label>🎭 ロールフィルター（複数選択可）</label>
+                  <div id="champion-roles-filter" class="tags-filter tags-filter-compact"></div>
+                </div>
 
-            <div class="input-group">
-              <label>🛣️ レーンフィルター</label>
-              <div id="champion-lanes-filter" class="tags-filter"></div>
-            </div>
+                <div class="input-group">
+                  <label>🛣️ レーンフィルター（複数選択可）</label>
+                  <div id="champion-lanes-filter" class="tags-filter tags-filter-compact"></div>
+                </div>
+              </div>
 
-            <div class="input-group">
-              <label>⚔️ 難易度フィルター</label>
-              <div id="champion-difficulty-filter" class="tags-filter"></div>
-            </div>
+              <!-- 右カラム -->
+              <div class="filter-section">
+                <div class="input-group">
+                  <label>⚔️ 難易度フィルター（複数選択可）</label>
+                  <div id="champion-difficulty-filter" class="tags-filter tags-filter-compact"></div>
+                </div>
 
-            <div class="input-group">
-              <label>📊 並び替え</label>
-              <select id="champion-sort">
-                <option value="name-asc">名前 (昇順)</option>
-                <option value="difficulty-asc">難易度 (低い順)</option>
-                <option value="difficulty-desc">難易度 (高い順)</option>
-              </select>
+                <div class="input-group">
+                  <label>📊 並び替え</label>
+                  <select id="champion-sort">
+                    <option value="name-asc">名前 (昇順)</option>
+                    <option value="difficulty-asc">難易度 (低い順)</option>
+                    <option value="difficulty-desc">難易度 (高い順)</option>
+                  </select>
+                </div>
+
+                <div class="input-group">
+                  <button onclick="clearChampionFilters()" style="width: 100%; background: rgba(239, 68, 68, 0.8);">
+                    🗑️ フィルターをクリア
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1532,21 +1634,23 @@
 
           <!-- ビルドコントロール -->
           <div class="build-controls">
-            <input 
-              type="text" 
-              id="build-name" 
-              placeholder="ビルド名を入力..." 
+            <input
+              type="text"
+              id="build-name"
+              placeholder="ビルド名を入力..."
               value="カスタムビルド"
             />
             <button onclick="toggleBuildPanel()">
               🎒 ビルド (<span id="build-items-count">0</span>)
             </button>
             <button onclick="saveBuild()">💾 ビルド保存</button>
-            <button onclick="toggleSavedBuilds()">📚 保存済み (<span id="saved-builds-count">0</span>)</button>
+            <button onclick="toggleSavedBuilds()">
+              📚 保存済み (<span id="saved-builds-count">0</span>)
+            </button>
           </div>
 
           <!-- 保存済みビルド表示エリア -->
-          <div id="saved-builds-container" style="display: none;">
+          <div id="saved-builds-container" style="display: none">
             <div class="saved-builds-panel">
               <h3>💾 保存済みビルド</h3>
               <div id="saved-builds-list"></div>
@@ -1554,7 +1658,7 @@
           </div>
 
           <!-- ビルドパネル -->
-          <div id="build-panel" class="build-panel" style="display: none;">
+          <div id="build-panel" class="build-panel" style="display: none">
             <div class="build-panel-content">
               <div class="build-panel-header">
                 <h3>🎒 現在のビルド</h3>
@@ -1571,78 +1675,110 @@
                 </div>
                 <div class="build-section">
                   <h4>状況対応アイテム</h4>
-                  <div id="build-situational-items" class="build-items-grid"></div>
+                  <div
+                    id="build-situational-items"
+                    class="build-items-grid"
+                  ></div>
                 </div>
               </div>
               <div class="build-panel-actions">
-                <button onclick="downloadBuild()">⬇️ ダウンロード (.json)</button>
+                <button onclick="downloadBuild()">
+                  ⬇️ ダウンロード (.json)
+                </button>
                 <button onclick="copyBuildToClipboard()">📋 コピー</button>
                 <button onclick="clearBuild()">🗑️ クリア</button>
               </div>
             </div>
           </div>
 
-          <div class="filter-group">
-            <div class="input-group">
-              <label>🔍 キーワード検索</label>
-              <input
-                type="text"
-                id="item-search"
-                placeholder="アイテム名、説明で検索..."
-              />
+          <!-- フィルターセクション -->
+          <div class="compact-filters">
+            <div class="compact-filters-header" onclick="toggleFiltersSection(this)">
+              <h3>
+                <span class="toggle-icon">🔽</span>
+                検索・フィルター
+              </h3>
+              <span style="color: #a0aec0; font-size: 0.9rem;">クリックで展開/折りたたみ</span>
             </div>
+            
+            <div class="filters-content">
+              <!-- 左カラム -->
+              <div class="filter-section">
+                <div class="input-group">
+                  <label>🔍 キーワード検索</label>
+                  <input
+                    type="text"
+                    id="item-search"
+                    placeholder="アイテム名、説明で検索..."
+                  />
+                </div>
 
-            <div class="input-group">
-              <label>🏷️ タグフィルター</label>
-              <div id="item-tags-filter" class="tags-filter"></div>
-            </div>
+                <div class="input-group">
+                  <label>🏷️ タグフィルター（複数選択可）</label>
+                  <div id="item-tags-filter" class="tags-filter tags-filter-compact"></div>
+                </div>
 
-            <div class="input-group">
-              <label>💰 最低価格</label>
-              <input
-                type="number"
-                id="item-price-min"
-                value="0"
-                min="0"
-                placeholder="0"
-              />
-            </div>
+                <div class="filter-row">
+                  <div class="input-group">
+                    <label>💰 最低価格</label>
+                    <input
+                      type="number"
+                      id="item-price-min"
+                      value="0"
+                      min="0"
+                      placeholder="0"
+                    />
+                  </div>
 
-            <div class="input-group">
-              <label>💰 最高価格</label>
-              <input
-                type="number"
-                id="item-price-max"
-                value="10000"
-                min="0"
-                placeholder="10000"
-              />
-            </div>
+                  <div class="input-group">
+                    <label>💰 最高価格</label>
+                    <input
+                      type="number"
+                      id="item-price-max"
+                      value="10000"
+                      min="0"
+                      placeholder="10000"
+                    />
+                  </div>
+                </div>
+              </div>
 
-            <div class="input-group">
-              <label>🗺️ マップ</label>
-              <select id="item-map">
-                <option value="all">すべて</option>
-                <option value="11">サモナーズリフト</option>
-                <option value="12">ハウリングアビス</option>
-                <option value="30">アリーナ</option>
-              </select>
-            </div>
+              <!-- 右カラム -->
+              <div class="filter-section">
+                <div class="filter-row">
+                  <div class="input-group">
+                    <label>🗺️ マップ</label>
+                    <select id="item-map">
+                      <option value="all">すべて</option>
+                      <option value="11">サモナーズリフト</option>
+                      <option value="12">ハウリングアビス</option>
+                      <option value="30">アリーナ</option>
+                    </select>
+                  </div>
 
-            <div class="input-group">
-              <label>📊 並び替え</label>
-              <select id="item-sort">
-                <option value="name-asc">名前 (昇順)</option>
-                <option value="price-asc">価格 (安い順)</option>
-                <option value="price-desc">価格 (高い順)</option>
-              </select>
-            </div>
+                  <div class="input-group">
+                    <label>📊 並び替え</label>
+                    <select id="item-sort">
+                      <option value="name-asc">名前 (昇順)</option>
+                      <option value="price-asc">価格 (安い順)</option>
+                      <option value="price-desc">価格 (高い順)</option>
+                    </select>
+                  </div>
+                </div>
 
-            <div class="input-group">
-              <label style="display: flex; align-items: center; gap: 8px;">
-                <input type="checkbox" id="item-purchasable" checked />
-                購入可能なアイテムのみ
-              </label>
+                <div class="input-group">
+                  <label style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="item-purchasable" checked />
+                    購入可能なアイテムのみ表示
+                  </label>
+                </div>
+
+                <div class="input-group">
+                  <button onclick="clearItemFilters()" style="width: 100%; background: rgba(239, 68, 68, 0.8);">
+                    🗑️ フィルターをクリア
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -2602,14 +2738,21 @@
       let selectedDifficulties = [];
 
       // ロールとレーンのマスターデータ
-      const CHAMPION_ROLES = ['Fighter', 'Tank', 'Mage', 'Assassin', 'Support', 'Marksman'];
-      const CHAMPION_LANES = ['Top', 'Jungle', 'Mid', 'Bot', 'Support'];
+      const CHAMPION_ROLES = [
+        "Fighter",
+        "Tank",
+        "Mage",
+        "Assassin",
+        "Support",
+        "Marksman",
+      ];
+      const CHAMPION_LANES = ["Top", "Jungle", "Mid", "Bot", "Support"];
       const DIFFICULTIES = [
-        { value: 1, label: '初心者' },
-        { value: 2, label: '初級' },
-        { value: 3, label: '中級' },
-        { value: 4, label: '上級' },
-        { value: 5, label: '専門' }
+        { value: 1, label: "初心者" },
+        { value: 2, label: "初級" },
+        { value: 3, label: "中級" },
+        { value: 4, label: "上級" },
+        { value: 5, label: "専門" },
       ];
 
       // チャンピオン一覧読み込み
@@ -2638,7 +2781,7 @@
           document
             .getElementById("champion-search")
             .addEventListener("input", filterChampions);
-          
+
           document
             .getElementById("champion-sort")
             .addEventListener("change", filterChampions);
@@ -2646,7 +2789,9 @@
           document.getElementById("champions-loading").style.display = "none";
           document.getElementById("champions-grid").style.display = "block";
 
-          console.log(`✅ ${allChampionsData.length}体のチャンピオンを読み込みました`);
+          console.log(
+            `✅ ${allChampionsData.length}体のチャンピオンを読み込みました`
+          );
         } catch (error) {
           console.error("❌ チャンピオンデータの読み込みに失敗:", error);
           document.getElementById("champions-loading").style.display = "none";
@@ -2658,61 +2803,61 @@
 
       // ロールフィルターのレンダリング
       function renderChampionRolesFilter() {
-        const container = document.getElementById('champion-roles-filter');
-        let html = '';
-        
-        CHAMPION_ROLES.forEach(role => {
+        const container = document.getElementById("champion-roles-filter");
+        let html = "";
+
+        CHAMPION_ROLES.forEach((role) => {
           const isActive = selectedRoles.includes(role);
           html += `
             <button 
-              class="tag-button ${isActive ? 'active' : ''}"
+              class="tag-button ${isActive ? "active" : ""}"
               onclick="toggleChampionRole('${role}')"
             >
               ${role}
             </button>
           `;
         });
-        
+
         container.innerHTML = html;
       }
 
       // レーンフィルターのレンダリング
       function renderChampionLanesFilter() {
-        const container = document.getElementById('champion-lanes-filter');
-        let html = '';
-        
-        CHAMPION_LANES.forEach(lane => {
+        const container = document.getElementById("champion-lanes-filter");
+        let html = "";
+
+        CHAMPION_LANES.forEach((lane) => {
           const isActive = selectedLanes.includes(lane);
           html += `
             <button 
-              class="tag-button ${isActive ? 'active' : ''}"
+              class="tag-button ${isActive ? "active" : ""}"
               onclick="toggleChampionLane('${lane}')"
             >
               ${lane}
             </button>
           `;
         });
-        
+
         container.innerHTML = html;
       }
 
       // 難易度フィルターのレンダリング
       function renderChampionDifficultyFilter() {
-        const container = document.getElementById('champion-difficulty-filter');
-        let html = '';
-        
+        const container = document.getElementById("champion-difficulty-filter");
+        let html = "";
+
         DIFFICULTIES.forEach(({ value, label }) => {
           const isActive = selectedDifficulties.includes(value);
           html += `
             <button 
-              class="tag-button ${isActive ? 'active' : ''}"
+              class="tag-button ${isActive ? "active" : ""}"
               onclick="toggleChampionDifficulty(${value})"
             >
               ${label}
             </button>
           `;
         });
-        
+
         container.innerHTML = html;
       }
 
@@ -2754,22 +2899,29 @@
 
       // チャンピオンフィルター
       function filterChampions() {
-        const searchTerm = document.getElementById("champion-search").value.toLowerCase();
+        const searchTerm = document
+          .getElementById("champion-search")
+          .value.toLowerCase();
         const sortBy = document.getElementById("champion-sort").value;
 
         let filtered = allChampionsData.filter((champion) => {
           // 検索テキストマッチング
-          const matchesSearch = !searchTerm || 
+          const matchesSearch =
+            !searchTerm ||
             champion.name.toLowerCase().includes(searchTerm) ||
             champion.id.toLowerCase().includes(searchTerm) ||
             champion.title.toLowerCase().includes(searchTerm);
 
           // ロールマッチング
-          const matchesRoles = selectedRoles.length === 0 ||
-            selectedRoles.some(role => champion.tags && champion.tags.includes(role));
+          const matchesRoles =
+            selectedRoles.length === 0 ||
+            selectedRoles.some(
+              (role) => champion.tags && champion.tags.includes(role)
+            );
 
           // 難易度マッチング
-          const matchesDifficulty = selectedDifficulties.length === 0 ||
+          const matchesDifficulty =
+            selectedDifficulties.length === 0 ||
             selectedDifficulties.includes(champion.info.difficulty);
 
           // レーンマッチングは現状タグに含まれないため、スキップ
@@ -2781,11 +2933,11 @@
         // ソート
         filtered.sort((a, b) => {
           switch (sortBy) {
-            case 'name-asc':
+            case "name-asc":
               return a.name.localeCompare(b.name);
-            case 'difficulty-asc':
+            case "difficulty-asc":
               return a.info.difficulty - b.info.difficulty;
-            case 'difficulty-desc':
+            case "difficulty-desc":
               return b.info.difficulty - a.info.difficulty;
             default:
               return 0;
@@ -2793,7 +2945,8 @@
         });
 
         displayChampions(filtered);
-        document.getElementById('champions-count').textContent = filtered.length;
+        document.getElementById("champions-count").textContent =
+          filtered.length;
       }
 
       // チャンピオン表示
@@ -2911,10 +3064,10 @@
 
       // アイテムビルド管理
       let currentBuild = {
-        name: 'カスタムビルド',
+        name: "カスタムビルド",
         items: [],
-        map: 'SR',
-        mode: 'CLASSIC'
+        map: "SR",
+        mode: "CLASSIC",
       };
       let savedBuilds = [];
       let allItemTags = [];
@@ -2935,15 +3088,15 @@
 
           // タグの収集
           const tagsSet = new Set();
-          allItems.forEach(item => {
+          allItems.forEach((item) => {
             if (item.tags) {
-              item.tags.forEach(tag => tagsSet.add(tag));
+              item.tags.forEach((tag) => tagsSet.add(tag));
             }
           });
           allItemTags = Array.from(tagsSet).sort();
 
           // 保存済みビルドの読み込み
-          const saved = localStorage.getItem('itemBuilds');
+          const saved = localStorage.getItem("itemBuilds");
           savedBuilds = saved ? JSON.parse(saved) : [];
           updateSavedBuildsCount();
 
@@ -2987,21 +3140,21 @@
 
       // タグフィルターのレンダリング
       function renderItemTagsFilter() {
-        const container = document.getElementById('item-tags-filter');
-        let html = '';
-        
-        allItemTags.forEach(tag => {
+        const container = document.getElementById("item-tags-filter");
+        let html = "";
+
+        allItemTags.forEach((tag) => {
           const isActive = selectedItemTags.includes(tag);
           html += `
             <button 
-              class="tag-button ${isActive ? 'active' : ''}"
+              class="tag-button ${isActive ? "active" : ""}"
               onclick="toggleItemTag('${tag}')"
             >
               ${tag}
             </button>
           `;
         });
-        
+
         container.innerHTML = html || '<p style="color: #a0aec0;">タグなし</p>';
       }
 
@@ -3028,7 +3181,8 @@
           parseInt(document.getElementById("item-price-max").value) || 999999;
         const selectedMap = document.getElementById("item-map").value;
         const sortBy = document.getElementById("item-sort").value;
-        const purchasableOnly = document.getElementById("item-purchasable").checked;
+        const purchasableOnly =
+          document.getElementById("item-purchasable").checked;
 
         let filtered = allItems.filter((item) => {
           const matchesSearch =
@@ -3037,28 +3191,39 @@
               item.plaintext.toLowerCase().includes(searchTerm)) ||
             (item.description &&
               item.description.toLowerCase().includes(searchTerm));
-          
+
           const matchesPrice =
             item.gold.total >= priceMin && item.gold.total <= priceMax;
-          
-          const matchesMap = selectedMap === 'all' || item.maps[selectedMap] === true;
-          
-          const matchesPurchasable = !purchasableOnly || item.gold.purchasable !== false;
-          
-          const matchesTags = selectedItemTags.length === 0 || 
-            selectedItemTags.every(tag => item.tags && item.tags.includes(tag));
 
-          return matchesSearch && matchesPrice && matchesMap && matchesPurchasable && matchesTags;
+          const matchesMap =
+            selectedMap === "all" || item.maps[selectedMap] === true;
+
+          const matchesPurchasable =
+            !purchasableOnly || item.gold.purchasable !== false;
+
+          const matchesTags =
+            selectedItemTags.length === 0 ||
+            selectedItemTags.every(
+              (tag) => item.tags && item.tags.includes(tag)
+            );
+
+          return (
+            matchesSearch &&
+            matchesPrice &&
+            matchesMap &&
+            matchesPurchasable &&
+            matchesTags
+          );
         });
 
         // ソート
         filtered.sort((a, b) => {
           switch (sortBy) {
-            case 'name-asc':
+            case "name-asc":
               return a.name.localeCompare(b.name);
-            case 'price-asc':
+            case "price-asc":
               return a.gold.total - b.gold.total;
-            case 'price-desc':
+            case "price-desc":
               return b.gold.total - a.gold.total;
             default:
               return 0;
@@ -3066,7 +3231,7 @@
         });
 
         displayItems(filtered);
-        document.getElementById('items-count').textContent = filtered.length;
+        document.getElementById("items-count").textContent = filtered.length;
       }
 
       // アイテム表示
@@ -3076,19 +3241,25 @@
 
         items.forEach((item) => {
           const imgUrl = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/item/${item.id}.png`;
-          const isInBuild = currentBuild.items.some(b => b.id === item.id);
+          const isInBuild = currentBuild.items.some((b) => b.id === item.id);
 
           html += `
-            <div class="item-card ${isInBuild ? 'in-build' : ''}" onclick="showItemDetail('${item.id}')">
-              <img src="${imgUrl}" alt="${item.name}" class="item-card-img" onerror="this.style.display='none'">
+            <div class="item-card ${
+              isInBuild ? "in-build" : ""
+            }" onclick="showItemDetail('${item.id}')">
+              <img src="${imgUrl}" alt="${
+            item.name
+          }" class="item-card-img" onerror="this.style.display='none'">
               <div class="item-card-name">${item.name}</div>
               <div class="item-card-price">${item.gold.total}G</div>
               <button 
                 class="add-to-build-btn" 
-                onclick="event.stopPropagation(); addItemToBuild('${item.id}', 'Core')"
+                onclick="event.stopPropagation(); addItemToBuild('${
+                  item.id
+                }', 'Core')"
                 style="margin-top: 8px; padding: 4px 8px; font-size: 0.75rem; width: 100%;"
               >
-                ${isInBuild ? '✓ ビルドに追加済み' : '+ コアに追加'}
+                ${isInBuild ? "✓ ビルドに追加済み" : "+ コアに追加"}
               </button>
             </div>
           `;
@@ -3099,21 +3270,25 @@
       }
 
       // ビルドにアイテムを追加
-      function addItemToBuild(itemId, blockType = 'Core') {
-        const item = allItems.find(i => i.id === itemId);
+      function addItemToBuild(itemId, blockType = "Core") {
+        const item = allItems.find((i) => i.id === itemId);
         if (!item) return;
 
-        const existsIndex = currentBuild.items.findIndex(i => i.id === itemId);
+        const existsIndex = currentBuild.items.findIndex(
+          (i) => i.id === itemId
+        );
         if (existsIndex !== -1) {
-          alert('このアイテムは既にビルドに含まれています');
+          alert("このアイテムは既にビルドに含まれています");
           return;
         }
 
         // コアアイテムの制限チェック
-        if (blockType === 'Core') {
-          const coreCount = currentBuild.items.filter(i => i.blockType === 'Core').length;
+        if (blockType === "Core") {
+          const coreCount = currentBuild.items.filter(
+            (i) => i.blockType === "Core"
+          ).length;
           if (coreCount >= 6) {
-            alert('コアアイテムは最大6個までです');
+            alert("コアアイテムは最大6個までです");
             return;
           }
         }
@@ -3126,7 +3301,7 @@
 
       // ビルドからアイテムを削除
       function removeItemFromBuild(itemId) {
-        currentBuild.items = currentBuild.items.filter(i => i.id !== itemId);
+        currentBuild.items = currentBuild.items.filter((i) => i.id !== itemId);
         updateBuildDisplay();
         updateBuildItemsCount();
         filterItems(); // 表示を更新
@@ -3134,14 +3309,16 @@
 
       // アイテムを別のブロックに移動
       function moveItemToBlock(itemId, newBlockType) {
-        const item = currentBuild.items.find(i => i.id === itemId);
+        const item = currentBuild.items.find((i) => i.id === itemId);
         if (!item) return;
 
         // コアアイテムの制限チェック
-        if (newBlockType === 'Core') {
-          const coreCount = currentBuild.items.filter(i => i.blockType === 'Core' && i.id !== itemId).length;
+        if (newBlockType === "Core") {
+          const coreCount = currentBuild.items.filter(
+            (i) => i.blockType === "Core" && i.id !== itemId
+          ).length;
           if (coreCount >= 6) {
-            alert('コアアイテムは最大6個までです');
+            alert("コアアイテムは最大6個までです");
             return;
           }
         }
@@ -3152,18 +3329,23 @@
 
       // ビルド表示の更新
       function updateBuildDisplay() {
-        const blockTypes = ['Start', 'Core', 'Situational'];
-        
-        blockTypes.forEach(blockType => {
-          const container = document.getElementById(`build-${blockType.toLowerCase()}-items`);
-          const items = currentBuild.items.filter(i => i.blockType === blockType);
-          
+        const blockTypes = ["Start", "Core", "Situational"];
+
+        blockTypes.forEach((blockType) => {
+          const container = document.getElementById(
+            `build-${blockType.toLowerCase()}-items`
+          );
+          const items = currentBuild.items.filter(
+            (i) => i.blockType === blockType
+          );
+
           if (items.length === 0) {
-            container.innerHTML = '<p style="color: #a0aec0; text-align: center; padding: 20px;">アイテムなし</p>';
+            container.innerHTML =
+              '<p style="color: #a0aec0; text-align: center; padding: 20px;">アイテムなし</p>';
             return;
           }
 
-          let html = '';
+          let html = "";
           items.forEach(({ id, item }) => {
             const imgUrl = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/item/${id}.png`;
             html += `
@@ -3171,28 +3353,34 @@
                 <img src="${imgUrl}" alt="${item.name}">
                 <button class="build-item-remove" onclick="removeItemFromBuild('${id}')">✕</button>
                 <select class="build-item-move" onchange="moveItemToBlock('${id}', this.value)">
-                  <option value="Start" ${blockType === 'Start' ? 'selected' : ''}>スタート</option>
-                  <option value="Core" ${blockType === 'Core' ? 'selected' : ''}>コア</option>
-                  <option value="Situational" ${blockType === 'Situational' ? 'selected' : ''}>状況</option>
+                  <option value="Start" ${
+                    blockType === "Start" ? "selected" : ""
+                  }>スタート</option>
+                  <option value="Core" ${
+                    blockType === "Core" ? "selected" : ""
+                  }>コア</option>
+                  <option value="Situational" ${
+                    blockType === "Situational" ? "selected" : ""
+                  }>状況</option>
                 </select>
               </div>
             `;
           });
-          
+
           container.innerHTML = html;
         });
       }
 
       // ビルドパネルの切り替え
       function toggleBuildPanel() {
-        const panel = document.getElementById('build-panel');
-        panel.classList.toggle('active');
+        const panel = document.getElementById("build-panel");
+        panel.classList.toggle("active");
       }
 
       // ビルドのクリア
       function clearBuild() {
-        if (!confirm('現在のビルドをクリアしますか？')) return;
-        
+        if (!confirm("現在のビルドをクリアしますか？")) return;
+
         currentBuild.items = [];
         updateBuildDisplay();
         updateBuildItemsCount();
@@ -3201,15 +3389,15 @@
 
       // ビルドの保存
       function saveBuild() {
-        const name = document.getElementById('build-name').value.trim();
-        
+        const name = document.getElementById("build-name").value.trim();
+
         if (!name) {
-          alert('ビルド名を入力してください');
+          alert("ビルド名を入力してください");
           return;
         }
 
         if (currentBuild.items.length === 0) {
-          alert('アイテムを追加してください');
+          alert("アイテムを追加してください");
           return;
         }
 
@@ -3219,50 +3407,52 @@
           items: currentBuild.items,
           map: currentBuild.map,
           mode: currentBuild.mode,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         };
 
         savedBuilds.push(newBuild);
-        localStorage.setItem('itemBuilds', JSON.stringify(savedBuilds));
-        
+        localStorage.setItem("itemBuilds", JSON.stringify(savedBuilds));
+
         updateSavedBuildsCount();
-        alert('✅ ビルドを保存しました！');
+        alert("✅ ビルドを保存しました！");
       }
 
       // ビルドのダウンロード
       function downloadBuild() {
-        const name = document.getElementById('build-name').value.trim();
-        
+        const name = document.getElementById("build-name").value.trim();
+
         if (currentBuild.items.length === 0) {
-          alert('アイテムを追加してください');
+          alert("アイテムを追加してください");
           return;
         }
 
-        const blockTypes = ['Start', 'Core', 'Situational'];
-        const blocks = blockTypes.map(blockType => ({
-          type: blockType,
-          recMath: false,
-          items: currentBuild.items
-            .filter(item => item.blockType === blockType)
-            .map(item => ({ id: item.id, count: 1 }))
-        })).filter(block => block.items.length > 0);
+        const blockTypes = ["Start", "Core", "Situational"];
+        const blocks = blockTypes
+          .map((blockType) => ({
+            type: blockType,
+            recMath: false,
+            items: currentBuild.items
+              .filter((item) => item.blockType === blockType)
+              .map((item) => ({ id: item.id, count: 1 })),
+          }))
+          .filter((block) => block.items.length > 0);
 
         const itemSet = {
-          title: name || 'カスタムビルド',
-          type: 'custom',
+          title: name || "カスタムビルド",
+          type: "custom",
           map: currentBuild.map,
           mode: currentBuild.mode,
           priority: false,
           sortrank: 0,
-          blocks
+          blocks,
         };
 
         const json = JSON.stringify(itemSet, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
+        const blob = new Blob([json], { type: "application/json" });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
-        a.download = `${name.replace(/[^a-zA-Z0-9]/g, '_')}.json`;
+        a.download = `${name.replace(/[^a-zA-Z0-9]/g, "_")}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -3271,66 +3461,69 @@
 
       // クリップボードにコピー
       async function copyBuildToClipboard() {
-        const name = document.getElementById('build-name').value.trim();
-        
+        const name = document.getElementById("build-name").value.trim();
+
         if (currentBuild.items.length === 0) {
-          alert('アイテムを追加してください');
+          alert("アイテムを追加してください");
           return;
         }
 
-        const blockTypes = ['Start', 'Core', 'Situational'];
-        const blocks = blockTypes.map(blockType => ({
-          type: blockType,
-          recMath: false,
-          items: currentBuild.items
-            .filter(item => item.blockType === blockType)
-            .map(item => ({ id: item.id, count: 1 }))
-        })).filter(block => block.items.length > 0);
+        const blockTypes = ["Start", "Core", "Situational"];
+        const blocks = blockTypes
+          .map((blockType) => ({
+            type: blockType,
+            recMath: false,
+            items: currentBuild.items
+              .filter((item) => item.blockType === blockType)
+              .map((item) => ({ id: item.id, count: 1 })),
+          }))
+          .filter((block) => block.items.length > 0);
 
         const itemSet = {
-          title: name || 'カスタムビルド',
-          type: 'custom',
+          title: name || "カスタムビルド",
+          type: "custom",
           map: currentBuild.map,
           mode: currentBuild.mode,
           priority: false,
           sortrank: 0,
-          blocks
+          blocks,
         };
 
         const json = JSON.stringify(itemSet, null, 2);
-        
+
         try {
           await navigator.clipboard.writeText(json);
-          alert('✅ クリップボードにコピーしました！');
+          alert("✅ クリップボードにコピーしました！");
         } catch (err) {
-          alert('❌ コピーに失敗しました');
+          alert("❌ コピーに失敗しました");
         }
       }
 
       // 保存済みビルドの切り替え
       function toggleSavedBuilds() {
-        const container = document.getElementById('saved-builds-container');
-        const isVisible = container.style.display !== 'none';
-        
+        const container = document.getElementById("saved-builds-container");
+        const isVisible = container.style.display !== "none";
+
         if (isVisible) {
-          container.style.display = 'none';
+          container.style.display = "none";
         } else {
           renderSavedBuilds();
-          container.style.display = 'block';
+          container.style.display = "block";
         }
       }
 
       // 保存済みビルドのレンダリング
       function renderSavedBuilds() {
-        const container = document.getElementById('saved-builds-list');
-        
+        const container = document.getElementById("saved-builds-list");
+
         if (savedBuilds.length === 0) {
-          container.innerHTML = '<p style="color: #a0aec0; text-align: center;">保存済みのビルドがありません</p>';
+          container.innerHTML =
+            '<p style="color: #a0aec0; text-align: center;">保存済みのビルドがありません</p>';
           return;
         }
 
-        let html = '';
-        savedBuilds.forEach(build => {
+        let html = "";
+        savedBuilds.forEach((build) => {
           html += `
             <div class="saved-build-card">
               <div class="saved-build-header">
@@ -3341,7 +3534,9 @@
                 </div>
               </div>
               <div class="saved-build-info">
-                アイテム数: ${build.items.length} | 作成日: ${new Date(build.createdAt).toLocaleDateString('ja-JP')}
+                アイテム数: ${build.items.length} | 作成日: ${new Date(
+            build.createdAt
+          ).toLocaleDateString("ja-JP")}
               </div>
             </div>
           `;
@@ -3352,39 +3547,99 @@
 
       // ビルドの読み込み
       function loadBuild(buildId) {
-        const build = savedBuilds.find(b => b.id === buildId);
+        const build = savedBuilds.find((b) => b.id === buildId);
         if (!build) return;
 
         currentBuild = { ...build };
-        document.getElementById('build-name').value = build.name;
-        
+        document.getElementById("build-name").value = build.name;
+
         updateBuildDisplay();
         updateBuildItemsCount();
         filterItems();
-        
-        document.getElementById('saved-builds-container').style.display = 'none';
-        alert('✅ ビルドを読み込みました！');
+
+        document.getElementById("saved-builds-container").style.display =
+          "none";
+        alert("✅ ビルドを読み込みました！");
       }
 
       // ビルドの削除
       function deleteBuild(buildId) {
-        if (!confirm('このビルドを削除しますか？')) return;
+        if (!confirm("このビルドを削除しますか？")) return;
 
-        savedBuilds = savedBuilds.filter(b => b.id !== buildId);
-        localStorage.setItem('itemBuilds', JSON.stringify(savedBuilds));
-        
+        savedBuilds = savedBuilds.filter((b) => b.id !== buildId);
+        localStorage.setItem("itemBuilds", JSON.stringify(savedBuilds));
+
         updateSavedBuildsCount();
         renderSavedBuilds();
       }
 
       // ビルドアイテム数の更新
       function updateBuildItemsCount() {
-        document.getElementById('build-items-count').textContent = currentBuild.items.length;
+        document.getElementById("build-items-count").textContent =
+          currentBuild.items.length;
       }
 
       // 保存済みビルド数の更新
       function updateSavedBuildsCount() {
-        document.getElementById('saved-builds-count').textContent = savedBuilds.length;
+        document.getElementById("saved-builds-count").textContent =
+          savedBuilds.length;
+      }
+
+      // フィルターセクションのトグル
+      function toggleFiltersSection(headerElement) {
+        const contentElement = headerElement.nextElementSibling;
+        const toggleIcon = headerElement.querySelector('.toggle-icon');
+        
+        contentElement.classList.toggle('collapsed');
+        
+        // アイコンの向きを変更
+        if (contentElement.classList.contains('collapsed')) {
+          toggleIcon.textContent = '▶️';
+        } else {
+          toggleIcon.textContent = '🔽';
+        }
+      }
+
+      // チャンピオンフィルターのクリア
+      function clearChampionFilters() {
+        document.getElementById('champion-search').value = '';
+        document.getElementById('champion-sort').value = 'name-asc';
+        
+        // すべてのロール・レーン・難易度を非選択にする
+        selectedChampionRoles = [];
+        selectedChampionLanes = [];
+        selectedChampionDifficulties = [];
+        
+        // ロールボタンの選択状態をクリア
+        const roleButtons = document.querySelectorAll('#champion-roles-filter .tag-button');
+        roleButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // レーンボタンの選択状態をクリア
+        const laneButtons = document.querySelectorAll('#champion-lanes-filter .tag-button');
+        laneButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // 難易度ボタンの選択状態をクリア
+        const difficultyButtons = document.querySelectorAll('#champion-difficulty-filter .tag-button');
+        difficultyButtons.forEach(btn => btn.classList.remove('active'));
+        
+        filterChampions();
+      }
+
+      // アイテムフィルターのクリア
+      function clearItemFilters() {
+        document.getElementById('item-search').value = '';
+        document.getElementById('item-price-min').value = '0';
+        document.getElementById('item-price-max').value = '10000';
+        document.getElementById('item-map').value = 'all';
+        document.getElementById('item-sort').value = 'name-asc';
+        document.getElementById('item-purchasable').checked = true;
+        
+        // すべてのタグを非選択にする
+        selectedItemTags = [];
+        const tagButtons = document.querySelectorAll('#item-tags-filter .tag-button');
+        tagButtons.forEach(btn => btn.classList.remove('active'));
+        
+        filterItems();
       }
 
       // アイテム詳細表示
