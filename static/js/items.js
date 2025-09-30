@@ -317,7 +317,7 @@ function updateBuildDisplay() {
 
     if (items.length === 0) {
       container.innerHTML =
-        '<p style="color: #a0aec0; text-align: center; padding: 20px;">アイテムなし</p>';
+        '<p style="color: #a0aec0; text-align: center; padding: 20px; white-space: nowrap;">アイテムなし</p>';
       return;
     }
 
