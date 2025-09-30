@@ -2,10 +2,10 @@
 
 // アイテムビルド管理
 let currentBuild = {
-  name: 'カスタムビルド',
+  name: "カスタムビルド",
   items: [],
-  map: 'SR',
-  mode: 'CLASSIC',
+  map: "SR",
+  mode: "CLASSIC",
 };
 let savedBuilds = [];
 let allItems = [];
@@ -35,7 +35,7 @@ async function loadItemsList() {
     allItemTags = Array.from(tagsSet).sort();
 
     // 保存済みビルドの読み込み
-    const saved = localStorage.getItem('itemBuilds');
+    const saved = localStorage.getItem("itemBuilds");
     savedBuilds = saved ? JSON.parse(saved) : [];
     updateSavedBuildsCount();
 
@@ -45,35 +45,46 @@ async function loadItemsList() {
     displayItems(allItems);
 
     // フィルター機能
-    document.getElementById('item-search').addEventListener('input', filterItems);
-    document.getElementById('item-price-min').addEventListener('input', filterItems);
-    document.getElementById('item-price-max').addEventListener('input', filterItems);
-    document.getElementById('item-map').addEventListener('change', filterItems);
-    document.getElementById('item-sort').addEventListener('change', filterItems);
-    document.getElementById('item-purchasable').addEventListener('change', filterItems);
+    document
+      .getElementById("item-search")
+      .addEventListener("input", filterItems);
+    document
+      .getElementById("item-price-min")
+      .addEventListener("input", filterItems);
+    document
+      .getElementById("item-price-max")
+      .addEventListener("input", filterItems);
+    document.getElementById("item-map").addEventListener("change", filterItems);
+    document
+      .getElementById("item-sort")
+      .addEventListener("change", filterItems);
+    document
+      .getElementById("item-purchasable")
+      .addEventListener("change", filterItems);
 
-    document.getElementById('items-loading').style.display = 'none';
-    document.getElementById('items-grid').style.display = 'grid';
+    document.getElementById("items-loading").style.display = "none";
+    document.getElementById("items-grid").style.display = "block";
 
     console.log(`✅ ${allItems.length}個のアイテムを読み込みました`);
   } catch (error) {
-    console.error('❌ アイテムデータの読み込みに失敗:', error);
-    document.getElementById('items-loading').style.display = 'none';
-    document.getElementById('items-error').textContent = 'アイテムデータの読み込みに失敗しました';
-    document.getElementById('items-error').style.display = 'block';
+    console.error("❌ アイテムデータの読み込みに失敗:", error);
+    document.getElementById("items-loading").style.display = "none";
+    document.getElementById("items-error").textContent =
+      "アイテムデータの読み込みに失敗しました";
+    document.getElementById("items-error").style.display = "block";
   }
 }
 
 // タグフィルターのレンダリング
 function renderItemTagsFilter() {
-  const container = document.getElementById('item-tags-filter');
-  let html = '';
+  const container = document.getElementById("item-tags-filter");
+  let html = "";
 
   allItemTags.forEach((tag) => {
     const isActive = selectedItemTags.includes(tag);
     html += `
       <button 
-        class="tag-button ${isActive ? 'active' : ''}"
+        class="tag-button ${isActive ? "active" : ""}"
         onclick="toggleItemTag('${tag}')"
       >
         ${tag}
@@ -98,29 +109,31 @@ function toggleItemTag(tag) {
 
 // アイテムフィルターのクリア
 function clearItemFilters() {
-  document.getElementById('item-search').value = '';
-  document.getElementById('item-price-min').value = '0';
-  document.getElementById('item-price-max').value = '10000';
-  document.getElementById('item-map').value = 'all';
-  document.getElementById('item-sort').value = 'name-asc';
-  document.getElementById('item-purchasable').checked = true;
+  document.getElementById("item-search").value = "";
+  document.getElementById("item-price-min").value = "0";
+  document.getElementById("item-price-max").value = "10000";
+  document.getElementById("item-map").value = "all";
+  document.getElementById("item-sort").value = "name-asc";
+  document.getElementById("item-purchasable").checked = true;
 
   // すべてのタグを非選択にする
   selectedItemTags = [];
-  const tagButtons = document.querySelectorAll('#item-tags-filter .tag-button');
-  tagButtons.forEach((btn) => btn.classList.remove('active'));
+  const tagButtons = document.querySelectorAll("#item-tags-filter .tag-button");
+  tagButtons.forEach((btn) => btn.classList.remove("active"));
 
   filterItems();
 }
 
 // アイテムフィルター
 function filterItems() {
-  const searchTerm = document.getElementById('item-search').value.toLowerCase();
-  const priceMin = parseInt(document.getElementById('item-price-min').value) || 0;
-  const priceMax = parseInt(document.getElementById('item-price-max').value) || 999999;
-  const selectedMap = document.getElementById('item-map').value;
-  const sortBy = document.getElementById('item-sort').value;
-  const purchasableOnly = document.getElementById('item-purchasable').checked;
+  const searchTerm = document.getElementById("item-search").value.toLowerCase();
+  const priceMin =
+    parseInt(document.getElementById("item-price-min").value) || 0;
+  const priceMax =
+    parseInt(document.getElementById("item-price-max").value) || 999999;
+  const selectedMap = document.getElementById("item-map").value;
+  const sortBy = document.getElementById("item-sort").value;
+  const purchasableOnly = document.getElementById("item-purchasable").checked;
 
   let filtered = allItems.filter((item) => {
     const matchesSearch =
@@ -128,27 +141,35 @@ function filterItems() {
       (item.plaintext && item.plaintext.toLowerCase().includes(searchTerm)) ||
       (item.description && item.description.toLowerCase().includes(searchTerm));
 
-    const matchesPrice = item.gold.total >= priceMin && item.gold.total <= priceMax;
+    const matchesPrice =
+      item.gold.total >= priceMin && item.gold.total <= priceMax;
 
-    const matchesMap = selectedMap === 'all' || item.maps[selectedMap] === true;
+    const matchesMap = selectedMap === "all" || item.maps[selectedMap] === true;
 
-    const matchesPurchasable = !purchasableOnly || item.gold.purchasable !== false;
+    const matchesPurchasable =
+      !purchasableOnly || item.gold.purchasable !== false;
 
     const matchesTags =
       selectedItemTags.length === 0 ||
       selectedItemTags.every((tag) => item.tags && item.tags.includes(tag));
 
-    return matchesSearch && matchesPrice && matchesMap && matchesPurchasable && matchesTags;
+    return (
+      matchesSearch &&
+      matchesPrice &&
+      matchesMap &&
+      matchesPurchasable &&
+      matchesTags
+    );
   });
 
   // ソート
   filtered.sort((a, b) => {
     switch (sortBy) {
-      case 'name-asc':
+      case "name-asc":
         return a.name.localeCompare(b.name);
-      case 'price-asc':
+      case "price-asc":
         return a.gold.total - b.gold.total;
-      case 'price-desc':
+      case "price-desc":
         return b.gold.total - a.gold.total;
       default:
         return 0;
@@ -156,29 +177,35 @@ function filterItems() {
   });
 
   displayItems(filtered);
-  document.getElementById('items-count').textContent = filtered.length;
+  document.getElementById("items-count").textContent = filtered.length;
 }
 
 // アイテム表示
 function displayItems(items) {
-  const container = document.getElementById('items-grid');
-  let html = '';
+  const container = document.getElementById("items-grid");
+  let html = "";
 
   items.forEach((item) => {
     const imgUrl = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/item/${item.id}.png`;
     const isInBuild = currentBuild.items.some((b) => b.id === item.id);
 
     html += `
-      <div class="item-card ${isInBuild ? 'in-build' : ''}" onclick="showItemDetail('${item.id}')">
-        <img src="${imgUrl}" alt="${item.name}" class="item-card-img" onerror="this.style.display='none'">
+      <div class="item-card ${
+        isInBuild ? "in-build" : ""
+      }" onclick="showItemDetail('${item.id}')">
+        <img src="${imgUrl}" alt="${
+      item.name
+    }" class="item-card-img" onerror="this.style.display='none'">
         <div class="item-card-name">${item.name}</div>
         <div class="item-card-price">${item.gold.total}G</div>
         <button 
           class="add-to-build-btn" 
-          onclick="event.stopPropagation(); addItemToBuild('${item.id}', 'Core')"
+          onclick="event.stopPropagation(); addItemToBuild('${
+            item.id
+          }', 'Core')"
           style="margin-top: 8px; padding: 4px 8px; font-size: 0.75rem; width: 100%;"
         >
-          ${isInBuild ? '✓ ビルドに追加済み' : '+ コアに追加'}
+          ${isInBuild ? "✓ ビルドに追加済み" : "+ コアに追加"}
         </button>
       </div>
     `;
@@ -188,21 +215,23 @@ function displayItems(items) {
 }
 
 // ビルドにアイテムを追加
-function addItemToBuild(itemId, blockType = 'Core') {
+function addItemToBuild(itemId, blockType = "Core") {
   const item = allItems.find((i) => i.id === itemId);
   if (!item) return;
 
   const existsIndex = currentBuild.items.findIndex((i) => i.id === itemId);
   if (existsIndex !== -1) {
-    alert('このアイテムは既にビルドに含まれています');
+    alert("このアイテムは既にビルドに含まれています");
     return;
   }
 
   // コアアイテムの制限チェック
-  if (blockType === 'Core') {
-    const coreCount = currentBuild.items.filter((i) => i.blockType === 'Core').length;
+  if (blockType === "Core") {
+    const coreCount = currentBuild.items.filter(
+      (i) => i.blockType === "Core"
+    ).length;
     if (coreCount >= 6) {
-      alert('コアアイテムは最大6個までです');
+      alert("コアアイテムは最大6個までです");
       return;
     }
   }
@@ -227,12 +256,12 @@ function moveItemToBlock(itemId, newBlockType) {
   if (!item) return;
 
   // コアアイテムの制限チェック
-  if (newBlockType === 'Core') {
+  if (newBlockType === "Core") {
     const coreCount = currentBuild.items.filter(
-      (i) => i.blockType === 'Core' && i.id !== itemId
+      (i) => i.blockType === "Core" && i.id !== itemId
     ).length;
     if (coreCount >= 6) {
-      alert('コアアイテムは最大6個までです');
+      alert("コアアイテムは最大6個までです");
       return;
     }
   }
@@ -243,10 +272,12 @@ function moveItemToBlock(itemId, newBlockType) {
 
 // ビルド表示の更新
 function updateBuildDisplay() {
-  const blockTypes = ['Start', 'Core', 'Situational'];
+  const blockTypes = ["Start", "Core", "Situational"];
 
   blockTypes.forEach((blockType) => {
-    const container = document.getElementById(`build-${blockType.toLowerCase()}-items`);
+    const container = document.getElementById(
+      `build-${blockType.toLowerCase()}-items`
+    );
     const items = currentBuild.items.filter((i) => i.blockType === blockType);
 
     if (items.length === 0) {
@@ -255,7 +286,7 @@ function updateBuildDisplay() {
       return;
     }
 
-    let html = '';
+    let html = "";
     items.forEach(({ id, item }) => {
       const imgUrl = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/item/${id}.png`;
       html += `
@@ -263,9 +294,15 @@ function updateBuildDisplay() {
           <img src="${imgUrl}" alt="${item.name}">
           <button class="build-item-remove" onclick="removeItemFromBuild('${id}')">✕</button>
           <select class="build-item-move" onchange="moveItemToBlock('${id}', this.value)">
-            <option value="Start" ${blockType === 'Start' ? 'selected' : ''}>スタート</option>
-            <option value="Core" ${blockType === 'Core' ? 'selected' : ''}>コア</option>
-            <option value="Situational" ${blockType === 'Situational' ? 'selected' : ''}>状況</option>
+            <option value="Start" ${
+              blockType === "Start" ? "selected" : ""
+            }>スタート</option>
+            <option value="Core" ${
+              blockType === "Core" ? "selected" : ""
+            }>コア</option>
+            <option value="Situational" ${
+              blockType === "Situational" ? "selected" : ""
+            }>状況</option>
           </select>
         </div>
       `;
@@ -277,13 +314,13 @@ function updateBuildDisplay() {
 
 // ビルドパネルの切り替え
 function toggleBuildPanel() {
-  const panel = document.getElementById('build-panel');
-  panel.classList.toggle('active');
+  const panel = document.getElementById("build-panel");
+  panel.classList.toggle("active");
 }
 
 // ビルドのクリア
 function clearBuild() {
-  if (!confirm('現在のビルドをクリアしますか？')) return;
+  if (!confirm("現在のビルドをクリアしますか？")) return;
 
   currentBuild.items = [];
   updateBuildDisplay();
@@ -293,15 +330,15 @@ function clearBuild() {
 
 // ビルドの保存
 function saveBuild() {
-  const name = document.getElementById('build-name').value.trim();
+  const name = document.getElementById("build-name").value.trim();
 
   if (!name) {
-    alert('ビルド名を入力してください');
+    alert("ビルド名を入力してください");
     return;
   }
 
   if (currentBuild.items.length === 0) {
-    alert('アイテムを追加してください');
+    alert("アイテムを追加してください");
     return;
   }
 
@@ -315,22 +352,22 @@ function saveBuild() {
   };
 
   savedBuilds.push(newBuild);
-  localStorage.setItem('itemBuilds', JSON.stringify(savedBuilds));
+  localStorage.setItem("itemBuilds", JSON.stringify(savedBuilds));
 
   updateSavedBuildsCount();
-  alert('✅ ビルドを保存しました！');
+  alert("✅ ビルドを保存しました！");
 }
 
 // ビルドのダウンロード
 function downloadBuild() {
-  const name = document.getElementById('build-name').value.trim();
+  const name = document.getElementById("build-name").value.trim();
 
   if (currentBuild.items.length === 0) {
-    alert('アイテムを追加してください');
+    alert("アイテムを追加してください");
     return;
   }
 
-  const blockTypes = ['Start', 'Core', 'Situational'];
+  const blockTypes = ["Start", "Core", "Situational"];
   const blocks = blockTypes
     .map((blockType) => ({
       type: blockType,
@@ -342,8 +379,8 @@ function downloadBuild() {
     .filter((block) => block.items.length > 0);
 
   const itemSet = {
-    title: name || 'カスタムビルド',
-    type: 'custom',
+    title: name || "カスタムビルド",
+    type: "custom",
     map: currentBuild.map,
     mode: currentBuild.mode,
     priority: false,
@@ -352,11 +389,11 @@ function downloadBuild() {
   };
 
   const json = JSON.stringify(itemSet, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
+  const blob = new Blob([json], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
-  a.download = `${name.replace(/[^a-zA-Z0-9]/g, '_')}.json`;
+  a.download = `${name.replace(/[^a-zA-Z0-9]/g, "_")}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -365,14 +402,14 @@ function downloadBuild() {
 
 // クリップボードにコピー
 async function copyBuildToClipboard() {
-  const name = document.getElementById('build-name').value.trim();
+  const name = document.getElementById("build-name").value.trim();
 
   if (currentBuild.items.length === 0) {
-    alert('アイテムを追加してください');
+    alert("アイテムを追加してください");
     return;
   }
 
-  const blockTypes = ['Start', 'Core', 'Situational'];
+  const blockTypes = ["Start", "Core", "Situational"];
   const blocks = blockTypes
     .map((blockType) => ({
       type: blockType,
@@ -384,8 +421,8 @@ async function copyBuildToClipboard() {
     .filter((block) => block.items.length > 0);
 
   const itemSet = {
-    title: name || 'カスタムビルド',
-    type: 'custom',
+    title: name || "カスタムビルド",
+    type: "custom",
     map: currentBuild.map,
     mode: currentBuild.mode,
     priority: false,
@@ -397,28 +434,28 @@ async function copyBuildToClipboard() {
 
   try {
     await navigator.clipboard.writeText(json);
-    alert('✅ クリップボードにコピーしました！');
+    alert("✅ クリップボードにコピーしました！");
   } catch (err) {
-    alert('❌ コピーに失敗しました');
+    alert("❌ コピーに失敗しました");
   }
 }
 
 // 保存済みビルドの切り替え
 function toggleSavedBuilds() {
-  const container = document.getElementById('saved-builds-container');
-  const isVisible = container.style.display !== 'none';
+  const container = document.getElementById("saved-builds-container");
+  const isVisible = container.style.display !== "none";
 
   if (isVisible) {
-    container.style.display = 'none';
+    container.style.display = "none";
   } else {
     renderSavedBuilds();
-    container.style.display = 'block';
+    container.style.display = "block";
   }
 }
 
 // 保存済みビルドのレンダリング
 function renderSavedBuilds() {
-  const container = document.getElementById('saved-builds-list');
+  const container = document.getElementById("saved-builds-list");
 
   if (savedBuilds.length === 0) {
     container.innerHTML =
@@ -426,7 +463,7 @@ function renderSavedBuilds() {
     return;
   }
 
-  let html = '';
+  let html = "";
   savedBuilds.forEach((build) => {
     html += `
       <div class="saved-build-card">
@@ -440,7 +477,7 @@ function renderSavedBuilds() {
         <div class="saved-build-info">
           アイテム数: ${build.items.length} | 作成日: ${new Date(
       build.createdAt
-    ).toLocaleDateString('ja-JP')}
+    ).toLocaleDateString("ja-JP")}
         </div>
       </div>
     `;
@@ -455,22 +492,22 @@ function loadBuild(buildId) {
   if (!build) return;
 
   currentBuild = { ...build };
-  document.getElementById('build-name').value = build.name;
+  document.getElementById("build-name").value = build.name;
 
   updateBuildDisplay();
   updateBuildItemsCount();
   filterItems();
 
-  document.getElementById('saved-builds-container').style.display = 'none';
-  alert('✅ ビルドを読み込みました！');
+  document.getElementById("saved-builds-container").style.display = "none";
+  alert("✅ ビルドを読み込みました！");
 }
 
 // ビルドの削除
 function deleteBuild(buildId) {
-  if (!confirm('このビルドを削除しますか？')) return;
+  if (!confirm("このビルドを削除しますか？")) return;
 
   savedBuilds = savedBuilds.filter((b) => b.id !== buildId);
-  localStorage.setItem('itemBuilds', JSON.stringify(savedBuilds));
+  localStorage.setItem("itemBuilds", JSON.stringify(savedBuilds));
 
   updateSavedBuildsCount();
   renderSavedBuilds();
@@ -478,12 +515,14 @@ function deleteBuild(buildId) {
 
 // ビルドアイテム数の更新
 function updateBuildItemsCount() {
-  document.getElementById('build-items-count').textContent = currentBuild.items.length;
+  document.getElementById("build-items-count").textContent =
+    currentBuild.items.length;
 }
 
 // 保存済みビルド数の更新
 function updateSavedBuildsCount() {
-  document.getElementById('saved-builds-count').textContent = savedBuilds.length;
+  document.getElementById("saved-builds-count").textContent =
+    savedBuilds.length;
 }
 
 // アイテム詳細表示
@@ -493,22 +532,24 @@ function showItemDetail(itemId) {
 
   let body = `
     <p><strong>価格:</strong> ${item.gold.total}G (売却: ${item.gold.sell}G)</p>
-    ${item.plaintext ? `<p><strong>説明:</strong> ${item.plaintext}</p>` : ''}
+    ${item.plaintext ? `<p><strong>説明:</strong> ${item.plaintext}</p>` : ""}
     <br>
     <p><strong>効果:</strong></p>
-    <p>${item.description.replace(/<[^>]*>/g, '')}</p>
+    <p>${item.description.replace(/<[^>]*>/g, "")}</p>
   `;
 
   if (item.tags && item.tags.length > 0) {
-    body += `<br><p><strong>タグ:</strong> ${item.tags.join(', ')}</p>`;
+    body += `<br><p><strong>タグ:</strong> ${item.tags.join(", ")}</p>`;
   }
 
   if (item.from && item.from.length > 0) {
-    body += `<br><p><strong>作成素材:</strong> ${item.from.join(', ')}</p>`;
+    body += `<br><p><strong>作成素材:</strong> ${item.from.join(", ")}</p>`;
   }
 
   if (item.into && item.into.length > 0) {
-    body += `<br><p><strong>アップグレード先:</strong> ${item.into.join(', ')}</p>`;
+    body += `<br><p><strong>アップグレード先:</strong> ${item.into.join(
+      ", "
+    )}</p>`;
   }
 
   showModal(item.name, body);

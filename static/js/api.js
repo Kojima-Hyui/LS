@@ -1,45 +1,50 @@
 // API.js - Riot API / Data Dragon API呼び出し
 
-const DDRAGON_BASE = 'https://ddragon.leagueoflegends.com/cdn';
-let currentVersion = '14.1.1'; // デフォルトバージョン
+const DDRAGON_BASE = "https://ddragon.leagueoflegends.com/cdn";
+let currentVersion = "14.1.1"; // デフォルトバージョン
 
 // 最新バージョンを取得
 async function fetchLatestVersion() {
   try {
-    const response = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+    const response = await fetch(
+      "https://ddragon.leagueoflegends.com/api/versions.json"
+    );
     const versions = await response.json();
     currentVersion = versions[0];
     return currentVersion;
   } catch (error) {
-    console.error('バージョン取得エラー:', error);
+    console.error("バージョン取得エラー:", error);
     return currentVersion;
   }
 }
 
 // 戦績取得
 async function fetchMatchHistory() {
-  const riotId = document.getElementById('game-riot-id').value.trim();
-  const loadingEl = document.getElementById('match-loading');
-  const errorEl = document.getElementById('match-error');
-  const resultEl = document.getElementById('match-result');
+  const riotId = document.getElementById("game-riot-id").value.trim();
+  const loadingEl = document.getElementById("match-loading");
+  const errorEl = document.getElementById("match-error");
+  const resultEl = document.getElementById("match-result");
 
-  if (!riotId || !riotId.includes('#')) {
-    errorEl.textContent = '⚠️ Riot IDを「ゲーム名#タグライン」形式で入力してください';
-    errorEl.style.display = 'block';
-    loadingEl.style.display = 'none';
-    resultEl.style.display = 'none';
+  if (!riotId || !riotId.includes("#")) {
+    errorEl.textContent =
+      "⚠️ Riot IDを「ゲーム名#タグライン」形式で入力してください";
+    errorEl.style.display = "block";
+    loadingEl.style.display = "none";
+    resultEl.style.display = "none";
     return;
   }
 
-  loadingEl.style.display = 'block';
-  errorEl.style.display = 'none';
-  resultEl.style.display = 'none';
+  loadingEl.style.display = "block";
+  errorEl.style.display = "none";
+  resultEl.style.display = "none";
 
-  const [gameName, tagLine] = riotId.split('#');
+  const [gameName, tagLine] = riotId.split("#");
 
   try {
     const response = await fetch(
-      `/api/match_history?game_name=${encodeURIComponent(gameName)}&tag_line=${encodeURIComponent(tagLine)}`
+      `/api/match_history?game_name=${encodeURIComponent(
+        gameName
+      )}&tag_line=${encodeURIComponent(tagLine)}`
     );
 
     if (!response.ok) {
@@ -47,30 +52,30 @@ async function fetchMatchHistory() {
     }
 
     const data = await response.json();
-    loadingEl.style.display = 'none';
+    loadingEl.style.display = "none";
 
     if (data.error) {
       errorEl.textContent = `❌ ${data.error}`;
-      errorEl.style.display = 'block';
+      errorEl.style.display = "block";
       return;
     }
 
     filteredMatches = data.matches || [];
     displayMatchHistory(filteredMatches);
-    resultEl.style.display = 'block';
+    resultEl.style.display = "block";
   } catch (error) {
-    loadingEl.style.display = 'none';
+    loadingEl.style.display = "none";
     errorEl.textContent = `❌ エラーが発生しました: ${error.message}`;
-    errorEl.style.display = 'block';
+    errorEl.style.display = "block";
   }
 }
 
 // 戦績表示
 function displayMatchHistory(matches) {
-  const resultEl = document.getElementById('match-result');
+  const resultEl = document.getElementById("match-result");
 
   if (!matches || matches.length === 0) {
-    resultEl.innerHTML = '<p>試合データが見つかりませんでした。</p>';
+    resultEl.innerHTML = "<p>試合データが見つかりませんでした。</p>";
     return;
   }
 
@@ -78,8 +83,8 @@ function displayMatchHistory(matches) {
 
   matches.forEach((match, index) => {
     const win = match.win;
-    const winClass = win ? 'team-blue' : 'team-red';
-    const winText = win ? '🏆 勝利' : '💀 敗北';
+    const winClass = win ? "team-blue" : "team-red";
+    const winText = win ? "🏆 勝利" : "💀 敗北";
 
     html += `
       <div class="team ${winClass}" style="margin: 15px 0;">
@@ -87,7 +92,9 @@ function displayMatchHistory(matches) {
         <div class="player">
           <strong>${match.champion}</strong><br>
           <span style="color: #9ae6b4;">KDA: ${match.kda}</span><br>
-          <span>CS: ${match.cs} | ダメージ: ${match.damage.toLocaleString()}</span>
+          <span>CS: ${
+            match.cs
+          } | ダメージ: ${match.damage.toLocaleString()}</span>
         </div>
       </div>
     `;
@@ -102,9 +109,9 @@ let filteredMatches = [];
 function applyFilters() {
   if (!filteredMatches.length) return;
 
-  const mode = document.getElementById('filter-mode').value;
-  const champion = document.getElementById('filter-champion').value;
-  const result = document.getElementById('filter-result').value;
+  const mode = document.getElementById("filter-mode").value;
+  const champion = document.getElementById("filter-champion").value;
+  const result = document.getElementById("filter-result").value;
 
   let filtered = [...filteredMatches];
 
@@ -116,9 +123,9 @@ function applyFilters() {
     filtered = filtered.filter((m) => m.champion === champion);
   }
 
-  if (result === 'win') {
+  if (result === "win") {
     filtered = filtered.filter((m) => m.win === true);
-  } else if (result === 'loss') {
+  } else if (result === "loss") {
     filtered = filtered.filter((m) => m.win === false);
   }
 
@@ -127,28 +134,31 @@ function applyFilters() {
 
 // 現在の試合情報取得
 async function fetchCurrentGame() {
-  const riotId = document.getElementById('current-game-riot-id').value.trim();
-  const loadingEl = document.getElementById('current-loading');
-  const errorEl = document.getElementById('current-error');
-  const resultEl = document.getElementById('current-result');
+  const riotId = document.getElementById("current-game-riot-id").value.trim();
+  const loadingEl = document.getElementById("current-loading");
+  const errorEl = document.getElementById("current-error");
+  const resultEl = document.getElementById("current-result");
 
-  if (!riotId || !riotId.includes('#')) {
-    errorEl.textContent = '⚠️ Riot IDを「ゲーム名#タグライン」形式で入力してください';
-    errorEl.style.display = 'block';
-    loadingEl.style.display = 'none';
-    resultEl.style.display = 'none';
+  if (!riotId || !riotId.includes("#")) {
+    errorEl.textContent =
+      "⚠️ Riot IDを「ゲーム名#タグライン」形式で入力してください";
+    errorEl.style.display = "block";
+    loadingEl.style.display = "none";
+    resultEl.style.display = "none";
     return;
   }
 
-  loadingEl.style.display = 'block';
-  errorEl.style.display = 'none';
-  resultEl.style.display = 'none';
+  loadingEl.style.display = "block";
+  errorEl.style.display = "none";
+  resultEl.style.display = "none";
 
-  const [gameName, tagLine] = riotId.split('#');
+  const [gameName, tagLine] = riotId.split("#");
 
   try {
     const response = await fetch(
-      `/api/current_game?game_name=${encodeURIComponent(gameName)}&tag_line=${encodeURIComponent(tagLine)}`
+      `/api/current_game?game_name=${encodeURIComponent(
+        gameName
+      )}&tag_line=${encodeURIComponent(tagLine)}`
     );
 
     if (!response.ok) {
@@ -156,26 +166,26 @@ async function fetchCurrentGame() {
     }
 
     const data = await response.json();
-    loadingEl.style.display = 'none';
+    loadingEl.style.display = "none";
 
     if (data.error) {
       errorEl.textContent = `❌ ${data.error}`;
-      errorEl.style.display = 'block';
+      errorEl.style.display = "block";
       return;
     }
 
     displayCurrentGame(data);
-    resultEl.style.display = 'block';
+    resultEl.style.display = "block";
   } catch (error) {
-    loadingEl.style.display = 'none';
+    loadingEl.style.display = "none";
     errorEl.textContent = `❌ エラーが発生しました: ${error.message}`;
-    errorEl.style.display = 'block';
+    errorEl.style.display = "block";
   }
 }
 
 // 現在の試合表示
 function displayCurrentGame(data) {
-  const resultEl = document.getElementById('current-result');
+  const resultEl = document.getElementById("current-result");
   const blueTeam = data.participants.filter((p) => p.teamId === 100);
   const redTeam = data.participants.filter((p) => p.teamId === 200);
 
@@ -208,37 +218,40 @@ function displayCurrentGame(data) {
 
 // チーム組み分け
 async function balanceTeams() {
-  const playersText = document.getElementById('balance-players').value.trim();
-  const loadingEl = document.getElementById('balance-loading');
-  const errorEl = document.getElementById('balance-error');
-  const resultEl = document.getElementById('balance-result');
+  const playersText = document.getElementById("balance-players").value.trim();
+  const loadingEl = document.getElementById("balance-loading");
+  const errorEl = document.getElementById("balance-error");
+  const resultEl = document.getElementById("balance-result");
 
   if (!playersText) {
-    errorEl.textContent = '⚠️ プレイヤーリストを入力してください';
-    errorEl.style.display = 'block';
-    loadingEl.style.display = 'none';
-    resultEl.style.display = 'none';
+    errorEl.textContent = "⚠️ プレイヤーリストを入力してください";
+    errorEl.style.display = "block";
+    loadingEl.style.display = "none";
+    resultEl.style.display = "none";
     return;
   }
 
-  const players = playersText.split('\n').map((p) => p.trim()).filter((p) => p);
+  const players = playersText
+    .split("\n")
+    .map((p) => p.trim())
+    .filter((p) => p);
 
   if (players.length < 10) {
-    errorEl.textContent = '⚠️ 10人のプレイヤーを入力してください';
-    errorEl.style.display = 'block';
-    loadingEl.style.display = 'none';
-    resultEl.style.display = 'none';
+    errorEl.textContent = "⚠️ 10人のプレイヤーを入力してください";
+    errorEl.style.display = "block";
+    loadingEl.style.display = "none";
+    resultEl.style.display = "none";
     return;
   }
 
-  loadingEl.style.display = 'block';
-  errorEl.style.display = 'none';
-  resultEl.style.display = 'none';
+  loadingEl.style.display = "block";
+  errorEl.style.display = "none";
+  resultEl.style.display = "none";
 
   try {
-    const response = await fetch('/api/balance_teams', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const response = await fetch("/api/balance_teams", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ players: players.slice(0, 10) }),
     });
 
@@ -247,26 +260,26 @@ async function balanceTeams() {
     }
 
     const data = await response.json();
-    loadingEl.style.display = 'none';
+    loadingEl.style.display = "none";
 
     if (data.error) {
       errorEl.textContent = `❌ ${data.error}`;
-      errorEl.style.display = 'block';
+      errorEl.style.display = "block";
       return;
     }
 
     displayBalancedTeams(data);
-    resultEl.style.display = 'block';
+    resultEl.style.display = "block";
   } catch (error) {
-    loadingEl.style.display = 'none';
+    loadingEl.style.display = "none";
     errorEl.textContent = `❌ エラーが発生しました: ${error.message}`;
-    errorEl.style.display = 'block';
+    errorEl.style.display = "block";
   }
 }
 
 // 組み分け結果表示
 function displayBalancedTeams(data) {
-  const resultEl = document.getElementById('balance-result');
+  const resultEl = document.getElementById("balance-result");
 
   let html = `<h3>⚖️ チーム組み分け結果</h3>`;
   html += `<p>平均スコア差: ${data.score_diff}</p>`;

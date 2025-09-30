@@ -7,14 +7,21 @@ let selectedChampionLanes = [];
 let selectedChampionDifficulties = [];
 
 // ロールとレーンのマスターデータ
-const CHAMPION_ROLES = ['Fighter', 'Tank', 'Mage', 'Assassin', 'Support', 'Marksman'];
-const CHAMPION_LANES = ['Top', 'Jungle', 'Mid', 'Bot', 'Support'];
+const CHAMPION_ROLES = [
+  "Fighter",
+  "Tank",
+  "Mage",
+  "Assassin",
+  "Support",
+  "Marksman",
+];
+const CHAMPION_LANES = ["Top", "Jungle", "Mid", "Bot", "Support"];
 const DIFFICULTIES = [
-  { value: 1, label: '初心者' },
-  { value: 2, label: '初級' },
-  { value: 3, label: '中級' },
-  { value: 4, label: '上級' },
-  { value: 5, label: '専門' },
+  { value: 1, label: "初心者" },
+  { value: 2, label: "初級" },
+  { value: 3, label: "中級" },
+  { value: 4, label: "上級" },
+  { value: 5, label: "専門" },
 ];
 
 // チャンピオン一覧読み込み
@@ -25,10 +32,12 @@ async function loadChampionsList() {
     );
     const championData = await response.json();
 
-    allChampionsData = Object.entries(championData.data).map(([id, champion]) => ({
-      id,
-      ...champion,
-    }));
+    allChampionsData = Object.entries(championData.data).map(
+      ([id, champion]) => ({
+        id,
+        ...champion,
+      })
+    );
 
     // フィルターUIの初期化
     renderChampionRolesFilter();
@@ -38,31 +47,38 @@ async function loadChampionsList() {
     displayChampions(allChampionsData);
 
     // 検索機能
-    document.getElementById('champion-search').addEventListener('input', filterChampions);
-    document.getElementById('champion-sort').addEventListener('change', filterChampions);
+    document
+      .getElementById("champion-search")
+      .addEventListener("input", filterChampions);
+    document
+      .getElementById("champion-sort")
+      .addEventListener("change", filterChampions);
 
-    document.getElementById('champions-loading').style.display = 'none';
-    document.getElementById('champions-grid').style.display = 'grid';
+    document.getElementById("champions-loading").style.display = "none";
+    document.getElementById("champions-grid").style.display = "block";
 
-    console.log(`✅ ${allChampionsData.length}体のチャンピオンを読み込みました`);
+    console.log(
+      `✅ ${allChampionsData.length}体のチャンピオンを読み込みました`
+    );
   } catch (error) {
-    console.error('❌ チャンピオンデータの読み込みに失敗:', error);
-    document.getElementById('champions-loading').style.display = 'none';
-    document.getElementById('champions-error').textContent = 'チャンピオンデータの読み込みに失敗しました';
-    document.getElementById('champions-error').style.display = 'block';
+    console.error("❌ チャンピオンデータの読み込みに失敗:", error);
+    document.getElementById("champions-loading").style.display = "none";
+    document.getElementById("champions-error").textContent =
+      "チャンピオンデータの読み込みに失敗しました";
+    document.getElementById("champions-error").style.display = "block";
   }
 }
 
 // ロールフィルターのレンダリング
 function renderChampionRolesFilter() {
-  const container = document.getElementById('champion-roles-filter');
-  let html = '';
+  const container = document.getElementById("champion-roles-filter");
+  let html = "";
 
   CHAMPION_ROLES.forEach((role) => {
     const isActive = selectedChampionRoles.includes(role);
     html += `
       <button 
-        class="tag-button ${isActive ? 'active' : ''}"
+        class="tag-button ${isActive ? "active" : ""}"
         onclick="toggleChampionRole('${role}')"
       >
         ${role}
@@ -75,14 +91,14 @@ function renderChampionRolesFilter() {
 
 // レーンフィルターのレンダリング
 function renderChampionLanesFilter() {
-  const container = document.getElementById('champion-lanes-filter');
-  let html = '';
+  const container = document.getElementById("champion-lanes-filter");
+  let html = "";
 
   CHAMPION_LANES.forEach((lane) => {
     const isActive = selectedChampionLanes.includes(lane);
     html += `
       <button 
-        class="tag-button ${isActive ? 'active' : ''}"
+        class="tag-button ${isActive ? "active" : ""}"
         onclick="toggleChampionLane('${lane}')"
       >
         ${lane}
@@ -95,14 +111,14 @@ function renderChampionLanesFilter() {
 
 // 難易度フィルターのレンダリング
 function renderChampionDifficultyFilter() {
-  const container = document.getElementById('champion-difficulty-filter');
-  let html = '';
+  const container = document.getElementById("champion-difficulty-filter");
+  let html = "";
 
   DIFFICULTIES.forEach(({ value, label }) => {
     const isActive = selectedChampionDifficulties.includes(value);
     html += `
       <button 
-        class="tag-button ${isActive ? 'active' : ''}"
+        class="tag-button ${isActive ? "active" : ""}"
         onclick="toggleChampionDifficulty(${value})"
       >
         ${label}
@@ -151,8 +167,8 @@ function toggleChampionDifficulty(difficulty) {
 
 // チャンピオンフィルターのクリア
 function clearChampionFilters() {
-  document.getElementById('champion-search').value = '';
-  document.getElementById('champion-sort').value = 'name-asc';
+  document.getElementById("champion-search").value = "";
+  document.getElementById("champion-sort").value = "name-asc";
 
   // すべてのロール・レーン・難易度を非選択にする
   selectedChampionRoles = [];
@@ -160,24 +176,32 @@ function clearChampionFilters() {
   selectedChampionDifficulties = [];
 
   // ロールボタンの選択状態をクリア
-  const roleButtons = document.querySelectorAll('#champion-roles-filter .tag-button');
-  roleButtons.forEach((btn) => btn.classList.remove('active'));
+  const roleButtons = document.querySelectorAll(
+    "#champion-roles-filter .tag-button"
+  );
+  roleButtons.forEach((btn) => btn.classList.remove("active"));
 
   // レーンボタンの選択状態をクリア
-  const laneButtons = document.querySelectorAll('#champion-lanes-filter .tag-button');
-  laneButtons.forEach((btn) => btn.classList.remove('active'));
+  const laneButtons = document.querySelectorAll(
+    "#champion-lanes-filter .tag-button"
+  );
+  laneButtons.forEach((btn) => btn.classList.remove("active"));
 
   // 難易度ボタンの選択状態をクリア
-  const difficultyButtons = document.querySelectorAll('#champion-difficulty-filter .tag-button');
-  difficultyButtons.forEach((btn) => btn.classList.remove('active'));
+  const difficultyButtons = document.querySelectorAll(
+    "#champion-difficulty-filter .tag-button"
+  );
+  difficultyButtons.forEach((btn) => btn.classList.remove("active"));
 
   filterChampions();
 }
 
 // チャンピオンフィルター
 function filterChampions() {
-  const searchTerm = document.getElementById('champion-search').value.toLowerCase();
-  const sortBy = document.getElementById('champion-sort').value;
+  const searchTerm = document
+    .getElementById("champion-search")
+    .value.toLowerCase();
+  const sortBy = document.getElementById("champion-sort").value;
 
   let filtered = allChampionsData.filter((champion) => {
     // 検索テキストマッチング
@@ -190,7 +214,9 @@ function filterChampions() {
     // ロールマッチング
     const matchesRoles =
       selectedChampionRoles.length === 0 ||
-      selectedChampionRoles.some((role) => champion.tags && champion.tags.includes(role));
+      selectedChampionRoles.some(
+        (role) => champion.tags && champion.tags.includes(role)
+      );
 
     // 難易度マッチング
     const matchesDifficulty =
@@ -206,11 +232,11 @@ function filterChampions() {
   // ソート
   filtered.sort((a, b) => {
     switch (sortBy) {
-      case 'name-asc':
+      case "name-asc":
         return a.name.localeCompare(b.name);
-      case 'difficulty-asc':
+      case "difficulty-asc":
         return a.info.difficulty - b.info.difficulty;
-      case 'difficulty-desc':
+      case "difficulty-desc":
         return b.info.difficulty - a.info.difficulty;
       default:
         return 0;
@@ -218,17 +244,17 @@ function filterChampions() {
   });
 
   displayChampions(filtered);
-  document.getElementById('champions-count').textContent = filtered.length;
+  document.getElementById("champions-count").textContent = filtered.length;
 }
 
 // チャンピオン表示
 function displayChampions(champions) {
-  const container = document.getElementById('champions-grid');
-  let html = '';
+  const container = document.getElementById("champions-grid");
+  let html = "";
 
   champions.forEach((champion) => {
     const imgUrl = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${champion.id}.png`;
-    const difficulty = '★'.repeat(champion.info.difficulty);
+    const difficulty = "★".repeat(champion.info.difficulty);
 
     html += `
       <div class="champion-card" onclick="showChampionDetail('${champion.id}')">
@@ -257,8 +283,8 @@ async function showChampionDetail(championId) {
       <p><strong>${champion.title}</strong></p>
       <p>${champion.lore}</p>
       <br>
-      <p><strong>タイプ:</strong> ${champion.tags.join(', ')}</p>
-      <p><strong>難易度:</strong> ${'★'.repeat(champion.info.difficulty)}</p>
+      <p><strong>タイプ:</strong> ${champion.tags.join(", ")}</p>
+      <p><strong>難易度:</strong> ${"★".repeat(champion.info.difficulty)}</p>
       <br>
       <h3>スキル</h3>
     `;
@@ -275,14 +301,16 @@ async function showChampionDetail(championId) {
       body += `
         <p><strong>${index + 1}. ${spell.name}</strong></p>
         <p>${cleanLoLText(spell.description)}</p>
-        <p><em>クールダウン: ${spell.cooldownBurn}秒 | コスト: ${spell.costBurn}</em></p>
+        <p><em>クールダウン: ${spell.cooldownBurn}秒 | コスト: ${
+        spell.costBurn
+      }</em></p>
         <br>
       `;
     });
 
     showModal(champion.name, body);
   } catch (error) {
-    console.error('チャンピオン詳細の取得に失敗:', error);
-    alert('チャンピオン詳細の取得に失敗しました');
+    console.error("チャンピオン詳細の取得に失敗:", error);
+    alert("チャンピオン詳細の取得に失敗しました");
   }
 }
