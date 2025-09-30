@@ -575,17 +575,12 @@
           </div>
 
           <div class="input-group">
-            <label>🎮 ゲーム名</label>
+            <label>🎮 Riot ID（ゲーム名#タグライン）</label>
             <input
               type="text"
-              id="history-game-name"
-              placeholder="例: Hide on Bush"
+              id="history-riot-id"
+              placeholder="例: Hide on Bush#KR1"
             />
-          </div>
-
-          <div class="input-group">
-            <label>🏷️ タグライン</label>
-            <input type="text" id="history-tag-line" placeholder="例: KR1" />
           </div>
 
           <div class="input-group">
@@ -655,17 +650,12 @@
           </div>
 
           <div class="input-group">
-            <label>🎮 ゲーム名</label>
+            <label>🎮 Riot ID（ゲーム名#タグライン）</label>
             <input
               type="text"
-              id="game-game-name"
-              placeholder="例: Hide on Bush"
+              id="game-riot-id"
+              placeholder="例: Hide on Bush#KR1"
             />
-          </div>
-
-          <div class="input-group">
-            <label>🏷️ タグライン</label>
-            <input type="text" id="game-tag-line" placeholder="例: KR1" />
           </div>
 
           <button onclick="getCurrentGame()">🔍 試合情報を取得</button>
@@ -781,17 +771,39 @@
         document.getElementById(tabName).classList.add("active");
       }
 
+      // Riot IDをパースする関数（ゲーム名#タグライン → {gameName, tagLine}）
+      function parseRiotId(riotId) {
+        const trimmed = riotId.trim();
+        
+        // #の個数を確認
+        const hashCount = (trimmed.match(/#/g) || []).length;
+        
+        if (hashCount === 0) {
+          throw new Error("Riot IDの形式が正しくありません。「ゲーム名#タグライン」の形式で入力してください（例: Hide on Bush#KR1）");
+        }
+        
+        if (hashCount > 1) {
+          throw new Error("Riot IDに#が複数含まれています。「ゲーム名#タグライン」の形式で入力してください");
+        }
+        
+        // #で分割
+        const parts = trimmed.split('#');
+        const gameName = parts[0].trim();
+        const tagLine = parts[1].trim();
+        
+        if (!gameName || !tagLine) {
+          throw new Error("ゲーム名またはタグラインが空です。正しい形式で入力してください（例: Hide on Bush#KR1）");
+        }
+        
+        return { gameName, tagLine };
+      }
+
       async function getMatchHistory() {
-        const gameName = document
-          .getElementById("history-game-name")
-          .value.trim();
-        const tagLine = document
-          .getElementById("history-tag-line")
-          .value.trim();
+        const riotId = document.getElementById("history-riot-id").value.trim();
         const count = document.getElementById("history-count").value;
 
-        if (!gameName || !tagLine) {
-          showError("history", "ゲーム名とタグラインを入力してください");
+        if (!riotId) {
+          showError("history", "Riot IDを入力してください（例: Hide on Bush#KR1）");
           return;
         }
 
@@ -800,6 +812,9 @@
         hideResult("history");
 
         try {
+          // Riot IDをパース
+          const { gameName, tagLine } = parseRiotId(riotId);
+          
           const response = await fetch("/api/match_history", {
             method: "POST",
             headers: {
@@ -949,11 +964,10 @@
       }
 
       async function getCurrentGame() {
-        const gameName = document.getElementById("game-game-name").value.trim();
-        const tagLine = document.getElementById("game-tag-line").value.trim();
+        const riotId = document.getElementById("game-riot-id").value.trim();
 
-        if (!gameName || !tagLine) {
-          showError("game", "ゲーム名とタグラインを入力してください");
+        if (!riotId) {
+          showError("game", "Riot IDを入力してください（例: Hide on Bush#KR1）");
           return;
         }
 
@@ -962,6 +976,9 @@
         hideResult("game");
 
         try {
+          // Riot IDをパース
+          const { gameName, tagLine } = parseRiotId(riotId);
+          
           const response = await fetch("/api/current_game", {
             method: "POST",
             headers: {
