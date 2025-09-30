@@ -20,10 +20,36 @@ async function loadItemsList() {
     );
     const itemData = await response.json();
 
-    allItems = Object.entries(itemData.data).map(([id, item]) => ({
+    // アイテムデータを取得し、重複を除外
+    const itemsArray = Object.entries(itemData.data).map(([id, item]) => ({
       id,
       ...item,
     }));
+
+    // 同名アイテムの重複を除外（6桁IDのものを優先的に除外）
+    const itemsByName = new Map();
+    itemsArray.forEach((item) => {
+      const existingItem = itemsByName.get(item.name);
+      if (!existingItem) {
+        // 新しいアイテム名の場合は追加
+        itemsByName.set(item.name, item);
+      } else {
+        // 既存のアイテムがある場合、IDが短い方（より一般的）を優先
+        // 6桁IDは特殊バージョンなので除外
+        const existingIdLength = existingItem.id.length;
+        const newIdLength = item.id.length;
+        
+        if (newIdLength < existingIdLength) {
+          // 新しいIDの方が短い場合は置き換え
+          itemsByName.set(item.name, item);
+        }
+        // 既存のIDの方が短い場合は何もしない（既存を保持）
+      }
+    });
+
+    allItems = Array.from(itemsByName.values());
+
+    console.log(`🔍 重複除外前: ${itemsArray.length}個 → 除外後: ${allItems.length}個`);
 
     // タグの収集
     const tagsSet = new Set();
@@ -240,6 +266,11 @@ function addItemToBuild(itemId, blockType = "Core") {
   updateBuildDisplay();
   updateBuildItemsCount();
   filterItems(); // 表示を更新
+  
+  // 初めてアイテムを追加した場合、ビルドパネルを開く
+  if (currentBuild.items.length === 1) {
+    document.getElementById("build-panel").classList.add("active");
+  }
 }
 
 // ビルドからアイテムを削除
@@ -315,7 +346,16 @@ function updateBuildDisplay() {
 // ビルドパネルの切り替え
 function toggleBuildPanel() {
   const panel = document.getElementById("build-panel");
-  panel.classList.toggle("active");
+  const isActive = panel.classList.contains("active");
+  
+  if (isActive) {
+    panel.classList.remove("active");
+  } else {
+    // 保存済みビルドパネルを閉じる
+    document.getElementById("saved-builds-container").style.display = "none";
+    // ビルドパネルを開く
+    panel.classList.add("active");
+  }
 }
 
 // ビルドのクリア
@@ -443,11 +483,15 @@ async function copyBuildToClipboard() {
 // 保存済みビルドの切り替え
 function toggleSavedBuilds() {
   const container = document.getElementById("saved-builds-container");
+  const buildPanel = document.getElementById("build-panel");
   const isVisible = container.style.display !== "none";
 
   if (isVisible) {
     container.style.display = "none";
   } else {
+    // ビルドパネルを閉じる
+    buildPanel.classList.remove("active");
+    // 保存済みビルドを表示
     renderSavedBuilds();
     container.style.display = "block";
   }
@@ -465,6 +509,17 @@ function renderSavedBuilds() {
 
   let html = "";
   savedBuilds.forEach((build) => {
+    // ビルド内のアイテムサムネイル（最大6個表示）
+    const itemThumbnails = build.items
+      .slice(0, 6)
+      .map((item) => {
+        const imgUrl = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/item/${item.id}.png`;
+        return `<img src="${imgUrl}" alt="${item.item.name}" style="width: 32px; height: 32px; border-radius: 4px; margin: 2px;" title="${item.item.name}">`;
+      })
+      .join("");
+
+    const moreItems = build.items.length > 6 ? ` +${build.items.length - 6}個` : "";
+
     html += `
       <div class="saved-build-card">
         <div class="saved-build-header">
@@ -473,6 +528,10 @@ function renderSavedBuilds() {
             <button onclick="loadBuild('${build.id}')">📥 読込</button>
             <button onclick="deleteBuild('${build.id}')">🗑️ 削除</button>
           </div>
+        </div>
+        <div class="saved-build-items" style="display: flex; flex-wrap: wrap; margin: 8px 0;">
+          ${itemThumbnails}
+          ${moreItems ? `<span style="color: #a0aec0; font-size: 0.85rem; align-self: center; margin-left: 8px;">${moreItems}</span>` : ""}
         </div>
         <div class="saved-build-info">
           アイテム数: ${build.items.length} | 作成日: ${new Date(
@@ -498,7 +557,10 @@ function loadBuild(buildId) {
   updateBuildItemsCount();
   filterItems();
 
+  // 保存済みビルドパネルを閉じて、ビルドパネルを開く
   document.getElementById("saved-builds-container").style.display = "none";
+  document.getElementById("build-panel").classList.add("active");
+  
   alert("✅ ビルドを読み込みました！");
 }
 
