@@ -128,7 +128,8 @@ function displayMatchHistory(matches) {
       'URF': 'URF',
       'NEXUSBLITZ': 'Nexus Blitz',
       'ONEFORALL': 'ワンフォーオール',
-      'TUTORIAL': 'チュートリアル'
+      'TUTORIAL': 'チュートリアル',
+      'SWIFTPLAY': 'スイフト'
     };
     const modeName = modeNames[match.game_mode] || match.game_mode;
 
