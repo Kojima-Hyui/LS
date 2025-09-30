@@ -428,7 +428,7 @@ button:active {
 .rune-trees,
 #champions-grid,
 #items-grid {
-  display: grid;
+  display: grid !important;
   gap: 20px;
 }
 
@@ -437,11 +437,13 @@ button:active {
 }
 
 #champions-grid {
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important;
+  max-width: 100%;
 }
 
 #items-grid {
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+  max-width: 100%;
 }
 
 /* ルーンビルダー */
@@ -870,6 +872,9 @@ button:active {
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid rgba(120, 119, 198, 0.3);
+  width: 100%;
+  max-width: 150px;
+  min-width: 120px;
 }
 
 .champion-card:hover {
@@ -882,6 +887,7 @@ button:active {
   width: 100%;
   height: 120px;
   object-fit: cover;
+  display: block;
 }
 
 .champion-card-name {
@@ -901,6 +907,9 @@ button:active {
   transition: all 0.3s ease;
   border: 2px solid rgba(120, 119, 198, 0.3);
   text-align: center;
+  width: 100%;
+  max-width: 120px;
+  min-width: 100px;
 }
 
 .item-card:hover {
