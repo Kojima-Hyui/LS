@@ -609,6 +609,7 @@
                   <option value="">すべて</option>
                   <option value="CLASSIC">クラシック（ランク/ノーマル）</option>
                   <option value="ARAM">ARAM</option>
+                  <option value="CHERRY">Arena（アリーナ）</option>
                   <option value="URF">URF</option>
                   <option value="ULTBOOK">アルティメットスペルブック</option>
                   <option value="ONEFORALL">ワンフォーオール</option>
@@ -755,6 +756,7 @@
         const modeMap = {
           CLASSIC: "クラシック",
           ARAM: "ARAM",
+          CHERRY: "Arena",
           URF: "URF",
           ULTBOOK: "スペルブック",
           ONEFORALL: "ワンフォーオール",
@@ -897,8 +899,19 @@
           html += `<p style="color: #93c5fd; padding: 20px; text-align: center;">フィルター条件に一致する試合が見つかりませんでした。</p>`;
         } else {
           filteredMatches.forEach((match, index) => {
+            const isArena = match.game_mode.toUpperCase() === 'CHERRY';
             const winClass = match.stats.win ? "win" : "loss";
-            const result = match.stats.win ? "🟢 勝利" : "🔴 敗北";
+            
+            // Arenaモードの場合は順位表示、それ以外は勝敗表示
+            let result;
+            if (isArena) {
+              const placement = match.stats.placement || '?';
+              const placementEmoji = placement <= 2 ? '🥇' : placement <= 4 ? '🥈' : '🥉';
+              result = `${placementEmoji} ${placement}位`;
+            } else {
+              result = match.stats.win ? "🟢 勝利" : "🔴 敗北";
+            }
+            
             const championIcon = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${match.stats.champion}.png`;
             const gameMode = getGameModeDisplayName(match.game_mode);
 

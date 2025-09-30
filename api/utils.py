@@ -44,6 +44,7 @@ def get_player_stats(match_data: Dict, puuid: str) -> Optional[Dict]:
                     participant.get("assists", 0)
                 ),
                 "win": participant.get("win"),
+                "placement": participant.get("placement"),  # Arenaモードの順位
                 "position": participant.get("teamPosition"),
                 "cs": participant.get("totalMinionsKilled", 0) + participant.get("neutralMinionsKilled", 0),
                 "gold": participant.get("goldEarned"),
