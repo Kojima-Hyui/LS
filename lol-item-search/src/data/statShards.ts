@@ -32,9 +32,9 @@ export interface StatShard {
 }
 
 export const STAT_SHARDS_DATA: StatShardData = {
-  version: "15.18", // 2025年9月現在の最新パッチ
-  lastUpdated: "2025-09-26",
-  updateNotes: "2025年シーズン15最新パッチでの統計シャード値（体力固定値シャード修正）",
+  version: "15.24", // 2025年9月現在の最新パッチ
+  lastUpdated: "2025-09-30",
+  updateNotes: "シャード値の更新: アダプティブフォースの詳細化、スキルヘイスト/移動速度/行動妨害耐性追加",
   
   shards: [
     // ===================
@@ -59,7 +59,7 @@ export const STAT_SHARDS_DATA: StatShardData = {
       gameValue: 0.1
     },
     {
-      id: 5007,
+      id: 5008,
       name: {
         ja: "適応攻撃力",
         en: "Adaptive Force"
@@ -69,13 +69,37 @@ export const STAT_SHARDS_DATA: StatShardData = {
         en: "Increases Attack Damage or Ability Power (whichever is higher)"
       },
       value: {
-        ja: "+9 適応攻撃力",
-        en: "+9 Adaptive Force"
+        ja: "+5.4 ADまたは+9 AP（アダプティブ）",
+        en: "+5.4 AD or +9 AP (Adaptive)"
       },
       category: "offense",
       iconPath: "perk-images/StatMods/StatModsAdaptiveForceIcon.png",
-      gameValue: 9
+      gameValue: "5.4 AD / 9 AP"
     },
+    {
+      id: 5007,
+      name: {
+        ja: "スキルヘイスト",
+        en: "Ability Haste"
+      },
+      description: {
+        ja: "スキルのクールダウンを短縮します",
+        en: "Reduces cooldown of abilities"
+      },
+      value: {
+        ja: "+8 スキルヘイスト",
+        en: "+8 Ability Haste"
+      },
+      category: "offense",
+      iconPath: "perk-images/StatMods/StatModsCDRScalingIcon.png",
+      gameValue: 8
+    },
+
+    // ===================
+    // フレックス統計シャード (Flex)
+    // ===================
+    // フレックス統計シャード (Flex)
+    // ===================
     {
       id: 5008,
       name: {
@@ -87,53 +111,53 @@ export const STAT_SHARDS_DATA: StatShardData = {
         en: "Increases Attack Damage or Ability Power (whichever is higher)"
       },
       value: {
-        ja: "+9 適応攻撃力",
-        en: "+9 Adaptive Force"
+        ja: "+5.4 ADまたは+9 AP（アダプティブ）",
+        en: "+5.4 AD or +9 AP (Adaptive)"
       },
-      category: "offense",
+      category: "flex",
       iconPath: "perk-images/StatMods/StatModsAdaptiveForceIcon.png",
-      gameValue: 9
+      gameValue: "5.4 AD / 9 AP"
+    },
+    {
+      id: 5004,
+      name: {
+        ja: "移動速度",
+        en: "Movement Speed"
+      },
+      description: {
+        ja: "移動速度を増加させます",
+        en: "Increases movement speed"
+      },
+      value: {
+        ja: "+2% 移動速度",
+        en: "+2% Movement Speed"
+      },
+      category: "flex",
+      iconPath: "perk-images/StatMods/StatModsMovementSpeedIcon.png",
+      gameValue: 0.02
+    },
+    {
+      id: 5001,
+      name: {
+        ja: "体力 (スケール)",
+        en: "Health (Scaling)"
+      },
+      description: {
+        ja: "最大体力を増加させます（レベルに応じてスケール）",
+        en: "Increases maximum health (scales with level)"
+      },
+      value: {
+        ja: "+10～180 HP（Lv1-18で増加）",
+        en: "+10-180 HP (Lv1-18)"
+      },
+      category: "flex",
+      iconPath: "perk-images/StatMods/StatModsHealthScalingIcon.png",
+      gameValue: "10 + (10 * (level - 1))"
     },
 
     // ===================
-    // フレックス統計シャード (Flex)
+    // 防御系統計シャード (Defense)
     // ===================
-    {
-      id: 5002,
-      name: {
-        ja: "適応攻撃力",
-        en: "Adaptive Force"
-      },
-      description: {
-        ja: "攻撃力または魔力を増加させます（高い方に適用）",
-        en: "Increases Attack Damage or Ability Power (whichever is higher)"
-      },
-      value: {
-        ja: "+9 適応攻撃力",
-        en: "+9 Adaptive Force"
-      },
-      category: "flex",
-      iconPath: "perk-images/StatMods/StatModsAdaptiveForceIcon.png",
-      gameValue: 9
-    },
-    {
-      id: 5003,
-      name: {
-        ja: "適応攻撃力",
-        en: "Adaptive Force"
-      },
-      description: {
-        ja: "攻撃力または魔力を増加させます（高い方に適用）",
-        en: "Increases Attack Damage or Ability Power (whichever is higher)"
-      },
-      value: {
-        ja: "+9 適応攻撃力",
-        en: "+9 Adaptive Force"
-      },
-      category: "flex",
-      iconPath: "perk-images/StatMods/StatModsAdaptiveForceIcon.png",
-      gameValue: 9
-    },
     {
       id: 5001,
       name: {
@@ -145,37 +169,33 @@ export const STAT_SHARDS_DATA: StatShardData = {
         en: "Increases maximum health by a flat amount"
       },
       value: {
-        ja: "+65 体力",
-        en: "+65 Health"
-      },
-      category: "flex",
-      iconPath: "perk-images/StatMods/StatModsHealthIcon.png",
-      gameValue: 65
-    },
-
-    // ===================
-    // 防御系統計シャード (Defense)
-    // ===================
-    {
-      id: 5011,
-      name: {
-        ja: "体力",
-        en: "Health"
-      },
-      description: {
-        ja: "最大体力を固定値で増加させます",
-        en: "Increases maximum health by a flat amount"
-      },
-      value: {
-        ja: "+65 体力",
-        en: "+65 Health"
+        ja: "+65 HP",
+        en: "+65 HP"
       },
       category: "defense",
       iconPath: "perk-images/StatMods/StatModsHealthIcon.png",
       gameValue: 65
     },
     {
-      id: 5012,
+      id: 5002,
+      name: {
+        ja: "行動妨害耐性&Slow耐性",
+        en: "Tenacity and Slow Resist"
+      },
+      description: {
+        ja: "行動妨害効果とスロウの効果時間を短縮します",
+        en: "Reduces duration of disables and slows"
+      },
+      value: {
+        ja: "+10% 行動妨害耐性&Slow耐性",
+        en: "+10% Tenacity and Slow Resist"
+      },
+      category: "defense",
+      iconPath: "perk-images/StatMods/StatModsTenacityIcon.png",
+      gameValue: 0.1
+    },
+    {
+      id: 5003,
       name: {
         ja: "体力 (スケール)",
         en: "Health (Scaling)"
@@ -185,48 +205,12 @@ export const STAT_SHARDS_DATA: StatShardData = {
         en: "Increases maximum health (scales with level)"
       },
       value: {
-        ja: "+15-140 体力 (レベルに応じて)",
-        en: "+15-140 Health (based on level)"
+        ja: "+10～180 HP（Lv1-18で増加）",
+        en: "+10-180 HP (Lv1-18)"
       },
       category: "defense",
       iconPath: "perk-images/StatMods/StatModsHealthScalingIcon.png",
-      gameValue: "15 + (7.4 * (level - 1))"
-    },
-    {
-      id: 5013,
-      name: {
-        ja: "物理防御",
-        en: "Armor"
-      },
-      description: {
-        ja: "物理ダメージに対する防御力を増加させます",
-        en: "Increases defense against physical damage"
-      },
-      value: {
-        ja: "+6 物理防御",
-        en: "+6 Armor"
-      },
-      category: "defense",
-      iconPath: "perk-images/StatMods/StatModsArmorIcon.png",
-      gameValue: 6
-    },
-    {
-      id: 5014,
-      name: {
-        ja: "魔法防御",
-        en: "Magic Resistance"
-      },
-      description: {
-        ja: "魔法ダメージに対する防御力を増加させます",
-        en: "Increases defense against magic damage"
-      },
-      value: {
-        ja: "+8 魔法防御",
-        en: "+8 Magic Resistance"
-      },
-      category: "defense",
-      iconPath: "perk-images/StatMods/StatModsMagicResIcon.png",
-      gameValue: 8
+      gameValue: "10 + (10 * (level - 1))"
     }
   ]
 };
@@ -285,6 +269,13 @@ export function getStatShardsVersion(): {
 
 /*
 CHANGE LOG:
+- 2025-09-30 (v15.24): 統計シャード大幅更新
+  * アダプティブフォース: +9 → +5.4 ADまたは+9 AP に詳細化
+  * 攻撃シャード: スキルヘイスト +8 を追加
+  * フレックスシャード: 移動速度 +2% MS を追加
+  * フレックス/防御: 体力スケール +10～180 HP (Lv1-18) に変更
+  * 防御シャード: 行動妨害耐性&Slow耐性 +10% を追加
+  * 物理防御・魔法防御シャードを削除
 - 2025-09-26 (v15.18): 体力固定値シャード（+65体力）とスケール体力シャード（+15-140体力）を正しく分離
 - 2024-01-15 (v14.1): 初回データ作成（過去データ）
 */
