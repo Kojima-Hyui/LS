@@ -82,19 +82,20 @@ function displayMatchHistory(matches) {
   let html = `<h3>📊 試合履歴（${matches.length}試合）</h3>`;
 
   matches.forEach((match, index) => {
-    const win = match.win;
+    const stats = match.stats || {};
+    const win = stats.win;
     const winClass = win ? "team-blue" : "team-red";
     const winText = win ? "🏆 勝利" : "💀 敗北";
 
     html += `
       <div class="team ${winClass}" style="margin: 15px 0;">
-        <h4>${winText} - ${match.mode} (${match.duration})</h4>
+        <h4>${winText} - ${match.game_mode} (${match.game_duration})</h4>
         <div class="player">
-          <strong>${match.champion}</strong><br>
-          <span style="color: #9ae6b4;">KDA: ${match.kda}</span><br>
-          <span>CS: ${
-            match.cs
-          } | ダメージ: ${match.damage.toLocaleString()}</span>
+          <strong>${stats.champion || "不明"}</strong><br>
+          <span style="color: #9ae6b4;">KDA: ${stats.kills || 0}/${stats.deaths || 0}/${stats.assists || 0} (${stats.kda || 0})</span><br>
+          <span>CS: ${stats.cs || 0} | ダメージ: ${
+            stats.damage ? stats.damage.toLocaleString() : "N/A"
+          }</span>
         </div>
       </div>
     `;
@@ -116,17 +117,17 @@ function applyFilters() {
   let filtered = [...filteredMatches];
 
   if (mode) {
-    filtered = filtered.filter((m) => m.mode === mode);
+    filtered = filtered.filter((m) => m.game_mode === mode);
   }
 
   if (champion) {
-    filtered = filtered.filter((m) => m.champion === champion);
+    filtered = filtered.filter((m) => m.stats?.champion === champion);
   }
 
   if (result === "win") {
-    filtered = filtered.filter((m) => m.win === true);
+    filtered = filtered.filter((m) => m.stats?.win === true);
   } else if (result === "loss") {
-    filtered = filtered.filter((m) => m.win === false);
+    filtered = filtered.filter((m) => m.stats?.win === false);
   }
 
   displayMatchHistory(filtered);

@@ -11,8 +11,18 @@ function switchTab(tabName) {
   });
 
   // 指定されたタブとボタンを active にする
-  document.getElementById(tabName).classList.add("active");
-  event.target.classList.add("active");
+  const targetTab = document.getElementById(tabName);
+  if (targetTab) {
+    targetTab.classList.add("active");
+  }
+  
+  // ボタンも探してactiveにする
+  const targetButton = Array.from(document.querySelectorAll(".tab-button")).find(
+    (btn) => btn.getAttribute("onclick")?.includes(tabName)
+  );
+  if (targetButton) {
+    targetButton.classList.add("active");
+  }
 }
 
 // モーダル表示
