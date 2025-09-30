@@ -49,17 +49,18 @@
             rgba(255, 115, 230, 0.2) 0%,
             transparent 50%
           );
-        animation: gradientShift 15s ease infinite;
+        animation: gradient 20s ease infinite;
+        pointer-events: none;
         z-index: 0;
       }
 
-      @keyframes gradientShift {
+      @keyframes gradient {
         0%,
         100% {
           transform: translate(0, 0) rotate(0deg);
         }
         33% {
-          transform: translate(5%, -5%) rotate(120deg);
+          transform: translate(5%, 5%) rotate(120deg);
         }
         66% {
           transform: translate(-5%, 5%) rotate(240deg);
@@ -73,26 +74,29 @@
         z-index: 1;
       }
 
-      /* ヘッダー */
-      h1 {
+      .header {
         text-align: center;
-        background: linear-gradient(
-          135deg,
-          #667eea 0%,
-          #764ba2 50%,
-          #f093fb 100%
-        );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
         margin-bottom: 40px;
-        font-size: 3.5em;
-        font-weight: 900;
+        padding: 30px 20px;
+        background: rgba(15, 20, 45, 0.8);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(120, 119, 198, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+
+      h1 {
         font-family: "Barlow", sans-serif;
-        letter-spacing: 2px;
+        font-size: 3.5rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 15px;
         text-transform: uppercase;
-        text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
-        animation: glow 3s ease-in-out infinite;
+        letter-spacing: 3px;
+        animation: glow 2s ease-in-out infinite;
       }
 
       @keyframes glow {
@@ -101,78 +105,82 @@
           filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
         }
         50% {
-          filter: drop-shadow(0 0 20px rgba(246, 147, 251, 0.8));
+          filter: drop-shadow(0 0 20px rgba(240, 147, 251, 0.8));
         }
+      }
+
+      .subtitle {
+        font-size: 1.1rem;
+        color: #a0aec0;
+        font-weight: 400;
       }
 
       /* タブナビゲーション */
       .tabs {
         display: flex;
+        justify-content: center;
         gap: 15px;
         margin-bottom: 30px;
-        justify-content: center;
         flex-wrap: wrap;
       }
 
-      .tab {
-        padding: 15px 35px;
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(10px);
-        border: 2px solid rgba(102, 126, 234, 0.3);
-        border-radius: 15px;
-        cursor: pointer;
-        font-size: 1.1em;
+      .tab-button {
+        padding: 15px 30px;
+        font-size: 1rem;
         font-weight: 700;
-        color: #8b92bc;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: none;
+        background: rgba(30, 40, 70, 0.6);
+        color: #a0aec0;
+        cursor: pointer;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        border: 2px solid transparent;
         position: relative;
         overflow: hidden;
-        font-family: "Barlow", sans-serif;
-        letter-spacing: 1px;
       }
 
-      .tab::before {
+      .tab-button::before {
         content: "";
         position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(102, 126, 234, 0.2);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-      }
-
-      .tab:hover::before {
-        width: 300px;
-        height: 300px;
-      }
-
-      .tab:hover {
-        transform: translateY(-5px) scale(1.05);
-        border-color: #667eea;
-        color: #fff;
-        box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
-      }
-
-      .tab.active {
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
         background: linear-gradient(
-          135deg,
-          rgba(102, 126, 234, 0.3) 0%,
-          rgba(118, 75, 162, 0.3) 100%
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
         );
-        border-color: #f093fb;
-        color: #fff;
-        box-shadow: 0 10px 40px rgba(246, 147, 251, 0.5),
-          inset 0 0 20px rgba(102, 126, 234, 0.3);
-        transform: translateY(-3px);
+        transition: left 0.5s;
       }
 
-      /* タブコンテンツカード */
+      .tab-button:hover::before {
+        left: 100%;
+      }
+
+      .tab-button:hover {
+        background: rgba(40, 50, 90, 0.8);
+        border-color: rgba(102, 126, 234, 0.5);
+        transform: translateY(-2px);
+      }
+
+      .tab-button.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      /* タブコンテンツ */
       .tab-content {
         display: none;
         animation: fadeIn 0.5s ease;
+      }
+
+      .tab-content.active {
+        display: block;
       }
 
       @keyframes fadeIn {
@@ -186,382 +194,293 @@
         }
       }
 
-      .tab-content.active {
-        display: block;
-      }
-
       .content-card {
-        background: rgba(15, 21, 46, 0.7);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(102, 126, 234, 0.2);
-        border-radius: 25px;
-        padding: 40px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5),
-          inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        transition: all 0.3s ease;
+        background: rgba(20, 30, 60, 0.7);
+        border-radius: 20px;
+        padding: 30px;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(120, 119, 198, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        margin-bottom: 30px;
       }
 
-      .content-card:hover {
-        box-shadow: 0 25px 70px rgba(102, 126, 234, 0.3),
-          inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        border-color: rgba(102, 126, 234, 0.4);
+      .info-box {
+        background: rgba(88, 101, 242, 0.1);
+        border-left: 4px solid #5865f2;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: #cbd5e0;
+        margin-bottom: 25px;
+        line-height: 1.6;
       }
 
-      /* 入力グループ */
+      /* 入力フォーム */
       .input-group {
         margin-bottom: 25px;
       }
 
       label {
         display: block;
-        margin-bottom: 10px;
+        color: #e2e8f0;
         font-weight: 700;
-        color: #c9d1d9;
-        font-size: 1.05em;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-family: "Barlow", sans-serif;
+        margin-bottom: 10px;
+        font-size: 1rem;
       }
 
       input[type="text"],
       input[type="number"],
+      select,
       textarea {
         width: 100%;
-        padding: 15px 20px;
-        background: rgba(10, 14, 39, 0.6);
-        border: 2px solid rgba(102, 126, 234, 0.3);
-        border-radius: 12px;
-        font-size: 1.05em;
-        color: #fff;
+        padding: 12px 16px;
+        background: rgba(30, 40, 70, 0.6);
+        border: 2px solid rgba(120, 119, 198, 0.3);
+        border-radius: 10px;
+        color: #ffffff;
+        font-size: 1rem;
         transition: all 0.3s ease;
-        font-family: "Noto Sans JP", sans-serif;
-      }
-
-      input[type="text"]:focus,
-      input[type="number"]:focus,
-      textarea:focus {
-        outline: none;
-        border-color: #667eea;
-        background: rgba(10, 14, 39, 0.8);
-        box-shadow: 0 0 20px rgba(102, 126, 234, 0.3),
-          inset 0 0 10px rgba(102, 126, 234, 0.1);
-        transform: translateY(-2px);
-      }
-
-      input::placeholder,
-      textarea::placeholder {
-        color: #6b7280;
+        backdrop-filter: blur(5px);
       }
 
       textarea {
-        min-height: 200px;
-        font-family: "Courier New", monospace;
+        min-height: 150px;
+        font-family: "Noto Sans JP", sans-serif;
         resize: vertical;
       }
 
-      /* セレクトボックス */
-      select {
-        width: 100%;
-        padding: 15px 20px;
-        background: rgba(10, 14, 39, 0.6);
-        border: 2px solid rgba(102, 126, 234, 0.3);
-        border-radius: 12px;
-        font-size: 1.05em;
-        color: #fff;
-        transition: all 0.3s ease;
-        font-family: "Noto Sans JP", sans-serif;
-        cursor: pointer;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 15px center;
-        padding-right: 45px;
-      }
-
-      select:focus {
+      input:focus,
+      select:focus,
+      textarea:focus {
         outline: none;
         border-color: #667eea;
-        background-color: rgba(10, 14, 39, 0.8);
-        box-shadow: 0 0 20px rgba(102, 126, 234, 0.3),
-          inset 0 0 10px rgba(102, 126, 234, 0.1);
-        transform: translateY(-2px);
-      }
-
-      select:hover {
-        border-color: rgba(102, 126, 234, 0.5);
-      }
-
-      select option {
-        background: #0a0e27;
-        color: #fff;
-        padding: 10px;
-      }
-
-      /* フィルターセクション */
-      .filter-section {
-        background: rgba(10, 14, 39, 0.3);
-        border: 1px solid rgba(102, 126, 234, 0.2);
-        border-radius: 15px;
-        padding: 25px;
-        margin-bottom: 25px;
-      }
-
-      .filter-section h3 {
-        color: #f093fb;
-        margin-bottom: 20px;
-        font-family: "Barlow", sans-serif;
-        font-size: 1.3em;
-        letter-spacing: 1px;
-      }
-
-      .filter-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        background: rgba(40, 50, 90, 0.8);
       }
 
       /* ボタン */
       button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        padding: 16px 40px;
-        border-radius: 12px;
-        font-size: 1.15em;
+        padding: 14px 30px;
+        font-size: 1rem;
         font-weight: 700;
+        border: none;
+        border-radius: 10px;
         cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         position: relative;
         overflow: hidden;
-        font-family: "Barlow", sans-serif;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
       }
 
       button::before {
         content: "";
         position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.3),
-          transparent
-        );
-        transition: left 0.5s;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
       }
 
       button:hover::before {
-        left: 100%;
+        width: 300px;
+        height: 300px;
       }
 
       button:hover {
-        transform: translateY(-5px) scale(1.05);
-        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6),
-          0 0 30px rgba(246, 147, 251, 0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
       }
 
       button:active {
-        transform: translateY(-2px) scale(1.02);
+        transform: translateY(0);
       }
 
-      /* ローディング */
-      .loading {
-        display: none;
-        text-align: center;
-        padding: 30px;
-        color: #667eea;
-        font-size: 1.3em;
-        font-weight: 700;
-        animation: pulse 1.5s ease-in-out infinite;
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 0.6;
-          transform: scale(1);
-        }
-        50% {
-          opacity: 1;
-          transform: scale(1.05);
-        }
-      }
-
-      /* 結果エリア */
-      .result {
-        margin-top: 30px;
-        padding: 30px;
-        background: rgba(15, 21, 46, 0.5);
-        border: 1px solid rgba(102, 126, 234, 0.2);
-        border-radius: 20px;
-        display: none;
-        animation: slideUp 0.5s ease;
-      }
-
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .result h2,
-      .result h3 {
-        color: #f093fb;
-        margin-bottom: 20px;
-        font-family: "Barlow", sans-serif;
-        letter-spacing: 1px;
-      }
-
-      .result p {
-        color: #c9d1d9;
-        margin-bottom: 10px;
-        font-size: 1.05em;
-      }
-
-      /* 試合アイテム */
-      .match-item {
-        background: rgba(20, 27, 58, 0.8);
-        padding: 20px;
-        margin-bottom: 15px;
-        border-radius: 15px;
-        border-left: 5px solid #667eea;
-        transition: all 0.3s ease;
-        color: #c9d1d9;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-      }
-
-      .match-item:hover {
-        transform: translateX(10px);
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-      }
-
-      .match-item.win {
-        border-left-color: #10b981;
-        background: rgba(16, 185, 129, 0.1);
-      }
-
-      .match-item.win:hover {
-        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-      }
-
-      .match-item.loss {
-        border-left-color: #ef4444;
-        background: rgba(239, 68, 68, 0.1);
-      }
-
-      .match-item.loss:hover {
-        box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
-      }
-
-      .champion-icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 10px;
-        border: 2px solid rgba(102, 126, 234, 0.5);
-        object-fit: cover;
-        flex-shrink: 0;
-      }
-
-      .match-info {
-        flex: 1;
-      }
-
-      /* チーム */
-      .team {
-        background: rgba(20, 27, 58, 0.6);
-        padding: 25px;
-        border-radius: 20px;
-        margin-bottom: 20px;
-        border: 2px solid rgba(102, 126, 234, 0.3);
-        transition: all 0.3s ease;
-      }
-
-      .team:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
-      }
-
-      .team.team1 {
-        border-left: 6px solid #3b82f6;
-      }
-
-      .team.team2 {
-        border-left: 6px solid #ef4444;
-      }
-
-      .team h3 {
-        color: #f093fb;
-        margin-bottom: 15px;
-        font-family: "Barlow", sans-serif;
-        font-size: 1.5em;
-      }
-
-      /* プレイヤーアイテム */
-      .player-item {
-        padding: 12px 15px;
-        background: rgba(10, 14, 39, 0.5);
-        margin-bottom: 10px;
-        border-radius: 10px;
-        color: #c9d1d9;
-        border-left: 3px solid #667eea;
-        transition: all 0.3s ease;
-      }
-
-      .player-item:hover {
-        background: rgba(102, 126, 234, 0.2);
-        transform: translateX(5px);
-        border-left-color: #f093fb;
-      }
-
-      /* エラー */
+      /* 結果表示 */
+      .result,
+      .loading,
       .error {
-        background: rgba(239, 68, 68, 0.2);
-        color: #fca5a5;
         padding: 20px;
         border-radius: 12px;
-        margin-top: 20px;
-        display: none;
-        border: 1px solid rgba(239, 68, 68, 0.5);
-        font-weight: 600;
-      }
-
-      /* 情報ボックス */
-      .info-box {
-        background: rgba(59, 130, 246, 0.1);
-        color: #93c5fd;
-        padding: 20px;
-        border-radius: 15px;
-        margin-bottom: 25px;
-        border: 1px solid rgba(59, 130, 246, 0.3);
-        font-size: 1em;
+        margin-top: 25px;
+        font-size: 1rem;
         line-height: 1.6;
       }
 
-      /* ルーンツリー */
-      .rune-trees {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
+      .result {
+        background: rgba(72, 187, 120, 0.1);
+        border: 2px solid rgba(72, 187, 120, 0.3);
+        color: #9ae6b4;
       }
 
-      .rune-tree {
-        background: rgba(20, 27, 58, 0.6);
-        border: 2px solid rgba(102, 126, 234, 0.3);
+      .loading {
+        background: rgba(237, 137, 54, 0.1);
+        border: 2px solid rgba(237, 137, 54, 0.3);
+        color: #fbd38d;
+        display: none;
+      }
+
+      .error {
+        background: rgba(245, 101, 101, 0.1);
+        border: 2px solid rgba(245, 101, 101, 0.3);
+        color: #fc8181;
+        display: none;
+      }
+
+      /* チーム分け結果 */
+      .team {
+        background: rgba(30, 40, 70, 0.6);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        border: 2px solid rgba(120, 119, 198, 0.3);
+      }
+
+      .team h3 {
+        color: #667eea;
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+      }
+
+      .team-blue h3 {
+        color: #4299e1;
+      }
+
+      .team-red h3 {
+        color: #f56565;
+      }
+
+      .player {
+        background: rgba(20, 30, 60, 0.6);
+        padding: 12px;
+        margin: 8px 0;
+        border-radius: 8px;
+        border-left: 4px solid #667eea;
+      }
+
+      .team-blue .player {
+        border-left-color: #4299e1;
+      }
+
+      .team-red .player {
+        border-left-color: #f56565;
+      }
+
+      /* レスポンシブ */
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.5rem;
+        }
+
+        .tabs {
+          gap: 10px;
+        }
+
+        .tab-button {
+          padding: 12px 20px;
+          font-size: 0.9rem;
+        }
+
+        .content-card {
+          padding: 20px;
+        }
+      }
+
+      /* モーダル */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(5px);
+        animation: fadeIn 0.3s ease;
+      }
+
+      .modal-content {
+        position: relative;
+        background: rgba(20, 30, 60, 0.95);
+        margin: 5% auto;
+        padding: 30px;
+        border: 2px solid rgba(120, 119, 198, 0.5);
         border-radius: 20px;
-        padding: 25px;
+        width: 90%;
+        max-width: 800px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+        animation: slideDown 0.3s ease;
+      }
+
+      @keyframes slideDown {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .close {
+        color: #a0aec0;
+        float: right;
+        font-size: 32px;
+        font-weight: bold;
+        line-height: 1;
+        cursor: pointer;
+        transition: color 0.3s;
+      }
+
+      .close:hover {
+        color: #f56565;
+      }
+
+      .modal h2 {
+        color: #667eea;
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+      }
+
+      .modal-body {
+        color: #cbd5e0;
+        line-height: 1.8;
+      }
+
+      /* ルーン、チャンピオン、アイテム共通スタイル */
+      .rune-trees,
+      .champions-grid,
+      .items-grid {
+        display: grid;
+        gap: 20px;
+      }
+
+      .rune-trees {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
+
+      .champions-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+
+      .items-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+
+      /* ルーンツリー */
+      .rune-tree {
+        background: rgba(30, 40, 70, 0.6);
+        border-radius: 12px;
+        padding: 20px;
+        border: 2px solid rgba(120, 119, 198, 0.3);
         transition: all 0.3s ease;
       }
 
@@ -577,84 +496,79 @@
         gap: 15px;
         margin-bottom: 20px;
         padding-bottom: 15px;
-        border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+        border-bottom: 2px solid rgba(120, 119, 198, 0.3);
       }
 
       .rune-tree-icon {
         width: 48px;
         height: 48px;
-        border-radius: 10px;
+        border-radius: 8px;
+        background: rgba(20, 30, 60, 0.8);
+        padding: 8px;
       }
 
       .rune-tree-name {
-        color: #f093fb;
-        font-size: 1.5em;
+        font-size: 1.3rem;
         font-weight: 700;
-        font-family: "Barlow", sans-serif;
+        color: #e2e8f0;
       }
 
       .rune-slot {
-        margin-bottom: 20px;
+        margin-bottom: 15px;
       }
 
       .rune-slot-title {
-        color: #93c5fd;
-        font-size: 0.9em;
+        color: #a0aec0;
+        font-size: 0.9rem;
         margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        font-weight: 600;
       }
 
       .rune-items {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        display: flex;
         gap: 10px;
+        flex-wrap: wrap;
       }
 
       .rune-item {
-        background: rgba(10, 14, 39, 0.6);
-        border: 2px solid rgba(102, 126, 234, 0.3);
-        border-radius: 12px;
+        background: rgba(20, 30, 60, 0.8);
+        border: 2px solid rgba(120, 119, 198, 0.3);
+        border-radius: 8px;
         padding: 10px;
-        text-align: center;
         cursor: pointer;
         transition: all 0.3s ease;
+        text-align: center;
+        flex: 1;
+        min-width: 80px;
       }
 
       .rune-item:hover {
         border-color: #667eea;
         transform: scale(1.05);
-        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
       }
 
       .rune-item-icon {
         width: 48px;
         height: 48px;
-        margin: 0 auto 8px;
+        margin-bottom: 8px;
         border-radius: 8px;
       }
 
       .rune-item-name {
-        color: #c9d1d9;
-        font-size: 0.85em;
-        line-height: 1.2;
+        color: #cbd5e0;
+        font-size: 0.85rem;
+        font-weight: 600;
       }
 
-      /* チャンピオングリッド */
-      .champions-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 15px;
-        margin-top: 20px;
-      }
-
+      /* チャンピオンカード */
       .champion-card {
-        background: rgba(20, 27, 58, 0.6);
-        border: 2px solid rgba(102, 126, 234, 0.3);
-        border-radius: 15px;
+        background: rgba(30, 40, 70, 0.6);
+        border-radius: 12px;
         overflow: hidden;
         cursor: pointer;
         transition: all 0.3s ease;
+        border: 2px solid rgba(120, 119, 198, 0.3);
       }
 
       .champion-card:hover {
@@ -672,75 +586,106 @@
       .champion-card-name {
         padding: 10px;
         text-align: center;
-        color: #c9d1d9;
-        font-weight: 700;
-        font-size: 0.9em;
+        color: #e2e8f0;
+        font-weight: 600;
+        font-size: 0.9rem;
       }
 
-      /* アイテムグリッド */
-      .items-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 15px;
-        margin-top: 20px;
-      }
-
+      /* アイテムカード */
       .item-card {
-        background: rgba(20, 27, 58, 0.6);
-        border: 2px solid rgba(102, 126, 234, 0.3);
+        background: rgba(30, 40, 70, 0.6);
         border-radius: 12px;
         padding: 10px;
         cursor: pointer;
         transition: all 0.3s ease;
+        border: 2px solid rgba(120, 119, 198, 0.3);
         text-align: center;
       }
 
       .item-card:hover {
         border-color: #667eea;
-        transform: scale(1.05);
-        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
       }
 
       .item-card-img {
         width: 64px;
         height: 64px;
         margin: 0 auto 8px;
+        display: block;
         border-radius: 8px;
       }
 
       .item-card-name {
-        color: #c9d1d9;
-        font-size: 0.85em;
-        line-height: 1.2;
+        color: #cbd5e0;
+        font-size: 0.85rem;
+        font-weight: 600;
         margin-bottom: 5px;
       }
 
       .item-card-price {
-        color: #f093fb;
+        color: #ffd700;
+        font-size: 0.8rem;
         font-weight: 700;
-        font-size: 0.9em;
+      }
+
+      /* フィルターグループ */
+      .filter-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      /* スクロールバーカスタマイズ */
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: rgba(20, 30, 60, 0.5);
+        border-radius: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>⚔️ LoL Search Tools</h1>
+      <!-- ヘッダー -->
+      <div class="header">
+        <h1>🎮 LoL Search Tools</h1>
+        <p class="subtitle">League of Legends 汎用ツール</p>
+      </div>
 
+      <!-- タブナビゲーション -->
       <div class="tabs">
-        <button class="tab active" onclick="showTab('match-history')">
+        <button class="tab-button active" onclick="switchTab('match-history')">
           📊 戦績表示
         </button>
-        <button class="tab" onclick="showTab('current-game')">
-          ⚔️ 試合情報
+        <button class="tab-button" onclick="switchTab('current-game')">
+          🎯 試合情報
         </button>
-        <button class="tab" onclick="showTab('team-balance')">
+        <button class="tab-button" onclick="switchTab('balance-teams')">
           ⚖️ 組み分け
         </button>
-        <button class="tab" onclick="showTab('runes')">🎨 ルーン</button>
-        <button class="tab" onclick="showTab('champions')">
+        <button class="tab-button" onclick="switchTab('runes')">
+          🎨 ルーン
+        </button>
+        <button class="tab-button" onclick="switchTab('champions')">
           🏆 チャンピオン
         </button>
-        <button class="tab" onclick="showTab('items')">📦 アイテム</button>
+        <button class="tab-button" onclick="switchTab('items')">
+          🗡️ アイテム
+        </button>
       </div>
 
       <!-- 戦績表示タブ -->
@@ -748,73 +693,53 @@
         <div class="content-card">
           <div class="info-box">
             💡
-            サモナーネーム（ゲーム名#タグライン）を入力して過去の戦績を確認できます。フィルターを使って特定のゲームモードやチャンピオンに絞り込めます。
+            Riot IDを入力すると、最近の試合戦績を取得します。<br />
+            試合モード、チャンピオン、勝敗でフィルタリングできます。
           </div>
 
           <div class="input-group">
-            <label>🎮 Riot ID（ゲーム名#タグライン）</label>
+            <label>🎮 Riot ID（例: ゲーム名#タグライン）</label>
             <input
               type="text"
-              id="history-riot-id"
-              placeholder="例: Hide on Bush#KR1"
+              id="game-riot-id"
+              placeholder="例: Hide on bush#KR1"
             />
           </div>
 
-          <div class="input-group">
-            <label>📈 取得する試合数</label>
-            <input
-              type="number"
-              id="history-count"
-              value="20"
-              min="1"
-              max="50"
-            />
-          </div>
+          <div class="filter-group">
+            <div class="input-group">
+              <label>🎲 試合モード</label>
+              <select id="filter-mode">
+                <option value="">すべて</option>
+                <option value="RANKED">ランク戦</option>
+                <option value="ARAM">ARAM</option>
+                <option value="CHERRY">アリーナ</option>
+                <option value="NORMAL">ノーマル</option>
+              </select>
+            </div>
 
-          <!-- フィルターセクション -->
-          <div class="filter-section">
-            <h3>🔍 フィルター</h3>
-            <div class="filter-grid">
-              <div class="input-group">
-                <label>🎮 ゲームモード</label>
-                <select id="filter-game-mode">
-                  <option value="">すべて</option>
-                  <option value="CLASSIC">クラシック（ランク/ノーマル）</option>
-                  <option value="ARAM">ARAM</option>
-                  <option value="CHERRY">Arena（アリーナ）</option>
-                  <option value="URF">URF</option>
-                  <option value="ULTBOOK">アルティメットスペルブック</option>
-                  <option value="ONEFORALL">ワンフォーオール</option>
-                  <option value="NEXUSBLITZ">ネクサスブリッツ</option>
-                  <option value="TUTORIAL">チュートリアル</option>
-                  <option value="PRACTICETOOL">練習モード</option>
-                </select>
-              </div>
+            <div class="input-group">
+              <label>🦸 チャンピオン</label>
+              <select id="filter-champion">
+                <option value="">すべて</option>
+              </select>
+            </div>
 
-              <div class="input-group">
-                <label>🏆 チャンピオン</label>
-                <select id="filter-champion">
-                  <option value="">すべて</option>
-                  <!-- Data Dragonから動的に追加 -->
-                </select>
-              </div>
-
-              <div class="input-group">
-                <label>📊 勝敗</label>
-                <select id="filter-result">
-                  <option value="">すべて</option>
-                  <option value="win">勝利のみ</option>
-                  <option value="loss">敗北のみ</option>
-                </select>
-              </div>
+            <div class="input-group">
+              <label>🏆 勝敗</label>
+              <select id="filter-result">
+                <option value="">すべて</option>
+                <option value="win">勝利のみ</option>
+                <option value="loss">敗北のみ</option>
+              </select>
             </div>
           </div>
 
-          <button onclick="getMatchHistory()">🔍 戦績を取得</button>
+          <button onclick="fetchMatchHistory()">🔍 戦績を取得</button>
 
-          <div class="loading" id="history-loading">⏳ 読み込み中...</div>
-          <div class="error" id="history-error"></div>
-          <div class="result" id="history-result"></div>
+          <div class="loading" id="match-loading">⏳ 読み込み中...</div>
+          <div class="error" id="match-error"></div>
+          <div class="result" id="match-result"></div>
         </div>
       </div>
 
@@ -823,28 +748,29 @@
         <div class="content-card">
           <div class="info-box">
             💡
-            サモナーネームを入力して、その人が現在ゲーム中の場合、試合の敵味方情報を表示します。
+            現在プレイ中のサモナーのRiot IDを入力すると、リアルタイムの試合情報を取得します。<br />
+            参加しているプレイヤー全員のランク情報が表示されます。
           </div>
 
           <div class="input-group">
-            <label>🎮 Riot ID（ゲーム名#タグライン）</label>
+            <label>🎮 Riot ID（例: ゲーム名#タグライン）</label>
             <input
               type="text"
-              id="game-riot-id"
-              placeholder="例: Hide on Bush#KR1"
+              id="current-game-riot-id"
+              placeholder="例: Hide on bush#KR1"
             />
           </div>
 
-          <button onclick="getCurrentGame()">🔍 試合情報を取得</button>
+          <button onclick="fetchCurrentGame()">🔍 試合情報を取得</button>
 
-          <div class="loading" id="game-loading">⏳ 読み込み中...</div>
-          <div class="error" id="game-error"></div>
-          <div class="result" id="game-result"></div>
+          <div class="loading" id="current-loading">⏳ 読み込み中...</div>
+          <div class="error" id="current-error"></div>
+          <div class="result" id="current-result"></div>
         </div>
       </div>
 
       <!-- 組み分けタブ -->
-      <div id="team-balance" class="tab-content">
+      <div id="balance-teams" class="tab-content">
         <div class="content-card">
           <div class="info-box">
             💡
@@ -875,16 +801,15 @@
       <div id="runes" class="tab-content">
         <div class="content-card">
           <div class="info-box">
-            🎨 League of Legendsの全ルーンツリーと効果を確認できます。
+            🎨 League of Legendsの全ルーンツリーと効果を確認できます。<br />
+            各ルーンをクリックすると詳細な説明が表示されます。
           </div>
 
           <div class="loading" id="runes-loading">
             ⏳ ルーンデータを読み込み中...
           </div>
           <div class="error" id="runes-error"></div>
-          <div id="runes-content" style="display: none">
-            <!-- ルーンツリー表示エリア -->
-          </div>
+          <div id="runes-content" style="display: none"></div>
         </div>
       </div>
 
@@ -892,7 +817,8 @@
       <div id="champions" class="tab-content">
         <div class="content-card">
           <div class="info-box">
-            🏆 全チャンピオンの詳細情報、スキル、ステータスを確認できます。
+            🏆 全チャンピオンの詳細情報、スキル、ステータスを確認できます。<br />
+            チャンピオン名で検索できます。
           </div>
 
           <div class="input-group">
@@ -908,9 +834,7 @@
             ⏳ チャンピオンデータを読み込み中...
           </div>
           <div class="error" id="champions-error"></div>
-          <div id="champions-grid" style="display: none">
-            <!-- チャンピオングリッド表示エリア -->
-          </div>
+          <div id="champions-grid" style="display: none"></div>
         </div>
       </div>
 
@@ -918,46 +842,49 @@
       <div id="items" class="tab-content">
         <div class="content-card">
           <div class="info-box">
-            📦 全アイテムの詳細情報、効果、ビルドパスを確認できます。
+            🗡️ 全アイテムの詳細情報を確認できます。<br />
+            価格、マップ、キーワードでフィルタリングできます。
           </div>
 
-          <div class="filter-section">
-            <h3>🔍 フィルター</h3>
-            <div class="filter-grid">
-              <div class="input-group">
-                <label>🔍 アイテム名</label>
-                <input
-                  type="text"
-                  id="item-search"
-                  placeholder="アイテム名で検索..."
-                />
-              </div>
+          <div class="filter-group">
+            <div class="input-group">
+              <label>🔍 キーワード検索</label>
+              <input
+                type="text"
+                id="item-search"
+                placeholder="アイテム名で検索..."
+              />
+            </div>
 
-              <div class="input-group">
-                <label>💰 価格範囲</label>
-                <input
-                  type="number"
-                  id="item-price-min"
-                  placeholder="最小"
-                  value="0"
-                  min="0"
-                />
-                <input
-                  type="number"
-                  id="item-price-max"
-                  placeholder="最大"
-                  value="10000"
-                  min="0"
-                />
-              </div>
+            <div class="input-group">
+              <label>💰 最低価格</label>
+              <input
+                type="number"
+                id="item-price-min"
+                value="0"
+                min="0"
+                placeholder="0"
+              />
+            </div>
 
-              <div class="input-group">
-                <label>🗺️ マップ</label>
-                <select id="item-map">
-                  <option value="11">サモナーズリフト</option>
-                  <option value="12">ハウリングアビス (ARAM)</option>
-                </select>
-              </div>
+            <div class="input-group">
+              <label>💰 最高価格</label>
+              <input
+                type="number"
+                id="item-price-max"
+                value="10000"
+                min="0"
+                placeholder="10000"
+              />
+            </div>
+
+            <div class="input-group">
+              <label>🗺️ マップ</label>
+              <select id="item-map">
+                <option value="11">サモナーズリフト</option>
+                <option value="12">ハウリングアビス</option>
+                <option value="21">ネクサスブリッツ</option>
+              </select>
             </div>
           </div>
 
@@ -965,65 +892,392 @@
             ⏳ アイテムデータを読み込み中...
           </div>
           <div class="error" id="items-error"></div>
-          <div id="items-grid" style="display: none">
-            <!-- アイテムグリッド表示エリア -->
-          </div>
+          <div id="items-grid" style="display: none"></div>
+        </div>
+      </div>
+
+      <!-- モーダル -->
+      <div id="detailModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal()">&times;</span>
+          <h2 id="modal-title"></h2>
+          <div class="modal-body" id="modal-body"></div>
         </div>
       </div>
     </div>
 
     <script>
-      // Data Dragon用のグローバル変数
-      let DDRAGON_VERSION = "14.1.1"; // デフォルト値
+      const API_KEY = "RGAPI-1ff5ec80-f024-47e4-a1db-3e22b8c7aa7c";
+      const DDRAGON_VERSION = "15.1.1";
 
-      // Data Dragonからチャンピオンリストを取得
+      // グローバル変数
+      let allChampions = [];
+      let allItems = [];
+      let filteredMatches = [];
+
+      // タブ切り替え
+      function switchTab(tabId) {
+        const tabs = document.querySelectorAll(".tab-content");
+        const buttons = document.querySelectorAll(".tab-button");
+
+        tabs.forEach((tab) => tab.classList.remove("active"));
+        buttons.forEach((btn) => btn.classList.remove("active"));
+
+        document.getElementById(tabId).classList.add("active");
+        event.target.classList.add("active");
+      }
+
+      // モーダル表示
+      function showModal(title, body) {
+        document.getElementById("modal-title").textContent = title;
+        document.getElementById("modal-body").innerHTML = body;
+        document.getElementById("detailModal").style.display = "block";
+      }
+
+      function closeModal() {
+        document.getElementById("detailModal").style.display = "none";
+      }
+
+      // モーダル外クリックで閉じる
+      window.onclick = function (event) {
+        const modal = document.getElementById("detailModal");
+        if (event.target === modal) {
+          closeModal();
+        }
+      };
+
+      // ========== 既存の機能（戦績・試合情報・組み分け）==========
+
+      // チャンピオンリスト読み込み（フィルター用）
       async function loadChampions() {
         try {
-          // 最新バージョンを取得
-          const versionResponse = await fetch(
-            "https://ddragon.leagueoflegends.com/api/versions.json"
-          );
-          const versions = await versionResponse.json();
-          DDRAGON_VERSION = versions[0]; // グローバル変数に保存
-
-          // チャンピオンデータを取得（日本語）
-          const championResponse = await fetch(
+          const response = await fetch(
             `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/data/ja_JP/champion.json`
           );
-          const championData = await championResponse.json();
+          const data = await response.json();
 
-          // チャンピオンリストをソート
-          const champions = Object.values(championData.data).sort((a, b) =>
-            a.name.localeCompare(b.name, "ja")
-          );
+          allChampions = Object.entries(data.data).map(([id, champion]) => ({
+            id,
+            ...champion,
+          }));
 
-          // セレクトボックスに追加
           const selectElement = document.getElementById("filter-champion");
-          champions.forEach((champion) => {
+          allChampions.forEach((champion) => {
             const option = document.createElement("option");
-            option.value = champion.id; // 英語ID（例: Yasuo）
-            option.textContent = `${champion.name} (${champion.id})`; // 日本語名 (英語ID)
+            option.value = champion.id;
+            option.textContent = `${champion.name} (${champion.id})`;
             selectElement.appendChild(option);
           });
 
-          console.log(`✅ ${champions.length}体のチャンピオンを読み込みました`);
+          console.log(`✅ ${allChampions.length}体のチャンピオンを読み込みました`);
         } catch (error) {
-          console.error(
-            "❌ チャンピオンリストの読み込みに失敗しました:",
-            error
-          );
+          console.error("❌ チャンピオンリストの読み込みに失敗:", error);
         }
       }
 
-      // ページ読み込み時にチャンピオンリストを取得
-      window.addEventListener("DOMContentLoaded", () => {
-        loadChampions();
-        loadRunes();
-        loadChampionsList();
-        loadItemsList();
-      });
+      // 戦績取得
+      async function fetchMatchHistory() {
+        const riotId = document.getElementById("game-riot-id").value.trim();
+        const loadingEl = document.getElementById("match-loading");
+        const errorEl = document.getElementById("match-error");
+        const resultEl = document.getElementById("match-result");
 
-      // ルーンデータを読み込む
+        if (!riotId || !riotId.includes("#")) {
+          errorEl.textContent = "⚠️ Riot IDを「ゲーム名#タグライン」形式で入力してください";
+          errorEl.style.display = "block";
+          loadingEl.style.display = "none";
+          resultEl.style.display = "none";
+          return;
+        }
+
+        loadingEl.style.display = "block";
+        errorEl.style.display = "none";
+        resultEl.style.display = "none";
+
+        const [gameName, tagLine] = riotId.split("#");
+
+        try {
+          const response = await fetch(
+            `/api/match_history?game_name=${encodeURIComponent(
+              gameName
+            )}&tag_line=${encodeURIComponent(tagLine)}`
+          );
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          loadingEl.style.display = "none";
+
+          if (data.error) {
+            errorEl.textContent = `❌ ${data.error}`;
+            errorEl.style.display = "block";
+            return;
+          }
+
+          filteredMatches = data.matches || [];
+          displayMatchHistory(filteredMatches);
+          resultEl.style.display = "block";
+        } catch (error) {
+          loadingEl.style.display = "none";
+          errorEl.textContent = `❌ エラーが発生しました: ${error.message}`;
+          errorEl.style.display = "block";
+        }
+      }
+
+      // 戦績表示
+      function displayMatchHistory(matches) {
+        const resultEl = document.getElementById("match-result");
+
+        if (!matches || matches.length === 0) {
+          resultEl.innerHTML = "<p>試合データが見つかりませんでした。</p>";
+          return;
+        }
+
+        let html = `<h3>📊 試合履歴（${matches.length}試合）</h3>`;
+
+        matches.forEach((match, index) => {
+          const win = match.win;
+          const winClass = win ? "team-blue" : "team-red";
+          const winText = win ? "🏆 勝利" : "💀 敗北";
+
+          html += `
+            <div class="team ${winClass}" style="margin: 15px 0;">
+              <h4>${winText} - ${match.mode} (${match.duration})</h4>
+              <div class="player">
+                <strong>${match.champion}</strong><br>
+                <span style="color: #9ae6b4;">KDA: ${match.kda}</span><br>
+                <span>CS: ${match.cs} | ダメージ: ${match.damage.toLocaleString()}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        resultEl.innerHTML = html;
+      }
+
+      // フィルター適用
+      function applyFilters() {
+        if (!filteredMatches.length) return;
+
+        const mode = document.getElementById("filter-mode").value;
+        const champion = document.getElementById("filter-champion").value;
+        const result = document.getElementById("filter-result").value;
+
+        let filtered = [...filteredMatches];
+
+        if (mode) {
+          filtered = filtered.filter((m) => m.mode === mode);
+        }
+
+        if (champion) {
+          filtered = filtered.filter((m) => m.champion === champion);
+        }
+
+        if (result === "win") {
+          filtered = filtered.filter((m) => m.win === true);
+        } else if (result === "loss") {
+          filtered = filtered.filter((m) => m.win === false);
+        }
+
+        displayMatchHistory(filtered);
+      }
+
+      // フィルター変更イベント
+      document
+        .getElementById("filter-mode")
+        ?.addEventListener("change", applyFilters);
+      document
+        .getElementById("filter-champion")
+        ?.addEventListener("change", applyFilters);
+      document
+        .getElementById("filter-result")
+        ?.addEventListener("change", applyFilters);
+
+      // 現在の試合情報取得
+      async function fetchCurrentGame() {
+        const riotId = document
+          .getElementById("current-game-riot-id")
+          .value.trim();
+        const loadingEl = document.getElementById("current-loading");
+        const errorEl = document.getElementById("current-error");
+        const resultEl = document.getElementById("current-result");
+
+        if (!riotId || !riotId.includes("#")) {
+          errorEl.textContent = "⚠️ Riot IDを「ゲーム名#タグライン」形式で入力してください";
+          errorEl.style.display = "block";
+          loadingEl.style.display = "none";
+          resultEl.style.display = "none";
+          return;
+        }
+
+        loadingEl.style.display = "block";
+        errorEl.style.display = "none";
+        resultEl.style.display = "none";
+
+        const [gameName, tagLine] = riotId.split("#");
+
+        try {
+          const response = await fetch(
+            `/api/current_game?game_name=${encodeURIComponent(
+              gameName
+            )}&tag_line=${encodeURIComponent(tagLine)}`
+          );
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          loadingEl.style.display = "none";
+
+          if (data.error) {
+            errorEl.textContent = `❌ ${data.error}`;
+            errorEl.style.display = "block";
+            return;
+          }
+
+          displayCurrentGame(data);
+          resultEl.style.display = "block";
+        } catch (error) {
+          loadingEl.style.display = "none";
+          errorEl.textContent = `❌ エラーが発生しました: ${error.message}`;
+          errorEl.style.display = "block";
+        }
+      }
+
+      // 現在の試合表示
+      function displayCurrentGame(data) {
+        const resultEl = document.getElementById("current-result");
+        const blueTeam = data.participants.filter((p) => p.teamId === 100);
+        const redTeam = data.participants.filter((p) => p.teamId === 200);
+
+        let html = `<h3>🎯 試合情報 - ${data.mode}</h3>`;
+
+        html += `<div class="team team-blue"><h3>💙 Blue Team</h3>`;
+        blueTeam.forEach((p) => {
+          html += `
+            <div class="player">
+              <strong>${p.riotId}</strong> - ${p.champion}<br>
+              <span style="color: #9ae6b4;">${p.rank}</span>
+            </div>
+          `;
+        });
+        html += `</div>`;
+
+        html += `<div class="team team-red"><h3>❤️ Red Team</h3>`;
+        redTeam.forEach((p) => {
+          html += `
+            <div class="player">
+              <strong>${p.riotId}</strong> - ${p.champion}<br>
+              <span style="color: #9ae6b4;">${p.rank}</span>
+            </div>
+          `;
+        });
+        html += `</div>`;
+
+        resultEl.innerHTML = html;
+      }
+
+      // チーム組み分け
+      async function balanceTeams() {
+        const playersText = document
+          .getElementById("balance-players")
+          .value.trim();
+        const loadingEl = document.getElementById("balance-loading");
+        const errorEl = document.getElementById("balance-error");
+        const resultEl = document.getElementById("balance-result");
+
+        if (!playersText) {
+          errorEl.textContent = "⚠️ プレイヤーリストを入力してください";
+          errorEl.style.display = "block";
+          loadingEl.style.display = "none";
+          resultEl.style.display = "none";
+          return;
+        }
+
+        const players = playersText
+          .split("\n")
+          .map((p) => p.trim())
+          .filter((p) => p);
+
+        if (players.length < 10) {
+          errorEl.textContent = "⚠️ 10人のプレイヤーを入力してください";
+          errorEl.style.display = "block";
+          loadingEl.style.display = "none";
+          resultEl.style.display = "none";
+          return;
+        }
+
+        loadingEl.style.display = "block";
+        errorEl.style.display = "none";
+        resultEl.style.display = "none";
+
+        try {
+          const response = await fetch("/api/balance_teams", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ players: players.slice(0, 10) }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = await response.json();
+          loadingEl.style.display = "none";
+
+          if (data.error) {
+            errorEl.textContent = `❌ ${data.error}`;
+            errorEl.style.display = "block";
+            return;
+          }
+
+          displayBalancedTeams(data);
+          resultEl.style.display = "block";
+        } catch (error) {
+          loadingEl.style.display = "none";
+          errorEl.textContent = `❌ エラーが発生しました: ${error.message}`;
+          errorEl.style.display = "block";
+        }
+      }
+
+      // 組み分け結果表示
+      function displayBalancedTeams(data) {
+        const resultEl = document.getElementById("balance-result");
+
+        let html = `<h3>⚖️ チーム組み分け結果</h3>`;
+        html += `<p>平均スコア差: ${data.score_diff}</p>`;
+
+        html += `<div class="team team-blue"><h3>💙 Team 1 (Score: ${data.team1_score})</h3>`;
+        data.team1.forEach((p) => {
+          html += `
+            <div class="player">
+              <strong>${p.riotId}</strong><br>
+              <span style="color: #9ae6b4;">${p.rank} (Score: ${p.score})</span>
+            </div>
+          `;
+        });
+        html += `</div>`;
+
+        html += `<div class="team team-red"><h3>❤️ Team 2 (Score: ${data.team2_score})</h3>`;
+        data.team2.forEach((p) => {
+          html += `
+            <div class="player">
+              <strong>${p.riotId}</strong><br>
+              <span style="color: #9ae6b4;">${p.rank} (Score: ${p.score})</span>
+            </div>
+          `;
+        });
+        html += `</div>`;
+
+        resultEl.innerHTML = html;
+      }
+
+      // ========== 新機能（ルーン・チャンピオン・アイテム）==========
+
+      // ルーンデータ読み込み
       async function loadRunes() {
         try {
           const response = await fetch(
@@ -1037,7 +1291,7 @@
 
           console.log(`✅ ${runesData.length}個のルーンツリーを読み込みました`);
         } catch (error) {
-          console.error("❌ ルーンデータの読み込みに失敗しました:", error);
+          console.error("❌ ルーンデータの読み込みに失敗:", error);
           document.getElementById("runes-loading").style.display = "none";
           document.getElementById("runes-error").textContent =
             "ルーンデータの読み込みに失敗しました";
@@ -1045,10 +1299,9 @@
         }
       }
 
-      // ルーンを表示
+      // ルーン表示
       function displayRunes(runesData) {
         const container = document.getElementById("runes-content");
-
         let html = '<div class="rune-trees">';
 
         runesData.forEach((tree) => {
@@ -1063,26 +1316,29 @@
           `;
 
           tree.slots.forEach((slot, slotIndex) => {
-            html += `
-              <div class="rune-slot">
-                <div class="rune-slot-title">スロット ${slotIndex + 1}</div>
-                <div class="rune-items">
-            `;
+            html += `<div class="rune-slot"><div class="rune-slot-title">スロット ${
+              slotIndex + 1
+            }</div><div class="rune-items">`;
 
             slot.runes.forEach((rune) => {
               const runeIconUrl = `https://ddragon.leagueoflegends.com/cdn/img/${rune.icon}`;
+              const escapedName = rune.name.replace(/'/g, "\\'");
+              const escapedShort = rune.shortDesc
+                .replace(/'/g, "\\'")
+                .replace(/"/g, "&quot;");
+              const escapedLong = rune.longDesc
+                .replace(/'/g, "\\'")
+                .replace(/"/g, "&quot;");
+
               html += `
-                <div class="rune-item" onclick="showRuneDetail('${rune.name}', '${rune.shortDesc}', '${rune.longDesc}')">
+                <div class="rune-item" onclick='showRuneDetail("${escapedName}", "${escapedShort}", "${escapedLong}")'>
                   <img src="${runeIconUrl}" alt="${rune.name}" class="rune-item-icon">
                   <div class="rune-item-name">${rune.name}</div>
                 </div>
               `;
             });
 
-            html += `
-                </div>
-              </div>
-            `;
+            html += `</div></div>`;
           });
 
           html += "</div>";
@@ -1092,17 +1348,21 @@
         container.innerHTML = html;
       }
 
-      // ルーン詳細を表示
+      // ルーン詳細表示
       function showRuneDetail(name, shortDesc, longDesc) {
-        alert(
-          `${name}\n\n${shortDesc}\n\n詳細:\n${longDesc.replace(
-            /<[^>]*>/g,
-            ""
-          )}`
-        );
+        const cleanShort = shortDesc.replace(/<[^>]*>/g, "");
+        const cleanLong = longDesc.replace(/<[^>]*>/g, "");
+        const body = `
+          <p><strong>短い説明:</strong></p>
+          <p>${cleanShort}</p>
+          <br>
+          <p><strong>詳細説明:</strong></p>
+          <p>${cleanLong}</p>
+        `;
+        showModal(name, body);
       }
 
-      // チャンピオン一覧を読み込む
+      // チャンピオン一覧読み込み
       async function loadChampionsList() {
         try {
           const response = await fetch(
@@ -1117,6 +1377,7 @@
             })
           );
 
+          window.allChampionsData = champions;
           displayChampions(champions);
 
           // 検索機能
@@ -1127,7 +1388,8 @@
               const filtered = champions.filter(
                 (c) =>
                   c.name.toLowerCase().includes(searchTerm) ||
-                  c.id.toLowerCase().includes(searchTerm)
+                  c.id.toLowerCase().includes(searchTerm) ||
+                  c.title.toLowerCase().includes(searchTerm)
               );
               displayChampions(filtered);
             });
@@ -1137,10 +1399,7 @@
 
           console.log(`✅ ${champions.length}体のチャンピオンを読み込みました`);
         } catch (error) {
-          console.error(
-            "❌ チャンピオンデータの読み込みに失敗しました:",
-            error
-          );
+          console.error("❌ チャンピオンデータの読み込みに失敗:", error);
           document.getElementById("champions-loading").style.display = "none";
           document.getElementById("champions-error").textContent =
             "チャンピオンデータの読み込みに失敗しました";
@@ -1148,10 +1407,9 @@
         }
       }
 
-      // チャンピオンを表示
+      // チャンピオン表示
       function displayChampions(champions) {
         const container = document.getElementById("champions-grid");
-
         let html = '<div class="champions-grid">';
 
         champions.forEach((champion) => {
@@ -1169,7 +1427,7 @@
         container.innerHTML = html;
       }
 
-      // チャンピオン詳細を表示
+      // チャンピオン詳細表示
       async function showChampionDetail(championId) {
         try {
           const response = await fetch(
@@ -1178,27 +1436,45 @@
           const data = await response.json();
           const champion = data.data[championId];
 
-          let info = `${champion.name} - ${champion.title}\n\n`;
-          info += `${champion.lore}\n\n`;
-          info += `タイプ: ${champion.tags.join(", ")}\n`;
-          info += `難易度: ${"★".repeat(champion.info.difficulty)}\n\n`;
-          info += `スキル:\n`;
+          let body = `
+            <p><strong>${champion.title}</strong></p>
+            <p>${champion.lore}</p>
+            <br>
+            <p><strong>タイプ:</strong> ${champion.tags.join(", ")}</p>
+            <p><strong>難易度:</strong> ${"★".repeat(
+              champion.info.difficulty
+            )}</p>
+            <br>
+            <h3>スキル</h3>
+          `;
 
+          // パッシブ
+          body += `
+            <p><strong>パッシブ: ${champion.passive.name}</strong></p>
+            <p>${champion.passive.description.replace(/<[^>]*>/g, "")}</p>
+            <br>
+          `;
+
+          // スキル
           champion.spells.forEach((spell, index) => {
-            info += `${index + 1}. ${spell.name}: ${spell.description.replace(
-              /<[^>]*>/g,
-              ""
-            )}\n`;
+            body += `
+              <p><strong>${index + 1}. ${spell.name}</strong></p>
+              <p>${spell.description.replace(/<[^>]*>/g, "")}</p>
+              <p><em>クールダウン: ${spell.cooldownBurn}秒 | コスト: ${
+              spell.costBurn
+            }</em></p>
+              <br>
+            `;
           });
 
-          alert(info);
+          showModal(champion.name, body);
         } catch (error) {
           console.error("チャンピオン詳細の取得に失敗:", error);
           alert("チャンピオン詳細の取得に失敗しました");
         }
       }
 
-      // アイテム一覧を読み込む
+      // アイテム一覧読み込み
       async function loadItemsList() {
         try {
           const response = await fetch(
@@ -1206,14 +1482,14 @@
           );
           const itemData = await response.json();
 
-          window.allItems = Object.entries(itemData.data).map(([id, item]) => ({
+          allItems = Object.entries(itemData.data).map(([id, item]) => ({
             id,
             ...item,
           }));
 
-          displayItems(window.allItems);
+          displayItems(allItems);
 
-          // 検索とフィルター機能
+          // フィルター機能
           document
             .getElementById("item-search")
             .addEventListener("input", filterItems);
@@ -1230,11 +1506,9 @@
           document.getElementById("items-loading").style.display = "none";
           document.getElementById("items-grid").style.display = "block";
 
-          console.log(
-            `✅ ${window.allItems.length}個のアイテムを読み込みました`
-          );
+          console.log(`✅ ${allItems.length}個のアイテムを読み込みました`);
         } catch (error) {
-          console.error("❌ アイテムデータの読み込みに失敗しました:", error);
+          console.error("❌ アイテムデータの読み込みに失敗:", error);
           document.getElementById("items-loading").style.display = "none";
           document.getElementById("items-error").textContent =
             "アイテムデータの読み込みに失敗しました";
@@ -1242,7 +1516,7 @@
         }
       }
 
-      // アイテムをフィルター
+      // アイテムフィルター
       function filterItems() {
         const searchTerm = document
           .getElementById("item-search")
@@ -1253,8 +1527,11 @@
           parseInt(document.getElementById("item-price-max").value) || 999999;
         const selectedMap = document.getElementById("item-map").value;
 
-        const filtered = window.allItems.filter((item) => {
-          const matchesSearch = item.name.toLowerCase().includes(searchTerm);
+        const filtered = allItems.filter((item) => {
+          const matchesSearch =
+            item.name.toLowerCase().includes(searchTerm) ||
+            (item.plaintext &&
+              item.plaintext.toLowerCase().includes(searchTerm));
           const matchesPrice =
             item.gold.total >= priceMin && item.gold.total <= priceMax;
           const matchesMap = item.maps[selectedMap] === true;
@@ -1266,10 +1543,9 @@
         displayItems(filtered);
       }
 
-      // アイテムを表示
+      // アイテム表示
       function displayItems(items) {
         const container = document.getElementById("items-grid");
-
         let html = '<div class="items-grid">';
 
         items.forEach((item) => {
@@ -1288,429 +1564,51 @@
         container.innerHTML = html;
       }
 
-      // アイテム詳細を表示
+      // アイテム詳細表示
       function showItemDetail(itemId) {
-        const item = window.allItems.find((i) => i.id === itemId);
+        const item = allItems.find((i) => i.id === itemId);
         if (!item) return;
 
-        let info = `${item.name}\n\n`;
-        info += `価格: ${item.gold.total}G (売却: ${item.gold.sell}G)\n`;
-        info += `説明: ${item.plaintext || ""}\n\n`;
-        info += `効果: ${item.description.replace(/<[^>]*>/g, "")}\n`;
+        let body = `
+          <p><strong>価格:</strong> ${item.gold.total}G (売却: ${
+          item.gold.sell
+        }G)</p>
+          ${
+            item.plaintext
+              ? `<p><strong>説明:</strong> ${item.plaintext}</p>`
+              : ""
+          }
+          <br>
+          <p><strong>効果:</strong></p>
+          <p>${item.description.replace(/<[^>]*>/g, "")}</p>
+        `;
 
         if (item.tags && item.tags.length > 0) {
-          info += `\nタグ: ${item.tags.join(", ")}`;
+          body += `<br><p><strong>タグ:</strong> ${item.tags.join(", ")}</p>`;
         }
 
-        alert(info);
-      }
-
-      // ページ読み込み時にチャンピオンリストを取得
-      window.addEventListener("DOMContentLoaded", loadChampions);
-
-      // ゲームモードを日本語に変換
-      function getGameModeDisplayName(mode) {
-        const modeMap = {
-          CLASSIC: "クラシック",
-          ARAM: "ARAM",
-          CHERRY: "Arena",
-          URF: "URF",
-          ULTBOOK: "スペルブック",
-          ONEFORALL: "ワンフォーオール",
-          NEXUSBLITZ: "ネクサスブリッツ",
-          TUTORIAL: "チュートリアル",
-          PRACTICETOOL: "練習モード",
-        };
-        return modeMap[mode.toUpperCase()] || mode;
-      }
-
-      function showTab(tabName) {
-        // すべてのタブとタブコンテンツを非表示
-        document
-          .querySelectorAll(".tab")
-          .forEach((tab) => tab.classList.remove("active"));
-        document
-          .querySelectorAll(".tab-content")
-          .forEach((content) => content.classList.remove("active"));
-
-        // 選択されたタブとコンテンツを表示
-        event.target.classList.add("active");
-        document.getElementById(tabName).classList.add("active");
-      }
-
-      // Riot IDをパースする関数（ゲーム名#タグライン → {gameName, tagLine}）
-      function parseRiotId(riotId) {
-        const trimmed = riotId.trim();
-
-        // #の個数を確認
-        const hashCount = (trimmed.match(/#/g) || []).length;
-
-        if (hashCount === 0) {
-          throw new Error(
-            "Riot IDの形式が正しくありません。「ゲーム名#タグライン」の形式で入力してください（例: Hide on Bush#KR1）"
-          );
+        if (item.from && item.from.length > 0) {
+          body += `<br><p><strong>作成素材:</strong> ${item.from.join(
+            ", "
+          )}</p>`;
         }
 
-        if (hashCount > 1) {
-          throw new Error(
-            "Riot IDに#が複数含まれています。「ゲーム名#タグライン」の形式で入力してください"
-          );
+        if (item.into && item.into.length > 0) {
+          body += `<br><p><strong>アップグレード先:</strong> ${item.into.join(
+            ", "
+          )}</p>`;
         }
 
-        // #で分割
-        const parts = trimmed.split("#");
-        const gameName = parts[0].trim();
-        const tagLine = parts[1].trim();
-
-        if (!gameName || !tagLine) {
-          throw new Error(
-            "ゲーム名またはタグラインが空です。正しい形式で入力してください（例: Hide on Bush#KR1）"
-          );
-        }
-
-        return { gameName, tagLine };
+        showModal(item.name, body);
       }
 
-      async function getMatchHistory() {
-        const riotId = document.getElementById("history-riot-id").value.trim();
-        const count = document.getElementById("history-count").value;
-
-        if (!riotId) {
-          showError(
-            "history",
-            "Riot IDを入力してください（例: Hide on Bush#KR1）"
-          );
-          return;
-        }
-
-        hideError("history");
-        showLoading("history");
-        hideResult("history");
-
-        try {
-          // Riot IDをパース
-          const { gameName, tagLine } = parseRiotId(riotId);
-
-          const response = await fetch("/api/match_history", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              game_name: gameName,
-              tag_line: tagLine,
-              count: parseInt(count),
-            }),
-          });
-
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.error || "エラーが発生しました");
-          }
-
-          displayMatchHistory(data);
-        } catch (error) {
-          showError("history", error.message);
-        } finally {
-          hideLoading("history");
-        }
-      }
-
-      function displayMatchHistory(data) {
-        const resultDiv = document.getElementById("history-result");
-
-        // フィルター値を取得
-        const filterGameMode =
-          document.getElementById("filter-game-mode").value;
-        const filterChampion = document
-          .getElementById("filter-champion")
-          .value.trim()
-          .toLowerCase();
-        const filterResult = document.getElementById("filter-result").value;
-
-        let html = "<h2>📊 プレイヤー情報</h2>";
-        html += `<p><strong>サモナー:</strong> ${data.summoner.game_name}#${data.summoner.tag_line}</p>`;
-        html += `<p><strong>レベル:</strong> ${data.summoner.level}</p>`;
-
-        if (data.ranked_stats && data.ranked_stats.length > 0) {
-          html += "<h3>ランク情報</h3>";
-          data.ranked_stats.forEach((rank) => {
-            const rankDisplay =
-              rank.tier === "MASTER" ||
-              rank.tier === "GRANDMASTER" ||
-              rank.tier === "CHALLENGER"
-                ? `${rank.tier} ${rank.leaguePoints} LP`
-                : `${rank.tier} ${rank.rank} ${rank.leaguePoints} LP`;
-            html += `<p><strong>${rank.queueType}:</strong> ${rankDisplay} (${rank.wins}W ${rank.losses}L)</p>`;
-          });
-        }
-
-        // デバッグ: 実際のゲームモード値を確認
-        if (data.matches.length > 0) {
-          const uniqueModes = [
-            ...new Set(data.matches.map((m) => m.game_mode)),
-          ];
-          console.log("📊 実際のゲームモード値:", uniqueModes);
-        }
-
-        // フィルタリング処理
-        let filteredMatches = data.matches.filter((match) => {
-          // ゲームモードでフィルタ（大文字小文字を無視、空白も許容）
-          if (filterGameMode) {
-            const matchMode = match.game_mode.toUpperCase().trim();
-            const filterMode = filterGameMode.toUpperCase().trim();
-            if (matchMode !== filterMode) {
-              return false;
-            }
-          }
-
-          // チャンピオンでフィルタ
-          if (
-            filterChampion &&
-            !match.stats.champion.toLowerCase().includes(filterChampion)
-          ) {
-            return false;
-          }
-
-          // 勝敗でフィルタ
-          if (filterResult === "win" && !match.stats.win) {
-            return false;
-          }
-          if (filterResult === "loss" && match.stats.win) {
-            return false;
-          }
-
-          return true;
-        });
-
-        html += `<h3>最近の試合 (${filteredMatches.length}/${data.matches.length}件)</h3>`;
-
-        if (filteredMatches.length === 0) {
-          html += `<p style="color: #93c5fd; padding: 20px; text-align: center;">フィルター条件に一致する試合が見つかりませんでした。</p>`;
-        } else {
-          filteredMatches.forEach((match, index) => {
-            const isArena = match.game_mode.toUpperCase() === "CHERRY";
-            const winClass = match.stats.win ? "win" : "loss";
-
-            // Arenaモードの場合は順位表示、それ以外は勝敗表示
-            let result;
-            if (isArena) {
-              const placement = match.stats.placement || "?";
-              const placementEmoji =
-                placement <= 2 ? "🥇" : placement <= 4 ? "🥈" : "🥉";
-              result = `${placementEmoji} ${placement}位`;
-            } else {
-              result = match.stats.win ? "🟢 勝利" : "🔴 敗北";
-            }
-
-            const championIcon = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${match.stats.champion}.png`;
-            const gameMode = getGameModeDisplayName(match.game_mode);
-
-            html += `
-                      <div class="match-item ${winClass}">
-                          <img src="${championIcon}" alt="${
-              match.stats.champion
-            }" class="champion-icon" onerror="this.style.display='none'">
-                          <div class="match-info">
-                              <strong>${
-                                index + 1
-                              }. ${result}</strong> | ${gameMode} | ${
-              match.game_duration
-            }<br>
-                              <strong>チャンピオン:</strong> ${
-                                match.stats.champion
-                              } | 
-                              <strong>KDA:</strong> ${match.stats.kills}/${
-              match.stats.deaths
-            }/${match.stats.assists} (${match.stats.kda})<br>
-                              <strong>CS:</strong> ${match.stats.cs} | 
-                              <strong>ダメージ:</strong> ${match.stats.damage.toLocaleString()} | 
-                              <strong>視界スコア:</strong> ${
-                                match.stats.vision_score
-                              }
-                          </div>
-                      </div>
-                  `;
-          });
-        }
-
-        resultDiv.innerHTML = html;
-        showResult("history");
-      }
-
-      async function getCurrentGame() {
-        const riotId = document.getElementById("game-riot-id").value.trim();
-
-        if (!riotId) {
-          showError(
-            "game",
-            "Riot IDを入力してください（例: Hide on Bush#KR1）"
-          );
-          return;
-        }
-
-        hideError("game");
-        showLoading("game");
-        hideResult("game");
-
-        try {
-          // Riot IDをパース
-          const { gameName, tagLine } = parseRiotId(riotId);
-
-          const response = await fetch("/api/current_game", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              game_name: gameName,
-              tag_line: tagLine,
-            }),
-          });
-
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.error || "エラーが発生しました");
-          }
-
-          displayCurrentGame(data);
-        } catch (error) {
-          showError("game", error.message);
-        } finally {
-          hideLoading("game");
-        }
-      }
-
-      function displayCurrentGame(data) {
-        const resultDiv = document.getElementById("game-result");
-
-        let html = "<h2>⚔️ 試合情報</h2>";
-        html += `<p><strong>ゲームモード:</strong> ${data.game_mode}</p>`;
-
-        const team1 = data.players.filter((p) => p.team_id === 100);
-        const team2 = data.players.filter((p) => p.team_id === 200);
-
-        html += '<div class="team team1"><h3>🔵 青チーム</h3>';
-        team1.forEach((player) => {
-          html += `<div class="player-item">${player.riot_id} - ${player.rank}</div>`;
-        });
-        html += "</div>";
-
-        html += '<div class="team team2"><h3>🔴 赤チーム</h3>';
-        team2.forEach((player) => {
-          html += `<div class="player-item">${player.riot_id} - ${player.rank}</div>`;
-        });
-        html += "</div>";
-
-        resultDiv.innerHTML = html;
-        showResult("game");
-      }
-
-      async function balanceTeams() {
-        const playersText = document
-          .getElementById("balance-players")
-          .value.trim();
-
-        if (!playersText) {
-          showError("balance", "プレイヤーリストを入力してください");
-          return;
-        }
-
-        const riotIds = playersText
-          .split("\n")
-          .map((line) => line.trim())
-          .filter((line) => line);
-
-        if (riotIds.length !== 10) {
-          showError(
-            "balance",
-            "10人のプレイヤーが必要です（現在: " + riotIds.length + "人）"
-          );
-          return;
-        }
-
-        hideError("balance");
-        showLoading("balance");
-        hideResult("balance");
-
-        try {
-          const response = await fetch("/api/balance_teams", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              riot_ids: riotIds,
-            }),
-          });
-
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(data.error || "エラーが発生しました");
-          }
-
-          displayBalancedTeams(data);
-        } catch (error) {
-          showError("balance", error.message);
-        } finally {
-          hideLoading("balance");
-        }
-      }
-
-      function displayBalancedTeams(data) {
-        const resultDiv = document.getElementById("balance-result");
-
-        let html = "<h2>⚖️ チーム組み分け結果</h2>";
-        html += `<p><strong>スコア差:</strong> ${data.score_difference.toFixed(
-          2
-        )}</p>`;
-
-        html += `<div class="team team1">`;
-        html += `<h3>🔵 チーム1 (平均スコア: ${data.team1.average_score})</h3>`;
-        data.team1.players.forEach((player) => {
-          html += `<div class="player-item">${player.riot_id} - ${player.rank_info} (${player.rank_score})</div>`;
-        });
-        html += "</div>";
-
-        html += `<div class="team team2">`;
-        html += `<h3>🔴 チーム2 (平均スコア: ${data.team2.average_score})</h3>`;
-        data.team2.players.forEach((player) => {
-          html += `<div class="player-item">${player.riot_id} - ${player.rank_info} (${player.rank_score})</div>`;
-        });
-        html += "</div>";
-
-        resultDiv.innerHTML = html;
-        showResult("balance");
-      }
-
-      function showLoading(section) {
-        document.getElementById(`${section}-loading`).style.display = "block";
-      }
-
-      function hideLoading(section) {
-        document.getElementById(`${section}-loading`).style.display = "none";
-      }
-
-      function showResult(section) {
-        document.getElementById(`${section}-result`).style.display = "block";
-      }
-
-      function hideResult(section) {
-        document.getElementById(`${section}-result`).style.display = "none";
-      }
-
-      function showError(section, message) {
-        const errorDiv = document.getElementById(`${section}-error`);
-        errorDiv.textContent = message;
-        errorDiv.style.display = "block";
-      }
-
-      function hideError(section) {
-        document.getElementById(`${section}-error`).style.display = "none";
-      }
+      // ページ読み込み時の初期化
+      window.addEventListener("DOMContentLoaded", () => {
+        loadChampions(); // フィルター用
+        loadRunes();
+        loadChampionsList();
+        loadItemsList();
+      });
     </script>
   </body>
 </html>
