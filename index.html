@@ -377,6 +377,9 @@
         border-left: 5px solid #667eea;
         transition: all 0.3s ease;
         color: #c9d1d9;
+        display: flex;
+        align-items: center;
+        gap: 15px;
       }
 
       .match-item:hover {
@@ -400,6 +403,19 @@
 
       .match-item.loss:hover {
         box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+      }
+
+      .champion-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 10px;
+        border: 2px solid rgba(102, 126, 234, 0.5);
+        object-fit: cover;
+        flex-shrink: 0;
+      }
+
+      .match-info {
+        flex: 1;
       }
 
       /* チーム */
@@ -531,11 +547,10 @@
 
               <div class="input-group">
                 <label>🏆 チャンピオン</label>
-                <input
-                  type="text"
-                  id="filter-champion"
-                  placeholder="例: Yasuo, Ahri"
-                />
+                <select id="filter-champion">
+                  <option value="">すべて</option>
+                  <!-- Data Dragonから動的に追加 -->
+                </select>
               </div>
 
               <div class="input-group">
@@ -612,6 +627,46 @@
     </div>
 
     <script>
+      // Data Dragon用のグローバル変数
+      let DDRAGON_VERSION = '14.1.1'; // デフォルト値
+
+      // Data Dragonからチャンピオンリストを取得
+      async function loadChampions() {
+        try {
+          // 最新バージョンを取得
+          const versionResponse = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
+          const versions = await versionResponse.json();
+          DDRAGON_VERSION = versions[0]; // グローバル変数に保存
+
+          // チャンピオンデータを取得（日本語）
+          const championResponse = await fetch(
+            `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/data/ja_JP/champion.json`
+          );
+          const championData = await championResponse.json();
+
+          // チャンピオンリストをソート
+          const champions = Object.values(championData.data).sort((a, b) => 
+            a.name.localeCompare(b.name, 'ja')
+          );
+
+          // セレクトボックスに追加
+          const selectElement = document.getElementById('filter-champion');
+          champions.forEach(champion => {
+            const option = document.createElement('option');
+            option.value = champion.id; // 英語ID（例: Yasuo）
+            option.textContent = `${champion.name} (${champion.id})`; // 日本語名 (英語ID)
+            selectElement.appendChild(option);
+          });
+
+          console.log(`✅ ${champions.length}体のチャンピオンを読み込みました`);
+        } catch (error) {
+          console.error('❌ チャンピオンリストの読み込みに失敗しました:', error);
+        }
+      }
+
+      // ページ読み込み時にチャンピオンリストを取得
+      window.addEventListener('DOMContentLoaded', loadChampions);
+
       function showTab(tabName) {
         // すべてのタブとタブコンテンツを非表示
         document
@@ -727,20 +782,19 @@
           filteredMatches.forEach((match, index) => {
             const winClass = match.stats.win ? "win" : "loss";
             const result = match.stats.win ? "🟢 勝利" : "🔴 敗北";
+            const championIcon = `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${match.stats.champion}.png`;
+            
             html += `
                       <div class="match-item ${winClass}">
-                          <strong>${index + 1}. ${result}</strong> | ${
-              match.game_mode
-            } | ${match.game_duration}<br>
-                          <strong>チャンピオン:</strong> ${
-                            match.stats.champion
-                          } | 
-                          <strong>KDA:</strong> ${match.stats.kills}/${
-              match.stats.deaths
-            }/${match.stats.assists} (${match.stats.kda})<br>
-                          <strong>CS:</strong> ${match.stats.cs} | 
-                          <strong>ダメージ:</strong> ${match.stats.damage.toLocaleString()} | 
-                          <strong>視界スコア:</strong> ${match.stats.vision_score}
+                          <img src="${championIcon}" alt="${match.stats.champion}" class="champion-icon" onerror="this.style.display='none'">
+                          <div class="match-info">
+                              <strong>${index + 1}. ${result}</strong> | ${match.game_mode} | ${match.game_duration}<br>
+                              <strong>チャンピオン:</strong> ${match.stats.champion} | 
+                              <strong>KDA:</strong> ${match.stats.kills}/${match.stats.deaths}/${match.stats.assists} (${match.stats.kda})<br>
+                              <strong>CS:</strong> ${match.stats.cs} | 
+                              <strong>ダメージ:</strong> ${match.stats.damage.toLocaleString()} | 
+                              <strong>視界スコア:</strong> ${match.stats.vision_score}
+                          </div>
                       </div>
                   `;
           });
