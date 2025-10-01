@@ -41,14 +41,26 @@ async function fetchMatchHistory() {
   const [gameName, tagLine] = riotId.split("#");
 
   try {
-    const response = await fetch(
-      `/api/match_history?game_name=${encodeURIComponent(
-        gameName
-      )}&tag_line=${encodeURIComponent(tagLine)}`
-    );
+    // まずは基本版APIを試行
+    const apiEndpoint = `/api/match_history_simple?game_name=${encodeURIComponent(
+      gameName
+    )}&tag_line=${encodeURIComponent(tagLine)}`;
+    
+    console.log('Trying API endpoint:', apiEndpoint);
+    let response = await fetch(apiEndpoint);
 
+    // シンプル版が失敗した場合は通常版を試行
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      console.warn('Simple API failed, trying regular API...');
+      const fallbackEndpoint = `/api/match_history?game_name=${encodeURIComponent(
+        gameName
+      )}&tag_line=${encodeURIComponent(tagLine)}`;
+      
+      response = await fetch(fallbackEndpoint);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
     }
 
     const data = await response.json();
