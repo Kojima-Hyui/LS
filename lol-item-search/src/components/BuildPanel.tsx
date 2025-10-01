@@ -25,6 +25,7 @@ export default function BuildPanel({
   const [buildName, setBuildName] = useState('My Custom Build');
   const [buildMap, setBuildMap] = useState<'SR' | 'HA' | 'any'>('SR');
   const [buildMode, setBuildMode] = useState<'CLASSIC' | 'ARAM' | 'any'>('CLASSIC');
+  const [showImportGuide, setShowImportGuide] = useState(false);
 
   const removeItemFromBuild = (itemId: string) => {
     const newBuildItems = buildItems.filter(i => i.id !== itemId);
@@ -77,7 +78,7 @@ export default function BuildPanel({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${buildName.replace(/[^a-zA-Z0-9]/g, '_')}.json`;
+    a.download = `${buildName.replace(/[^a-zA-Z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g, '_')}_itemset.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -117,11 +118,67 @@ export default function BuildPanel({
     }
   };
 
+  const ImportGuideModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-60 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-full overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b">
+          <h2 className="text-xl font-semibold text-gray-900">LoL Item Set Import Guide</h2>
+          <button
+            onClick={() => setShowImportGuide(false)}
+            className="p-2 hover:bg-gray-100 rounded transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="p-6 overflow-y-auto max-h-96">
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">📋 Step 1: Download the Item Set</h3>
+              <p className="text-sm text-gray-600">Click &quot;📥 Download for LoL Import&quot; to download your custom item set as a JSON file.</p>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">📁 Step 2: Locate LoL Config Folder</h3>
+              <p className="text-sm text-gray-600 mb-2">Navigate to your League of Legends installation folder:</p>
+              <div className="bg-gray-100 p-3 rounded text-sm font-mono">
+                C:\Riot Games\League of Legends\Config\Global\Recommended\
+              </div>
+              <p className="text-xs text-gray-500 mt-1">If the &quot;Global&quot; or &quot;Recommended&quot; folders don&apos;t exist, create them.</p>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">📄 Step 3: Copy the JSON File</h3>
+              <p className="text-sm text-gray-600">Place the downloaded JSON file into the Recommended folder.</p>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">🎮 Step 4: Access In-Game</h3>
+              <p className="text-sm text-gray-600">Your custom item set will appear in the in-game shop under &quot;Item Sets&quot;.</p>
+            </div>
+            
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-blue-900 mb-2">💡 Pro Tips:</h4>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>• Item sets work for all champions when placed in Global/Recommended</li>
+                <li>• Restart League of Legends client to see new item sets</li>
+                <li>• You can create multiple item sets for different strategies</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
-    <div className={`fixed top-0 right-0 h-full w-96 bg-white shadow-xl transform transition-transform duration-300 z-50 ${
-      isOpen ? 'translate-x-0' : 'translate-x-full'
-    }`}>
-      <div className="flex flex-col h-full">
+    <>
+      {showImportGuide && <ImportGuideModal />}
+      <div className={`fixed top-0 right-0 h-full w-96 bg-white shadow-xl transform transition-transform duration-300 z-50 ${
+        isOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}>
+        <div className="flex flex-col h-full">
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold text-gray-900">Build Creator</h2>
           <button
@@ -158,7 +215,7 @@ export default function BuildPanel({
                   </label>
                   <select
                     value={buildMap}
-                    onChange={(e) => setBuildMap(e.target.value as any)}
+                    onChange={(e) => setBuildMap(e.target.value as 'SR' | 'HA' | 'any')}
                     className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
                     <option value="SR">Summoner's Rift</option>
@@ -173,7 +230,7 @@ export default function BuildPanel({
                   </label>
                   <select
                     value={buildMode}
-                    onChange={(e) => setBuildMode(e.target.value as any)}
+                    onChange={(e) => setBuildMode(e.target.value as 'CLASSIC' | 'ARAM' | 'any')}
                     className="w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
                     <option value="CLASSIC">Classic</option>
@@ -261,22 +318,31 @@ export default function BuildPanel({
             </button>
           </div>
           
-          <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-2">
             <button
               onClick={downloadItemSet}
-              className="px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+              className="w-full px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
             >
-              Download JSON
+              📥 Download for LoL Import
             </button>
-            <button
-              onClick={copyToClipboard}
-              className="px-3 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors"
-            >
-              Copy JSON
-            </button>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={copyToClipboard}
+                className="px-3 py-2 bg-gray-600 text-white text-sm rounded hover:bg-gray-700 transition-colors"
+              >
+                📋 Copy JSON
+              </button>
+              <button
+                onClick={() => setShowImportGuide(true)}
+                className="px-3 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition-colors"
+              >
+                📖 Import Guide
+              </button>
+            </div>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

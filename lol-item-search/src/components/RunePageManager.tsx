@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { RunePage } from '@/types/rune';
 import { RuneAPI } from '@/lib/runeApi';
 
@@ -16,6 +17,7 @@ export default function RunePageManager({
   onDeletePage, 
   onClose 
 }: RunePageManagerProps) {
+  const [showImportGuide, setShowImportGuide] = useState(false);
   const getTreeName = (treeId: number) => {
     // This is a simplified approach - in a full implementation, 
     // you'd want to pass the tree data down as props
@@ -30,12 +32,26 @@ export default function RunePageManager({
   };
 
   const exportPage = (page: RunePage) => {
-    const json = JSON.stringify(page, null, 2);
+    // LoL Client API用のフォーマット
+    const runePageForImport = {
+      name: page.name,
+      primaryStyleId: page.primaryTreeId,
+      subStyleId: page.secondaryTreeId,
+      selectedPerkIds: [
+        ...page.selectedRunes.primaryRunes,
+        ...page.selectedRunes.secondaryRunes,
+        page.statShards.offense,
+        page.statShards.flex, 
+        page.statShards.defense
+      ]
+    };
+    
+    const json = JSON.stringify(runePageForImport, null, 2);
     const blob = new Blob([json], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${page.name.replace(/[^a-zA-Z0-9]/g, '_')}_rune_page.json`;
+    a.download = `${page.name.replace(/[^a-zA-Z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/g, '_')}_runepage.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -52,19 +68,89 @@ export default function RunePageManager({
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-full overflow-hidden">
+  const RuneImportGuideModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-60 flex items-center justify-center p-4">
+      <div className="bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-full overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b border-gray-600">
-          <h2 className="text-xl font-semibold text-white">Saved Rune Pages</h2>
+          <h2 className="text-xl font-semibold text-white">LoL Rune Page Import Guide</h2>
           <button
-            onClick={onClose}
+            onClick={() => setShowImportGuide(false)}
             className="p-2 hover:bg-gray-700 rounded transition-colors"
           >
             <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
+        </div>
+        <div className="p-6 overflow-y-auto max-h-96">
+          <div className="space-y-4">
+            <div>
+              <h3 className="font-semibold text-yellow-400 mb-2">⚠️ Important Note</h3>
+              <p className="text-sm text-gray-300">Rune pages cannot be directly imported into League of Legends like item sets. However, you can use third-party apps or manually recreate them.</p>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold text-white mb-2">🔄 Option 1: Third-Party Apps (Recommended)</h3>
+              <div className="space-y-2 text-sm text-gray-300">
+                <p>Use apps like <strong>Blitz.gg</strong>, <strong>Mobalytics</strong>, or <strong>Porofessor</strong> that can automatically import rune pages:</p>
+                <ul className="list-disc list-inside space-y-1 ml-4">
+                  <li>Download and install the app</li>
+                  <li>Enable auto-import in settings</li>
+                  <li>The app will automatically set up runes during champion select</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold text-white mb-2">✍️ Option 2: Manual Recreation</h3>
+              <div className="space-y-2 text-sm text-gray-300">
+                <p>Use the exported JSON data to manually recreate the rune page:</p>
+                <ul className="list-disc list-inside space-y-1 ml-4">
+                  <li>Open League of Legends client</li>
+                  <li>Go to Collection → Runes</li>
+                  <li>Create a new rune page</li>
+                  <li>Select runes according to the exported data</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="bg-blue-900 bg-opacity-50 p-4 rounded-lg">
+              <h4 className="font-semibold text-blue-300 mb-2">💡 Pro Tips:</h4>
+              <ul className="text-sm text-blue-200 space-y-1">
+                <li>• Copy the exported JSON to reference the exact rune IDs</li>
+                <li>• Third-party apps are the most convenient for automatic imports</li>
+                <li>• You can create unlimited rune pages manually</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {showImportGuide && <RuneImportGuideModal />}
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-full overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b border-gray-600">
+          <h2 className="text-xl font-semibold text-white">Saved Rune Pages</h2>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowImportGuide(true)}
+              className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+            >
+              📖 Import Guide
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-700 rounded transition-colors"
+            >
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div className="p-6 overflow-y-auto max-h-96">
@@ -128,7 +214,7 @@ export default function RunePageManager({
                       onClick={() => exportPage(page)}
                       className="px-3 py-1.5 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors"
                     >
-                      Export
+                      📥 Export
                     </button>
                     <button
                       onClick={() => copyToClipboard(page)}
@@ -142,7 +228,8 @@ export default function RunePageManager({
             </div>
           )}
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { RunePage } from '@/types/rune';
+import type { RunePage } from '@/types/rune';
 import { RuneAPI, RuneTreeApiData } from '@/lib/runeApi';
 import RuneTreeSelection from '@/components/RuneTreeSelection';
 import RuneSlotSelection from '@/components/RuneSlotSelection';

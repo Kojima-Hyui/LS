@@ -10,7 +10,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from riot_client import RiotAPIClient
-from utils import get_player_stats, format_game_duration
+from utils import get_player_stats, format_game_duration, calculate_performance_score, get_detailed_match_info
 
 
 class handler(BaseHTTPRequestHandler):
@@ -97,6 +97,12 @@ class handler(BaseHTTPRequestHandler):
                 if match_data:
                     player_stats = get_player_stats(match_data, puuid)
                     if player_stats:
+                        # パフォーマンススコアを計算
+                        performance_score = calculate_performance_score(player_stats)
+                        
+                        # 詳細な試合情報を取得
+                        detailed_info = get_detailed_match_info(match_data)
+                        
                         matches.append({
                             'match_id': match_id,
                             'game_duration': format_game_duration(
@@ -104,7 +110,12 @@ class handler(BaseHTTPRequestHandler):
                             ),
                             'game_mode': match_data['info']['gameMode'],
                             'game_creation': match_data['info']['gameCreation'],
-                            'stats': player_stats
+                            'queue_id': match_data['info'].get('queueId'),
+                            'game_version': match_data['info'].get('gameVersion'),
+                            'map_id': match_data['info'].get('mapId'),
+                            'stats': player_stats,
+                            'performance_score': performance_score,
+                            'detailed_info': detailed_info
                         })
             
             # 成功レスポンス
