@@ -18,6 +18,49 @@ async function fetchLatestVersion() {
   }
 }
 
+// デバッグ用API テスト関数
+async function testDebugAPI() {
+  try {
+    console.log('Testing debug API...');
+    const response = await fetch('/api/debug');
+    const data = await response.json();
+    console.log('Debug API Response:', data);
+    alert('Debug info logged to console. Check F12 developer tools.');
+  } catch (error) {
+    console.error('Debug API Error:', error);
+    alert(`Debug API failed: ${error.message}`);
+  }
+}
+
+// テスト用API テスト関数
+async function testBasicAPI() {
+  try {
+    console.log('Testing basic API...');
+    const response = await fetch('/api/test');
+    const data = await response.json();
+    console.log('Test API Response:', data);
+    alert('Basic API is working! Check console for details.');
+  } catch (error) {
+    console.error('Test API Error:', error);
+    alert(`Test API failed: ${error.message}`);
+  }
+}
+
+// 最小限APIテスト
+async function testMinimalAPI() {
+  try {
+    console.log('Testing minimal match API...');
+    const response = await fetch('/api/match_minimal?game_name=Hide%20on%20Bush&tag_line=KR1');
+    console.log('Response status:', response.status);
+    const data = await response.json();
+    console.log('Minimal API Response:', data);
+    alert('Minimal API test completed! Check console for details.');
+  } catch (error) {
+    console.error('Minimal API Error:', error);
+    alert(`Minimal API failed: ${error.message}`);
+  }
+}
+
 // 戦績取得
 async function fetchMatchHistory() {
   const riotId = document.getElementById("game-riot-id").value.trim();
@@ -41,25 +84,38 @@ async function fetchMatchHistory() {
   const [gameName, tagLine] = riotId.split("#");
 
   try {
+    let response;
+    let apiEndpoint;
+    
     // まずは基本版APIを試行
-    const apiEndpoint = `/api/match_history_simple?game_name=${encodeURIComponent(
+    apiEndpoint = `/api/match_history_simple?game_name=${encodeURIComponent(
       gameName
     )}&tag_line=${encodeURIComponent(tagLine)}`;
     
-    console.log('Trying API endpoint:', apiEndpoint);
-    let response = await fetch(apiEndpoint);
+    console.log('Trying Simple API endpoint:', apiEndpoint);
+    response = await fetch(apiEndpoint);
 
     // シンプル版が失敗した場合は通常版を試行
     if (!response.ok) {
       console.warn('Simple API failed, trying regular API...');
-      const fallbackEndpoint = `/api/match_history?game_name=${encodeURIComponent(
+      apiEndpoint = `/api/match_history?game_name=${encodeURIComponent(
         gameName
       )}&tag_line=${encodeURIComponent(tagLine)}`;
       
-      response = await fetch(fallbackEndpoint);
+      response = await fetch(apiEndpoint);
       
+      // 通常版も失敗した場合は独立版を試行
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.warn('Regular API failed, trying independent API...');
+        apiEndpoint = `/api/match_history_independent?game_name=${encodeURIComponent(
+          gameName
+        )}&tag_line=${encodeURIComponent(tagLine)}`;
+        
+        response = await fetch(apiEndpoint);
+        
+        if (!response.ok) {
+          throw new Error(`All APIs failed! Last status: ${response.status}`);
+        }
       }
     }
 

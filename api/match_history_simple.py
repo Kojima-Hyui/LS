@@ -9,8 +9,25 @@ import sys
 # APIモジュールのパスを追加
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from riot_client import RiotAPIClient
-from utils import get_player_stats, format_game_duration
+# 安全なインポート
+try:
+    from riot_client import RiotAPIClient
+    from utils import get_player_stats, format_game_duration
+    IMPORTS_OK = True
+except ImportError as e:
+    print(f"Import error: {e}")
+    IMPORTS_OK = False
+    
+    # フォールバック用のダミー関数
+    class RiotAPIClient:
+        def __init__(self, *args, **kwargs):
+            pass
+    
+    def get_player_stats(*args):
+        return {}
+    
+    def format_game_duration(seconds):
+        return f"{seconds//60}:{seconds%60:02d}"
 
 
 class handler(BaseHTTPRequestHandler):
@@ -69,6 +86,15 @@ class handler(BaseHTTPRequestHandler):
         """戦績取得の共通処理（シンプル版）"""
         try:
             print(f"Processing match history for {game_name}#{tag_line}")
+            
+            # インポートチェック
+            if not IMPORTS_OK:
+                self.send_error_response({
+                    'error': 'API dependencies not available',
+                    'debug': 'Module import failed',
+                    'fallback': True
+                }, 503)
+                return
             
             # Riot APIクライアント初期化
             riot_client = RiotAPIClient(region=region, routing=routing)

@@ -60,6 +60,13 @@
           </div>
 
           <button onclick="fetchMatchHistory()">🔍 戦績を取得</button>
+          
+          <!-- デバッグボタン（開発用） -->
+          <div style="margin-top: 10px; font-size: 12px;">
+            <button onclick="testBasicAPI()" style="padding: 5px 10px; margin-right: 5px; background: #4a5568; color: white; border: none; border-radius: 4px;">🧪 Basic Test</button>
+            <button onclick="testDebugAPI()" style="padding: 5px 10px; margin-right: 5px; background: #2d3748; color: white; border: none; border-radius: 4px;">🔍 Debug Info</button>
+            <button onclick="testMinimalAPI()" style="padding: 5px 10px; background: #1a365d; color: white; border: none; border-radius: 4px;">⚡ Minimal API</button>
+          </div>
 
           <!-- フィルターセクション -->
           <div id="match-filters" style="display: none; margin-top: 20px;">
