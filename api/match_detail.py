@@ -9,8 +9,14 @@ import sys
 # APIモジュールのパスを追加
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from riot_client import RiotAPIClient
-from utils import get_player_stats, format_game_duration, calculate_performance_score, get_detailed_match_info
+try:
+    from riot_client import RiotAPIClient
+    from utils import get_player_stats, format_game_duration, calculate_performance_score, get_detailed_match_info
+except ImportError:
+    # フォールバック: 親ディレクトリから読み込み
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from api.riot_client import RiotAPIClient
+    from api.utils import get_player_stats, format_game_duration, calculate_performance_score, get_detailed_match_info
 
 
 class handler(BaseHTTPRequestHandler):

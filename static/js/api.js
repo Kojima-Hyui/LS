@@ -198,14 +198,41 @@ function displayMatchHistory(matches) {
 
 // 試合詳細表示
 async function showMatchDetail(matchId) {
+  console.log('試合詳細を取得中:', matchId);
+  
+  // 暫定対応: 新APIエンドポイントがデプロイされるまで、既存データから詳細モーダルを表示
+  const matchData = allMatches.find(match => match.match_id === matchId);
+  if (matchData) {
+    console.log('既存データから詳細表示:', matchData);
+    displaySimpleMatchDetail(matchData);
+    return;
+  }
+  
   try {
-    const response = await fetch(`/api/match_detail?match_id=${encodeURIComponent(matchId)}`);
+    const apiUrl = `/api/match_detail?match_id=${encodeURIComponent(matchId)}`;
+    console.log('APIコール:', apiUrl);
+    
+    const response = await fetch(apiUrl);
+    console.log('レスポンス:', response.status, response.statusText);
     
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      // 404の場合は既存データで表示
+      if (response.status === 404) {
+        console.log('新APIが利用できません。既存データで表示します。');
+        const matchData = allMatches.find(match => match.match_id === matchId);
+        if (matchData) {
+          displaySimpleMatchDetail(matchData);
+          return;
+        }
+      }
+      
+      const errorText = await response.text();
+      console.error('API エラーレスポンス:', errorText);
+      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
     }
     
     const data = await response.json();
+    console.log('取得データ:', data);
     
     if (data.error) {
       alert(`エラー: ${data.error}`);
@@ -216,8 +243,150 @@ async function showMatchDetail(matchId) {
     
   } catch (error) {
     console.error('試合詳細取得エラー:', error);
-    alert(`試合詳細の取得に失敗しました: ${error.message}`);
+    // エラーの場合も既存データで表示を試行
+    const matchData = allMatches.find(match => match.match_id === matchId);
+    if (matchData) {
+      console.log('エラーのため既存データで表示');
+      displaySimpleMatchDetail(matchData);
+    } else {
+      alert(`試合詳細の取得に失敗しました: ${error.message}`);
+    }
   }
+}
+
+// 簡単な試合詳細表示（既存データ用）
+function displaySimpleMatchDetail(matchData) {
+  const modal = document.createElement('div');
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  `;
+  
+  const modalContent = document.createElement('div');
+  modalContent.className = 'match-detail-modal';
+  modalContent.style.cssText = `
+    border-radius: 12px;
+    max-width: 800px;
+    max-height: 90vh;
+    width: 100%;
+    overflow-y: auto;
+    padding: 24px;
+    color: white;
+  `;
+  
+  const stats = matchData.stats || {};
+  const isArena = matchData.game_mode === "CHERRY";
+  
+  let resultText, resultClass;
+  if (isArena) {
+    const placement = stats.placement || "?";
+    resultClass = placement <= 2 ? "team-blue" : (placement <= 4 ? "team-neutral" : "team-red");
+    resultText = `🏆 ${placement}位`;
+  } else {
+    const win = stats.win;
+    resultClass = win ? "team-blue" : "team-red";
+    resultText = win ? "🏆 勝利" : "💀 敗北";
+  }
+  
+  const championIcon = stats.champion 
+    ? `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${stats.champion}.png`
+    : "";
+  
+  const items = stats.items || [];
+  const itemsHtml = items.slice(0, 6).map(itemId => 
+    `<img src="https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/item/${itemId}.png" 
+     alt="Item ${itemId}" style="width: 48px; height: 48px; margin: 2px; border-radius: 4px;" 
+     onerror="this.style.display='none'">`
+  ).join('');
+  
+  modalContent.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h2 style="margin: 0; color: #4299e1;">試合詳細</h2>
+      <button onclick="this.closest('[style*=\"position: fixed\"]').remove()" 
+              class="close-button">
+        閉じる
+      </button>
+    </div>
+    
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div class="match-card ${resultClass}" style="padding: 20px; margin: 0;">
+        <h3>${resultText} - ${matchData.game_mode} (${matchData.game_duration})</h3>
+        
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin: 20px 0;">
+          ${championIcon ? `<img src="${championIcon}" alt="${stats.champion}" style="width: 80px; height: 80px; border-radius: 12px;">` : ''}
+          
+          <div style="text-align: left;">
+            <h4 style="margin: 0; color: white;">${stats.champion || "不明"} (Lv.${stats.champion_level || 1})</h4>
+            <div style="margin: 10px 0;">
+              <span style="color: #9ae6b4; font-size: 18px; font-weight: bold;">
+                KDA: ${stats.kills || 0}/${stats.deaths || 0}/${stats.assists || 0} (${stats.kda || 0})
+              </span>
+            </div>
+            
+            <div style="font-size: 14px; color: #e2e8f0;">
+              <div>CS: ${stats.cs || 0} (${stats.cs_per_minute || 0}/min)</div>
+              <div>ダメージ: ${stats.damage?.total_damage_to_champions ? stats.damage.total_damage_to_champions.toLocaleString() : "N/A"}</div>
+              <div>ゴールド: ${stats.gold ? stats.gold.toLocaleString() : "N/A"} (${stats.gold_per_minute || 0}/min)</div>
+              <div>ビジョンスコア: ${stats.vision?.vision_score || 0}</div>
+            </div>
+            
+            ${matchData.performance_score ? `
+              <div style="margin-top: 10px;">
+                <span class="performance-score ${matchData.performance_score >= 70 ? 'excellent' : matchData.performance_score >= 50 ? 'good' : 'poor'}">
+                  パフォーマンススコア: ${matchData.performance_score}
+                </span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+        
+        ${itemsHtml ? `
+          <div style="margin-top: 20px;">
+            <h4 style="color: #a0aec0; margin-bottom: 10px;">アイテム</h4>
+            <div style="display: flex; justify-content: center; gap: 4px;">
+              ${itemsHtml}
+            </div>
+          </div>
+        ` : ''}
+        
+        ${stats.largest_multi_kill > 1 || stats.penta_kills > 0 || stats.quadra_kills > 0 ? `
+          <div class="achievements-badge" style="margin-top: 20px;">
+            <span style="font-size: 14px; color: #ffd700; font-weight: bold;">
+              ${stats.penta_kills > 0 ? '🏆 PENTAKILL! ' : ''}
+              ${stats.quadra_kills > 0 ? '⭐ QUADRAKILL! ' : ''}
+              ${stats.triple_kills > 0 ? '🔥 Triple Kill ' : ''}
+              ${stats.first_blood_kill ? '🩸 First Blood ' : ''}
+            </span>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+    
+    <div style="text-align: center; color: #a0aec0; font-size: 12px; margin-top: 20px;">
+      ※ 簡易表示モード - 全プレイヤー詳細は今後のアップデートで利用可能になります
+    </div>
+  `;
+  
+  modal.appendChild(modalContent);
+  document.body.appendChild(modal);
+  
+  // ESCキーで閉じる
+  const handleEscape = (e) => {
+    if (e.key === 'Escape') {
+      modal.remove();
+      document.removeEventListener('keydown', handleEscape);
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
 }
 
 // 試合詳細モーダル表示
