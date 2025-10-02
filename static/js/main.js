@@ -17,3 +17,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("✅ 初期化完了");
 });
+
+// パフォーマンス分析実行
+async function analyzePerformance() {
+  const riotId = document.getElementById("performance-riot-id").value.trim();
+  const matchCount = parseInt(document.getElementById("performance-match-count").value);
+  
+  if (!riotId) {
+    const errorEl = document.getElementById("performance-error");
+    errorEl.textContent = "⚠️ Riot IDを入力してください";
+    errorEl.style.display = "block";
+    return;
+  }
+  
+  await loadDetailedPerformanceAnalysis(riotId, matchCount);
+}

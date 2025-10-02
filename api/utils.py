@@ -157,8 +157,16 @@ def get_player_stats(match_data: Dict, puuid: str) -> Optional[Dict]:
                 
                 # チーム情報
                 "team_id": participant.get("teamId"),
-                "team_position": participant.get("teamPosition")
+                "team_position": participant.get("teamPosition"),
+                
+                # ゲーム時間（パフォーマンス計算用）
+                "game_duration": match_data.get("info", {}).get("gameDuration", 1800)
             }
+            
+            # 詳細パフォーマンススコア計算
+            player_stats["performance_analysis"] = calculate_performance_score(player_stats)
+            
+            return player_stats
     return None
 
 
@@ -273,29 +281,170 @@ def get_match_timeline_events(match_data: Dict, puuid: str) -> List[Dict]:
     return []
 
 
-def calculate_performance_score(stats: Dict) -> float:
+def calculate_performance_score(stats: Dict) -> Dict:
     """
-    パフォーマンススコアを計算
+    詳細パフォーマンススコアを計算
     
     Args:
         stats: プレイヤー統計
         
     Returns:
-        パフォーマンススコア (0-100)
+        詳細パフォーマンススコア情報
     """
     if not stats:
-        return 0.0
+        return {
+            'total_score': 0.0,
+            'breakdown': {
+                'farming_score': 0,
+                'combat_score': 0,
+                'vision_score': 0,
+                'objective_score': 0,
+                'gold_efficiency': 0
+            },
+            'percentile_rank': 0
+        }
     
-    # 基本スコア計算
-    kda_score = min(stats.get("kda", 0) * 10, 40)
-    cs_score = min(stats.get("cs_per_minute", 0) * 2, 20)
-    damage_score = min(stats.get("damage_per_minute", 0) / 100, 20)
-    vision_score = min(stats.get("vision", {}).get("vision_score", 0) / 2, 10)
-    gold_score = min(stats.get("gold_per_minute", 0) / 100, 10)
+    # ポジション取得（デフォルトはMID）
+    position = stats.get("position", "MID")
     
-    total_score = kda_score + cs_score + damage_score + vision_score + gold_score
+    # 各スコア計算
+    farming_score = calculate_farming_efficiency(stats, position)
+    combat_score = calculate_combat_effectiveness(stats)
+    vision_score = calculate_vision_control(stats, position)
+    objective_score = calculate_objective_participation(stats)
+    gold_efficiency = calculate_gold_efficiency(stats)
     
-    return round(min(total_score, 100), 1)
+    # 総合スコア計算（重み付け）
+    total_score = (
+        farming_score * 0.20 +      # ファーム 20%
+        combat_score * 0.25 +       # 戦闘 25%
+        vision_score * 0.20 +       # 視界 20%
+        objective_score * 0.15 +    # オブジェクト 15%
+        gold_efficiency * 0.20      # ゴールド効率 20%
+    )
+    
+    return {
+        'total_score': round(min(total_score, 100), 1),
+        'breakdown': {
+            'farming_score': round(farming_score, 1),
+            'combat_score': round(combat_score, 1),
+            'vision_score': round(vision_score, 1),
+            'objective_score': round(objective_score, 1),
+            'gold_efficiency': round(gold_efficiency, 1)
+        },
+        'percentile_rank': calculate_percentile_rank(total_score, position, stats.get('champion'))
+    }
+
+
+def calculate_farming_efficiency(stats: Dict, position: str) -> float:
+    """ファーム効率スコア (0-20点)"""
+    cs_per_min = stats.get('cs_per_minute', 0)
+    
+    # ロール別基準値
+    role_cs_benchmarks = {
+        'TOP': 7.5, 'JUNGLE': 6.0, 'MIDDLE': 8.0, 'MID': 8.0,
+        'BOTTOM': 8.5, 'ADC': 8.5, 'UTILITY': 2.0, 'SUPPORT': 2.0
+    }
+    
+    benchmark = role_cs_benchmarks.get(position, 7.0)
+    if benchmark == 0:
+        return 20.0  # サポートなど、CSが重要でないロール
+    
+    efficiency_ratio = min(cs_per_min / benchmark, 1.5)
+    return min(efficiency_ratio * 20, 20)
+
+
+def calculate_combat_effectiveness(stats: Dict) -> float:
+    """戦闘効率スコア (0-25点)"""
+    kda = stats.get('kda', 0)
+    damage_per_min = stats.get('damage_per_minute', 0)
+    kills = stats.get('kills', 0)
+    assists = stats.get('assists', 0)
+    deaths = stats.get('deaths', 1)
+    
+    # KDA基本スコア (0-12点)
+    kda_score = min(kda * 3, 12)
+    
+    # ダメージ効率 (0-8点)
+    damage_score = min(damage_per_min / 200, 8)
+    
+    # キル参加率推定 (0-5点)
+    kill_participation = min((kills + assists) / max(deaths * 3, 1), 1) * 5
+    
+    return kda_score + damage_score + kill_participation
+
+
+def calculate_vision_control(stats: Dict, position: str) -> float:
+    """視界コントロールスコア (0-20点)"""
+    vision_data = stats.get('vision', {})
+    vision_score = vision_data.get('vision_score', 0)
+    wards_placed = vision_data.get('wards_placed', 0)
+    wards_killed = vision_data.get('wards_killed', 0)
+    
+    # ポジション別基準
+    if position in ['UTILITY', 'SUPPORT']:
+        # サポートは視界スコアを重視
+        base_score = min(vision_score / 3, 15)
+        ward_score = min((wards_placed + wards_killed) / 10, 5)
+    else:
+        # その他のロールは低めの基準
+        base_score = min(vision_score / 4, 15)
+        ward_score = min((wards_placed + wards_killed) / 15, 5)
+    
+    return base_score + ward_score
+
+
+def calculate_objective_participation(stats: Dict) -> float:
+    """オブジェクト参加スコア (0-15点)"""
+    # 現在のstatsにオブジェクト情報がない場合の暫定実装
+    # 将来的にはタワー破壊、ドラゴン/バロンキルなどを含める
+    
+    turret_kills = stats.get('turret_kills', 0)
+    dragon_kills = stats.get('dragon_kills', 0)
+    baron_kills = stats.get('baron_kills', 0)
+    
+    # 基本的なオブジェクト参加度
+    objective_score = min(turret_kills * 2 + dragon_kills * 3 + baron_kills * 4, 15)
+    
+    return objective_score
+
+
+def calculate_gold_efficiency(stats: Dict) -> float:
+    """ゴールド効率スコア (0-20点)"""
+    gold_per_min = stats.get('gold_per_minute', 0)
+    gold_earned = stats.get('gold', 0)
+    damage_per_min = stats.get('damage_per_minute', 0)
+    
+    # ゴールド獲得効率 (0-10点)
+    gold_rate_score = min(gold_per_min / 400, 10)
+    
+    # ゴールドダメージ効率 (0-10点)
+    if gold_earned > 0:
+        damage_per_gold = (damage_per_min * stats.get('game_duration', 1800) / 60) / gold_earned
+        efficiency_score = min(damage_per_gold * 5, 10)
+    else:
+        efficiency_score = 0
+    
+    return gold_rate_score + efficiency_score
+
+
+def calculate_percentile_rank(total_score: float, position: str, champion: str) -> float:
+    """パーセンタイルランク計算（暫定実装）"""
+    # 将来的にはデータベースの統計データから計算
+    # 現在は簡易的な計算
+    
+    if total_score >= 80:
+        return 95.0
+    elif total_score >= 70:
+        return 85.0
+    elif total_score >= 60:
+        return 70.0
+    elif total_score >= 50:
+        return 50.0
+    elif total_score >= 40:
+        return 30.0
+    else:
+        return 15.0
 
 
 def get_team_stats(match_data: Dict, team_id: int) -> Dict:

@@ -28,6 +28,9 @@
         <button class="tab-button" onclick="switchTab('current-game')">
           🎯 試合情報
         </button>
+        <button class="tab-button" onclick="switchTab('performance-analysis')">
+          📈 分析
+        </button>
         <button class="tab-button" onclick="switchTab('balance-teams')">
           ⚖️ 組み分け
         </button>
@@ -135,6 +138,42 @@
           <div class="loading" id="current-loading">⏳ 読み込み中...</div>
           <div class="error" id="current-error"></div>
           <div class="result" id="current-result"></div>
+        </div>
+      </div>
+
+      <!-- パフォーマンス分析タブ -->
+      <div id="performance-analysis" class="tab-content">
+        <div class="content-card">
+          <div class="info-box">
+            📈
+            プレイヤーの詳細パフォーマンス分析を行います。<br />
+            最近の試合から総合スコア（0-100）とスキル別分析を提供します。
+          </div>
+
+          <div class="input-group">
+            <label>🎮 Riot ID（ゲーム名#タグライン）</label>
+            <input
+              type="text"
+              id="performance-riot-id"
+              placeholder="例: PlayerName#JP1"
+            />
+          </div>
+
+          <div class="input-group">
+            <label>📊 分析する試合数</label>
+            <select id="performance-match-count">
+              <option value="5">最近5試合</option>
+              <option value="10" selected>最近10試合</option>
+              <option value="20">最近20試合</option>
+            </select>
+          </div>
+
+          <button onclick="analyzePerformance()">📈 パフォーマンス分析</button>
+
+          <div class="loading" id="performance-loading">⏳ 分析中...</div>
+          <div class="error" id="performance-error"></div>
+          <div class="result" id="performance-result"></div>
+          <div id="performance-trend"></div>
         </div>
       </div>
 
@@ -548,6 +587,7 @@
     <!-- JavaScript ファイル読み込み -->
     <script src="static/js/ui.js"></script>
     <script src="static/js/api.js"></script>
+    <script src="static/js/performance_analysis.js"></script>
     <script src="static/js/runes.js"></script>
     <script src="static/js/champions.js"></script>
     <script src="static/js/items.js"></script>
