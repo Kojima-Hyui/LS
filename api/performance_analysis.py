@@ -48,7 +48,7 @@ class handler(BaseHTTPRequestHandler):
             puuid = account['puuid']
             
             # 最近の試合IDを取得
-            recent_matches = riot_client.get_recent_matches(puuid, count=match_count)
+            recent_matches = riot_client.get_match_history(puuid, count=match_count)
             if not recent_matches:
                 self.send_error_response({'error': '試合データが見つかりません'}, 404)
                 return
@@ -60,7 +60,7 @@ class handler(BaseHTTPRequestHandler):
             
             for match_id in recent_matches[:match_count]:
                 try:
-                    match_data = riot_client.get_match_details(match_id)
+                    match_data = riot_client.get_match_detail(match_id)
                     if not match_data:
                         continue
                     
@@ -119,7 +119,7 @@ class handler(BaseHTTPRequestHandler):
                 'analysis_metadata': {
                     'total_matches_analyzed': len(match_analyses),
                     'requested_matches': match_count,
-                    'analysis_date': riot_client.get_current_timestamp()
+                    'analysis_date': int(__import__('time').time() * 1000)  # 現在のタイムスタンプ（ミリ秒）
                 }
             })
             
