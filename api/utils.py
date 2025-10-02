@@ -357,3 +357,101 @@ def get_detailed_match_info(match_data: Dict) -> Dict:
         "tournament_code": info.get("tournamentCode"),
         "teams": [get_team_stats(match_data, 100), get_team_stats(match_data, 200)]
     }
+
+
+def balance_teams_with_lanes(players_data: List[Dict]) -> Tuple[List[Dict], List[Dict], Dict]:
+    """
+    レーン配分を考慮したチーム組み分け
+    
+    Args:
+        players_data: プレイヤー情報のリスト (preferred_lanesを含む)
+        
+    Returns:
+        (チーム1, チーム2, レーン配分)のタプル
+    """
+    if len(players_data) != 10:
+        raise ValueError("10人のプレイヤーが必要です")
+    
+    lanes = ['top', 'jungle', 'mid', 'adc', 'support']
+    
+    from itertools import combinations, permutations
+    
+    best_score = float('-inf')
+    best_team1 = []
+    best_team2 = []
+    best_assignments = {}
+    
+    # 全ての5vs5の組み合わせを試す
+    for team1_indices in combinations(range(10), 5):
+        team1_players = [players_data[i] for i in team1_indices]
+        team2_players = [players_data[i] for i in range(10) if i not in team1_indices]
+        
+        # チーム1のレーン配分を最適化
+        team1_best_assignment, team1_lane_score = optimize_lane_assignment(team1_players, lanes)
+        
+        # チーム2のレーン配分を最適化
+        team2_best_assignment, team2_lane_score = optimize_lane_assignment(team2_players, lanes)
+        
+        # ランクスコアのバランスも考慮
+        team1_rank_score = sum(p.get('rank_score', 0) for p in team1_players)
+        team2_rank_score = sum(p.get('rank_score', 0) for p in team2_players)
+        rank_balance_score = 1000 - abs(team1_rank_score - team2_rank_score)
+        
+        # 総合スコア（レーン適性 + ランクバランス）
+        total_score = team1_lane_score + team2_lane_score + rank_balance_score
+        
+        if total_score > best_score:
+            best_score = total_score
+            best_team1 = team1_players
+            best_team2 = team2_players
+            best_assignments = {
+                'team1': team1_best_assignment,
+                'team2': team2_best_assignment
+            }
+    
+    return best_team1, best_team2, best_assignments
+
+
+def optimize_lane_assignment(team_players: List[Dict], lanes: List[str]) -> Tuple[Dict, float]:
+    """
+    1チーム（5人）のレーン配分を最適化
+    
+    Args:
+        team_players: チームプレイヤーリスト
+        lanes: レーンリスト
+        
+    Returns:
+        (最適配分, スコア)のタプル
+    """
+    from itertools import permutations
+    
+    best_assignment = {}
+    best_score = float('-inf')
+    
+    # 全てのレーン配分を試す
+    for lane_perm in permutations(lanes):
+        assignment = {}
+        score = 0
+        
+        for i, player in enumerate(team_players):
+            assigned_lane = lane_perm[i]
+            player_id = player['riot_id']
+            assignment[player_id] = assigned_lane
+            
+            # プレイヤーがこのレーンを得意としているかどうかでスコア計算
+            preferred_lanes = player.get('preferred_lanes', [])
+            if assigned_lane in preferred_lanes:
+                # 得意レーンなら高スコア
+                score += 100
+            elif not preferred_lanes:
+                # レーン指定なしならニュートラル
+                score += 50
+            else:
+                # 得意でないレーンなら低スコア
+                score += 10
+        
+        if score > best_score:
+            best_score = score
+            best_assignment = assignment
+    
+    return best_assignment, best_score

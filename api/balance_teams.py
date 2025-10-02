@@ -10,7 +10,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from riot_client import RiotAPIClient
-from utils import get_rank_score, balance_teams, calculate_team_average, format_rank
+from utils import get_rank_score, balance_teams, calculate_team_average, format_rank, balance_teams_with_lanes
 
 
 class handler(BaseHTTPRequestHandler):
@@ -21,9 +21,10 @@ class handler(BaseHTTPRequestHandler):
             body = self.rfile.read(content_length).decode('utf-8')
             data = json.loads(body)
             
-            riot_ids = data.get('riot_ids', [])
+            riot_ids = data.get('players', data.get('riot_ids', []))
             region = data.get('region', 'jp1')
             routing = data.get('routing', 'asia')
+            lane_preferences = data.get('lane_preferences', {})
             
             if len(riot_ids) != 10:
                 self.send_error_response({'error': '10人のプレイヤーが必要です'}, 400)
@@ -73,14 +74,20 @@ class handler(BaseHTTPRequestHandler):
                     'rank_info': rank_info,
                     'tier': tier,
                     'division': division,
-                    'lp': lp
+                    'lp': lp,
+                    'preferred_lanes': lane_preferences.get(riot_id, [])
                 })
             
-            # チーム分け
-            team1, team2 = balance_teams(players_data)
+            # チーム分け（レーン情報を考慮するかどうか判定）
+            use_lane_balance = bool(lane_preferences and any(lane_preferences.values()))
+            if use_lane_balance:
+                team1, team2, lane_assignments = balance_teams_with_lanes(players_data)
+            else:
+                team1, team2 = balance_teams(players_data)
+                lane_assignments = None
             
             # 成功レスポンス
-            self.send_success_response({
+            response_data = {
                 'team1': {
                     'players': team1,
                     'average_score': calculate_team_average(team1),
@@ -95,7 +102,12 @@ class handler(BaseHTTPRequestHandler):
                     calculate_team_average(team1) - 
                     calculate_team_average(team2)
                 )
-            })
+            }
+            
+            if lane_assignments:
+                response_data['lane_assignments'] = lane_assignments
+            
+            self.send_success_response(response_data)
             
         except Exception as e:
             print(f"Error in balance_teams: {e}")

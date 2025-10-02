@@ -731,6 +731,97 @@ function displayCurrentGame(data) {
   resultEl.innerHTML = html;
 }
 
+// レーン選択UI制御
+function toggleLaneInputs() {
+  const enableLaneBalance = document.getElementById("enable-lane-balance").checked;
+  const laneInputsEl = document.getElementById("lane-inputs");
+  
+  if (enableLaneBalance) {
+    laneInputsEl.style.display = "block";
+    updatePlayerLaneSelection();
+  } else {
+    laneInputsEl.style.display = "none";
+  }
+}
+
+function updatePlayerLaneSelection() {
+  const playersText = document.getElementById("balance-players").value.trim();
+  const players = playersText
+    .split("\n")
+    .map((p) => p.trim())
+    .filter((p) => p);
+
+  const container = document.getElementById("player-lane-selection");
+  container.innerHTML = "";
+
+  const lanes = [
+    { id: "top", name: "トップ", emoji: "🛡️" },
+    { id: "jungle", name: "ジャングル", emoji: "🌲" },
+    { id: "mid", name: "ミッド", emoji: "⚡" },
+    { id: "adc", name: "ADC", emoji: "🏹" },
+    { id: "support", name: "サポート", emoji: "🛡️" }
+  ];
+
+  players.forEach((player, index) => {
+    const playerDiv = document.createElement("div");
+    playerDiv.className = "player-lane-item";
+    
+    const playerName = document.createElement("div");
+    playerName.className = "player-name";
+    playerName.textContent = player;
+    
+    const laneOptions = document.createElement("div");
+    laneOptions.className = "lane-options";
+    
+    lanes.forEach(lane => {
+      const laneOption = document.createElement("label");
+      laneOption.className = "lane-option";
+      
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.name = `player-${index}-lanes`;
+      checkbox.value = lane.id;
+      checkbox.onchange = () => updateLaneOptionStyle(laneOption, checkbox.checked);
+      
+      const text = document.createElement("span");
+      text.textContent = `${lane.emoji} ${lane.name}`;
+      
+      laneOption.appendChild(checkbox);
+      laneOption.appendChild(text);
+      laneOptions.appendChild(laneOption);
+    });
+    
+    playerDiv.appendChild(playerName);
+    playerDiv.appendChild(laneOptions);
+    container.appendChild(playerDiv);
+  });
+}
+
+function updateLaneOptionStyle(laneOption, isSelected) {
+  if (isSelected) {
+    laneOption.classList.add("selected");
+  } else {
+    laneOption.classList.remove("selected");
+  }
+}
+
+function getPlayerLanePreferences() {
+  const players = document.getElementById("balance-players").value
+    .split("\n")
+    .map(p => p.trim())
+    .filter(p => p);
+    
+  const preferences = {};
+  
+  players.forEach((player, index) => {
+    const checkboxes = document.querySelectorAll(`input[name="player-${index}-lanes"]:checked`);
+    const selectedLanes = Array.from(checkboxes).map(cb => cb.value);
+    preferences[player] = selectedLanes;
+  });
+  
+  return preferences;
+}
+
 // チーム組み分け
 async function balanceTeams() {
   const playersText = document.getElementById("balance-players").value.trim();
@@ -764,10 +855,17 @@ async function balanceTeams() {
   resultEl.style.display = "none";
 
   try {
+    const enableLaneBalance = document.getElementById("enable-lane-balance").checked;
+    const requestBody = { players: players.slice(0, 10) };
+    
+    if (enableLaneBalance) {
+      requestBody.lane_preferences = getPlayerLanePreferences();
+    }
+
     const response = await fetch("/api/balance_teams", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ players: players.slice(0, 10) }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
@@ -795,31 +893,97 @@ async function balanceTeams() {
 // 組み分け結果表示
 function displayBalancedTeams(data) {
   const resultEl = document.getElementById("balance-result");
+  const enableLaneBalance = document.getElementById("enable-lane-balance").checked;
 
   let html = `<h3>⚖️ チーム組み分け結果</h3>`;
-  html += `<p>平均スコア差: ${data.score_diff}</p>`;
+  html += `<p>平均スコア差: ${data.score_difference || data.score_diff}</p>`;
+  
+  if (enableLaneBalance && data.lane_assignments) {
+    html += `<p style="color: #fbbf24;">🎯 レーン配分を考慮した組み分けを実行しました</p>`;
+  }
 
-  html += `<div class="team team-blue"><h3>💙 Team 1 (Score: ${data.team1_score})</h3>`;
-  data.team1.forEach((p) => {
+  html += `<div class="team-result-enhanced">`;
+  
+  html += `<div class="team-section team-blue">
+    <div class="team-header">
+      <div class="team-name">💙 Team 1</div>
+      <div class="team-score">Score: ${data.team1_score || data.team1?.total_score}</div>
+    </div>`;
+    
+  (data.team1?.players || data.team1).forEach((p) => {
+    const assignedLane = enableLaneBalance && data.lane_assignments?.team1 ? 
+      data.lane_assignments.team1[p.riotId || p.riot_id] : null;
+    
     html += `
-      <div class="player">
-        <strong>${p.riotId}</strong><br>
-        <span style="color: #9ae6b4;">${p.rank} (Score: ${p.score})</span>
+      <div class="player-with-lane">
+        <div class="player-info">
+          <strong>${p.riotId || p.riot_id}</strong><br>
+          <span style="color: #9ae6b4;">${p.rank || p.rank_info} (Score: ${p.score || p.rank_score})</span>
+        </div>
+        ${assignedLane ? `<div class="player-lane-badge">${getLaneEmoji(assignedLane)} ${getLaneName(assignedLane)}</div>` : ''}
       </div>
     `;
   });
   html += `</div>`;
 
-  html += `<div class="team team-red"><h3>❤️ Team 2 (Score: ${data.team2_score})</h3>`;
-  data.team2.forEach((p) => {
+  html += `<div class="team-section team-red">
+    <div class="team-header">
+      <div class="team-name">❤️ Team 2</div>
+      <div class="team-score">Score: ${data.team2_score || data.team2?.total_score}</div>
+    </div>`;
+    
+  (data.team2?.players || data.team2).forEach((p) => {
+    const assignedLane = enableLaneBalance && data.lane_assignments?.team2 ? 
+      data.lane_assignments.team2[p.riotId || p.riot_id] : null;
+    
     html += `
-      <div class="player">
-        <strong>${p.riotId}</strong><br>
-        <span style="color: #9ae6b4;">${p.rank} (Score: ${p.score})</span>
+      <div class="player-with-lane">
+        <div class="player-info">
+          <strong>${p.riotId || p.riot_id}</strong><br>
+          <span style="color: #9ae6b4;">${p.rank || p.rank_info} (Score: ${p.score || p.rank_score})</span>
+        </div>
+        ${assignedLane ? `<div class="player-lane-badge">${getLaneEmoji(assignedLane)} ${getLaneName(assignedLane)}</div>` : ''}
       </div>
     `;
   });
+  html += `</div>`;
+  
   html += `</div>`;
 
   resultEl.innerHTML = html;
 }
+
+function getLaneEmoji(lane) {
+  const emojis = {
+    'top': '🛡️',
+    'jungle': '🌲',
+    'mid': '⚡',
+    'adc': '🏹',
+    'support': '🛡️'
+  };
+  return emojis[lane] || '❓';
+}
+
+function getLaneName(lane) {
+  const names = {
+    'top': 'トップ',
+    'jungle': 'ジャングル',
+    'mid': 'ミッド',
+    'adc': 'ADC',
+    'support': 'サポート'
+  };
+  return names[lane] || lane;
+}
+
+// プレイヤーリストの変更を検知してレーン選択UIを更新
+document.addEventListener("DOMContentLoaded", function() {
+  const playersTextarea = document.getElementById("balance-players");
+  if (playersTextarea) {
+    playersTextarea.addEventListener("input", function() {
+      const enableLaneBalance = document.getElementById("enable-lane-balance");
+      if (enableLaneBalance && enableLaneBalance.checked) {
+        updatePlayerLaneSelection();
+      }
+    });
+  }
+});
