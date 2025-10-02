@@ -293,6 +293,7 @@ function displayDetailedPerformanceResults(data) {
                     <div class="match-performance-card ${match.win ? 'win' : 'loss'}">
                         <div class="match-info">
                             <span class="champion">${match.champion || '不明'}</span>
+                            <span class="queue-type">${match.queue_type || 'ランク・ノーマル'}</span>
                             <span class="result">${match.win ? '勝利' : '敗北'}</span>
                             <span class="kda">${match.kda}</span>
                         </div>

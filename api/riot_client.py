@@ -93,18 +93,26 @@ class RiotAPIClient:
             print(f"Summoner API Response keys: {result.keys()}")
         return result
     
-    def get_match_history(self, puuid: str, count: int = 20) -> Optional[List[str]]:
+    def get_match_history(self, puuid: str, count: int = 20, queue_filter: bool = True) -> Optional[List[str]]:
         """
         マッチ履歴のIDリストを取得
         
         Args:
             puuid: プレイヤーUUID
             count: 取得する試合数
+            queue_filter: ランク・ノーマルのみに限定するか
             
         Returns:
             マッチIDのリスト
         """
-        url = f"{self.routing_url}/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count={count}"
+        if queue_filter:
+            # ランク・ノーマルのみ取得（多めに取得してフィルタリング）
+            # 420: ランクソロ, 440: ランクフレックス, 400: ノーマルドラフト, 430: ノーマルブラインド
+            queue_params = "&queue=420&queue=440&queue=400&queue=430"
+            url = f"{self.routing_url}/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count={count * 2}{queue_params}"
+        else:
+            url = f"{self.routing_url}/lol/match/v5/matches/by-puuid/{puuid}/ids?start=0&count={count}"
+        
         return self._make_request(url)
     
     def get_match_detail(self, match_id: str) -> Optional[Dict]:

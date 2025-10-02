@@ -47,10 +47,10 @@ class handler(BaseHTTPRequestHandler):
             
             puuid = account['puuid']
             
-            # 最近の試合IDを取得
-            recent_matches = riot_client.get_match_history(puuid, count=match_count)
+            # 最近の試合IDを取得（ランク・ノーマルのみ）
+            recent_matches = riot_client.get_match_history(puuid, count=match_count, queue_filter=True)
             if not recent_matches:
-                self.send_error_response({'error': '試合データが見つかりません'}, 404)
+                self.send_error_response({'error': 'ランク・ノーマル試合データが見つかりません'}, 404)
                 return
             
             # 各試合の詳細パフォーマンス分析
@@ -64,10 +64,28 @@ class handler(BaseHTTPRequestHandler):
                     if not match_data:
                         continue
                     
+                    # ゲームモードチェック（ランク・ノーマルのみ対象）
+                    game_info = match_data.get('info', {})
+                    queue_id = game_info.get('queueId', 0)
+                    
+                    # Summoner's Riftのランク・ノーマルゲームのみ対象
+                    # 420: ランクソロ, 440: ランクフレックス, 400: ノーマルドラフト, 430: ノーマルブラインド
+                    valid_queues = [420, 440, 400, 430]
+                    if queue_id not in valid_queues:
+                        continue
+                    
                     # プレイヤー統計取得
                     player_stats = get_player_stats(match_data, puuid)
                     if not player_stats:
                         continue
+                    
+                    # ゲームモード名を取得
+                    queue_names = {
+                        420: "ランクソロ",
+                        440: "ランクフレックス", 
+                        400: "ノーマルドラフト",
+                        430: "ノーマルブラインド"
+                    }
                     
                     # 試合分析データ構築
                     match_analysis = {
@@ -79,7 +97,8 @@ class handler(BaseHTTPRequestHandler):
                         'kda': f"{player_stats.get('kills', 0)}/{player_stats.get('deaths', 0)}/{player_stats.get('assists', 0)}",
                         'game_duration': player_stats.get('game_duration', 0),
                         'performance_analysis': player_stats.get('performance_analysis', {}),
-                        'game_creation': match_data.get('info', {}).get('gameCreation', 0)
+                        'game_creation': match_data.get('info', {}).get('gameCreation', 0),
+                        'queue_type': queue_names.get(queue_id, f"Queue {queue_id}")
                     }
                     
                     match_analyses.append(match_analysis)
