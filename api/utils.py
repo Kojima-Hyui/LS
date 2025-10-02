@@ -75,7 +75,7 @@ def get_player_stats(match_data: Dict, puuid: str) -> Optional[Dict]:
                 "control_wards_purchased": participant.get("visionWardsBoughtInGame", 0)
             }
             
-            return {
+            player_stats = {
                 # 基本情報
                 "champion": participant.get("championName"),
                 "champion_id": participant.get("championId"),
@@ -338,113 +338,133 @@ def calculate_performance_score(stats: Dict) -> Dict:
 
 def calculate_farming_efficiency(stats: Dict, position: str) -> float:
     """ファーム効率スコア (0-20点)"""
-    cs_per_min = stats.get('cs_per_minute', 0)
-    
-    # ロール別基準値
-    role_cs_benchmarks = {
-        'TOP': 7.5, 'JUNGLE': 6.0, 'MIDDLE': 8.0, 'MID': 8.0,
-        'BOTTOM': 8.5, 'ADC': 8.5, 'UTILITY': 2.0, 'SUPPORT': 2.0
-    }
-    
-    benchmark = role_cs_benchmarks.get(position, 7.0)
-    if benchmark == 0:
-        return 20.0  # サポートなど、CSが重要でないロール
-    
-    efficiency_ratio = min(cs_per_min / benchmark, 1.5)
-    return min(efficiency_ratio * 20, 20)
+    try:
+        cs_per_min = float(stats.get('cs_per_minute', 0))
+        
+        # ロール別基準値
+        role_cs_benchmarks = {
+            'TOP': 7.5, 'JUNGLE': 6.0, 'MIDDLE': 8.0, 'MID': 8.0,
+            'BOTTOM': 8.5, 'ADC': 8.5, 'UTILITY': 2.0, 'SUPPORT': 2.0
+        }
+        
+        benchmark = role_cs_benchmarks.get(position, 7.0)
+        if benchmark <= 0.1:  # サポートなど、CSが重要でないロール
+            return 18.0
+        
+        efficiency_ratio = min(cs_per_min / benchmark, 1.5)
+        return min(efficiency_ratio * 20, 20)
+    except (ValueError, TypeError, ZeroDivisionError):
+        return 10.0  # デフォルト値
 
 
 def calculate_combat_effectiveness(stats: Dict) -> float:
     """戦闘効率スコア (0-25点)"""
-    kda = stats.get('kda', 0)
-    damage_per_min = stats.get('damage_per_minute', 0)
-    kills = stats.get('kills', 0)
-    assists = stats.get('assists', 0)
-    deaths = stats.get('deaths', 1)
-    
-    # KDA基本スコア (0-12点)
-    kda_score = min(kda * 3, 12)
-    
-    # ダメージ効率 (0-8点)
-    damage_score = min(damage_per_min / 200, 8)
-    
-    # キル参加率推定 (0-5点)
-    kill_participation = min((kills + assists) / max(deaths * 3, 1), 1) * 5
-    
-    return kda_score + damage_score + kill_participation
+    try:
+        kda = float(stats.get('kda', 0))
+        damage_per_min = float(stats.get('damage_per_minute', 0))
+        kills = int(stats.get('kills', 0))
+        assists = int(stats.get('assists', 0))
+        deaths = max(int(stats.get('deaths', 0)), 1)
+        
+        # KDA基本スコア (0-12点)
+        kda_score = min(kda * 3, 12)
+        
+        # ダメージ効率 (0-8点)
+        damage_score = min(damage_per_min / 200, 8)
+        
+        # キル参加率推定 (0-5点)
+        kill_participation = min((kills + assists) / max(deaths * 3, 1), 1) * 5
+        
+        return kda_score + damage_score + kill_participation
+    except (ValueError, TypeError, ZeroDivisionError):
+        return 12.0  # デフォルト値
 
 
 def calculate_vision_control(stats: Dict, position: str) -> float:
     """視界コントロールスコア (0-20点)"""
-    vision_data = stats.get('vision', {})
-    vision_score = vision_data.get('vision_score', 0)
-    wards_placed = vision_data.get('wards_placed', 0)
-    wards_killed = vision_data.get('wards_killed', 0)
-    
-    # ポジション別基準
-    if position in ['UTILITY', 'SUPPORT']:
-        # サポートは視界スコアを重視
-        base_score = min(vision_score / 3, 15)
-        ward_score = min((wards_placed + wards_killed) / 10, 5)
-    else:
-        # その他のロールは低めの基準
-        base_score = min(vision_score / 4, 15)
-        ward_score = min((wards_placed + wards_killed) / 15, 5)
-    
-    return base_score + ward_score
+    try:
+        vision_data = stats.get('vision', {})
+        vision_score = float(vision_data.get('vision_score', 0))
+        wards_placed = int(vision_data.get('wards_placed', 0))
+        wards_killed = int(vision_data.get('wards_killed', 0))
+        
+        # ポジション別基準
+        if position in ['UTILITY', 'SUPPORT']:
+            # サポートは視界スコアを重視
+            base_score = min(vision_score / 3, 15)
+            ward_score = min((wards_placed + wards_killed) / 10, 5)
+        else:
+            # その他のロールは低めの基準
+            base_score = min(vision_score / 4, 15)
+            ward_score = min((wards_placed + wards_killed) / 15, 5)
+        
+        return base_score + ward_score
+    except (ValueError, TypeError, ZeroDivisionError):
+        return 10.0  # デフォルト値
 
 
 def calculate_objective_participation(stats: Dict) -> float:
     """オブジェクト参加スコア (0-15点)"""
-    # 現在のstatsにオブジェクト情報がない場合の暫定実装
-    # 将来的にはタワー破壊、ドラゴン/バロンキルなどを含める
-    
-    turret_kills = stats.get('turret_kills', 0)
-    dragon_kills = stats.get('dragon_kills', 0)
-    baron_kills = stats.get('baron_kills', 0)
-    
-    # 基本的なオブジェクト参加度
-    objective_score = min(turret_kills * 2 + dragon_kills * 3 + baron_kills * 4, 15)
-    
-    return objective_score
+    try:
+        # 現在のstatsにオブジェクト情報がない場合の暫定実装
+        turret_kills = int(stats.get('turret_kills', 0))
+        dragon_kills = int(stats.get('dragon_kills', 0))
+        baron_kills = int(stats.get('baron_kills', 0))
+        
+        # 基本的なオブジェクト参加度
+        objective_score = min(turret_kills * 2 + dragon_kills * 3 + baron_kills * 4, 15)
+        
+        # 最低点保証
+        return max(objective_score, 5.0)
+    except (ValueError, TypeError):
+        return 7.5  # デフォルト値
 
 
 def calculate_gold_efficiency(stats: Dict) -> float:
     """ゴールド効率スコア (0-20点)"""
-    gold_per_min = stats.get('gold_per_minute', 0)
-    gold_earned = stats.get('gold', 0)
-    damage_per_min = stats.get('damage_per_minute', 0)
-    
-    # ゴールド獲得効率 (0-10点)
-    gold_rate_score = min(gold_per_min / 400, 10)
-    
-    # ゴールドダメージ効率 (0-10点)
-    if gold_earned > 0:
-        damage_per_gold = (damage_per_min * stats.get('game_duration', 1800) / 60) / gold_earned
-        efficiency_score = min(damage_per_gold * 5, 10)
-    else:
-        efficiency_score = 0
-    
-    return gold_rate_score + efficiency_score
+    try:
+        gold_per_min = float(stats.get('gold_per_minute', 0))
+        gold_earned = float(stats.get('gold', 0))
+        damage_per_min = float(stats.get('damage_per_minute', 0))
+        
+        # ゴールド獲得効率 (0-10点)
+        gold_rate_score = min(gold_per_min / 400, 10)
+        
+        # ゴールドダメージ効率 (0-10点)
+        if gold_earned > 100 and damage_per_min > 0:
+            game_duration_min = max(float(stats.get('game_duration', 1800)) / 60, 1)
+            total_damage = damage_per_min * game_duration_min
+            damage_per_gold = total_damage / gold_earned
+            efficiency_score = min(damage_per_gold * 1000, 10)  # スケール調整
+        else:
+            efficiency_score = 5  # デフォルト値
+        
+        return gold_rate_score + efficiency_score
+    except (ValueError, TypeError, ZeroDivisionError):
+        return 10.0  # デフォルト値
 
 
 def calculate_percentile_rank(total_score: float, position: str, champion: str) -> float:
     """パーセンタイルランク計算（暫定実装）"""
-    # 将来的にはデータベースの統計データから計算
-    # 現在は簡易的な計算
-    
-    if total_score >= 80:
-        return 95.0
-    elif total_score >= 70:
-        return 85.0
-    elif total_score >= 60:
-        return 70.0
-    elif total_score >= 50:
-        return 50.0
-    elif total_score >= 40:
-        return 30.0
-    else:
-        return 15.0
+    try:
+        # 将来的にはデータベースの統計データから計算
+        # 現在は簡易的な計算
+        score = float(total_score)
+        
+        if score >= 80:
+            return 95.0
+        elif score >= 70:
+            return 85.0
+        elif score >= 60:
+            return 70.0
+        elif score >= 50:
+            return 50.0
+        elif score >= 40:
+            return 30.0
+        else:
+            return 15.0
+    except (ValueError, TypeError):
+        return 50.0  # デフォルト値
 
 
 def get_team_stats(match_data: Dict, team_id: int) -> Dict:
